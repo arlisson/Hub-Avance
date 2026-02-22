@@ -99,14 +99,13 @@ if (forgotLink) {
   forgotLink.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const email = (identifierInput.value || "").trim();
-    if (!email || !/[^\s@]+@[^\s@]+\.[^\s@]+/.test(email)) {
+    const email = (document.getElementById("identifier")?.value || "").trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
       return;
     }
 
     const supabase = window.supabaseClient;
-
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset/reset.html`,
     });
