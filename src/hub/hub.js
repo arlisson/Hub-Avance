@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = sessionData.session.user.email || "";
 
+  const userEmailCardEl = document.getElementById("user-email-card");
+  if (userEmailCardEl) userEmailCardEl.textContent = sessionData.session.user.email || "";
+
   // Logout
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
