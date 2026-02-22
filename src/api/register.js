@@ -1,8 +1,6 @@
 // src/api/register.js
 export default async function handler(req, res) {
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "method_not_allowed" });
   }
@@ -19,16 +17,19 @@ export default async function handler(req, res) {
     const GS_WEBAPP_URL = process.env.GS_WEBAPP_URL;
     const HUB_SECRET = process.env.HUB_SECRET;
 
+    // Opcional: defina explicitamente no env
+    const APP_ORIGIN =
+      process.env.APP_ORIGIN ||
+      req.headers.origin ||
+      `https://${req.headers.host}`;
 
-    if (!SUPABASE_URL || !SERVICE_ROLE) {
-      return res.status(500).json({
-        ok: false,
-        error: "missing_supabase_env",
-        has_url: !!SUPABASE_URL,
-        has_service_role: !!SERVICE_ROLE,
-      });
+    // Para onde o usuário vai após clicar no link de confirmação do e-mail
+    const EMAIL_REDIRECT_TO =
+      process.env.EMAIL_REDIRECT_TO || `${APP_ORIGIN}/login/login.html`;
+
+    if (!SUPABASE_URL) {
+      return res.status(500).json({ ok: false, error: "missing_supabase_url" });
     }
-
     if (!GS_WEBAPP_URL || !HUB_SECRET) {
       return res.status(500).json({
         ok: false,
@@ -39,6 +40,13 @@ export default async function handler(req, res) {
     }
 
     // 1) checa CPF duplicado (service role)
+    if (!SERVICE_ROLE) {
+      return res.status(500).json({
+        ok: false,
+        error: "missing_supabase_service_role",
+      });
+    }
+
     const cpfCheck = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpf)}&limit=1`,
       {
@@ -54,34 +62,51 @@ export default async function handler(req, res) {
       return res.status(409).json({ ok: false, error: "cpf_exists" });
     }
 
-    // 2) cria usuário (Admin API)
-    const createUser = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+    // 2) cria usuário via SIGNUP (envia e-mail de confirmação quando o projeto exigir)
+    // Não use /admin/users aqui, pois ele não envia confirmação e você estava confirmando automaticamente.
+    const signUpResp = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: SERVICE_ROLE,
-        Authorization: `Bearer ${SERVICE_ROLE}`,
+        apikey: SERVICE_ROLE, // pode ser anon key também, mas aqui já temos service role
       },
       body: JSON.stringify({
         email,
         password,
-        email_confirm: true,
+        data: {
+          name: name || null,
+          cpf,
+          whatsapp: whatsapp || null,
+        },
+        gotrue_meta_security: {},
+        // redirect após confirmar e-mail
+        options: {
+          emailRedirectTo: EMAIL_REDIRECT_TO,
+        },
       }),
     });
 
-    const created = await createUser.json().catch(() => ({}));
-    if (!createUser.ok) {
-      const msg = created?.msg || created?.message || "create_user_failed";
-      return res.status(createUser.status).json({
+    const signUpData = await signUpResp.json().catch(() => ({}));
+    if (!signUpResp.ok) {
+      const msg = signUpData?.msg || signUpData?.message || "signup_failed";
+      return res.status(signUpResp.status).json({
         ok: false,
         error: "auth_error",
         detail: msg,
       });
     }
 
-    const userId = created.id;
+    // GoTrue pode retornar user em "user" ou direto em "id" dependendo do formato.
+    const userId = signUpData?.user?.id || signUpData?.id;
+    if (!userId) {
+      return res.status(500).json({
+        ok: false,
+        error: "signup_missing_user_id",
+        detail: "Supabase signup did not return a user id.",
+      });
+    }
 
-    // 3) atualiza profile (linha criada por trigger)
+    // 3) atualiza profile (linha criada por trigger) - usando service role
     const upd = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`,
       {
@@ -110,8 +135,12 @@ export default async function handler(req, res) {
         },
       });
 
-      const detail = await upd.text();
-      return res.status(409).json({ ok: false, error: "profile_update_failed", detail });
+      const detail = await upd.text().catch(() => "");
+      return res.status(409).json({
+        ok: false,
+        error: "profile_update_failed",
+        detail,
+      });
     }
 
     // 4) registra licença no Google Sheets (upsert)
@@ -132,9 +161,8 @@ export default async function handler(req, res) {
 
     const sheetsData = await sheetsResp.json().catch(() => null);
 
-    // Se você NÃO quiser bloquear o cadastro por falha no Sheets, comente este if e apenas faça log
     if (!sheetsResp.ok || !sheetsData?.ok) {
-      // rollback: remove usuário criado, já que o cadastro "não completou" o provisionamento
+      // rollback: remove usuário criado
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -142,17 +170,27 @@ export default async function handler(req, res) {
           Authorization: `Bearer ${SERVICE_ROLE}`,
         },
       });
-      alert("Sheets failed:", sheetsData || await sheetsResp.text());
-     // tenta limpar profile também (opcional; geralmente cascade resolve ao deletar user)
+
+      console.error("Sheets failed:", sheetsData);
+
       return res.status(502).json({
         ok: false,
         error: "sheets_failed",
-        detail: sheetsData || (await sheetsResp.text()),
+        detail: sheetsData || (await sheetsResp.text().catch(() => "")),
       });
     }
 
-    return res.status(200).json({ ok: true });
+    // Observação: quando confirmação de e-mail estiver ativa, sessão geralmente é null
+    return res.status(200).json({
+      ok: true,
+      needs_email_confirmation: true,
+      email_redirect_to: EMAIL_REDIRECT_TO,
+    });
   } catch (e) {
-    return res.status(500).json({ ok: false, error: "server_error", detail: String(e) });
+    return res.status(500).json({
+      ok: false,
+      error: "server_error",
+      detail: String(e),
+    });
   }
 }

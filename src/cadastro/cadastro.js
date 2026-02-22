@@ -1,7 +1,4 @@
-// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/Email já existem)
-// Mantém: máscaras, toggle senha, submit
-// Faz: chama endpoint server-side /api/register (Vercel Function) que valida e cria usuário+perfil de forma atômica
-
+// cadastro.js — cria usuário via /api/register e exige confirmação de e-mail
 document.addEventListener("DOMContentLoaded", () => {
   // --- 1) MÁSCARAS ---
   const docInput = document.getElementById("document");
@@ -43,8 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (toggleBtn && passInput) {
     toggleBtn.addEventListener("click", () => {
-      const type =
-        passInput.getAttribute("type") === "password" ? "text" : "password";
+      const type = passInput.getAttribute("type") === "password" ? "text" : "password";
       passInput.setAttribute("type", type);
 
       const icon = toggleBtn.querySelector("i");
@@ -69,8 +65,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const cpfCnpj = docInput.value.replace(/\D/g, "");
     const whatsapp = phoneInput.value.replace(/\D/g, "");
 
+    if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      alert("Informe um e-mail válido.");
+      return;
+    }
+    if (!passwordValue || passwordValue.length < 8) {
+      alert("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+    if (!cpfCnpj) {
+      alert("Informe CPF/CNPJ.");
+      return;
+    }
+
     const btn = form.querySelector(".register-btn");
-    const originalText = btn?.innerText || "Criar conta";
+    const originalText = btn?.innerText || "Cadastrar";
 
     if (btn) {
       btn.innerText = "Criando conta...";
@@ -78,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Payload para o backend (Vercel Function)
       const payload = {
         name: nameValue,
         email: emailValue,
@@ -99,12 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const err = out?.error || "unknown_error";
 
         if (err === "cpf_exists") {
-          alert("Este CPF já está cadastrado.");
+          alert("Este CPF/CNPJ já está cadastrado.");
           return;
         }
 
         if (err === "auth_error") {
-          // normalmente email já cadastrado
           alert("Este e-mail já está cadastrado.");
           return;
         }
@@ -114,11 +121,17 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        alert("Erro ao cadastrar. Verifique os dados e tente novamente.");
+        alert(out?.detail || "Erro ao cadastrar. Verifique os dados e tente novamente.");
         return;
       }
 
-      alert("Conta criada com sucesso! Redirecionando para o login...");
+      // Sucesso: exigir confirmação de e-mail antes de entrar
+      if (out?.needs_email_confirmation) {
+        alert("Conta criada. Verifique seu e-mail para confirmar antes de fazer login.");
+      } else {
+        alert("Conta criada com sucesso.");
+      }
+
       window.location.href = "../login/login.html";
     } catch (error) {
       console.error("Erro:", error);
