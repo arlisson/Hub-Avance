@@ -118,7 +118,7 @@ export default async function handler(req, res) {
     const sheetsData = await sheetsResp.json().catch(() => null);
 
     // Se você NÃO quiser bloquear o cadastro por falha no Sheets, comente este if e apenas faça log
-    //if (!sheetsResp.ok || !sheetsData?.ok) {
+    if (!sheetsResp.ok || !sheetsData?.ok) {
       // rollback: remove usuário criado, já que o cadastro "não completou" o provisionamento
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
@@ -134,7 +134,7 @@ export default async function handler(req, res) {
         error: "sheets_failed",
         detail: sheetsData || (await sheetsResp.text()),
       });
-    //}
+    }
 
     return res.status(200).json({ ok: true });
   } catch (e) {
