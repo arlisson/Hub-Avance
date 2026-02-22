@@ -1,10 +1,10 @@
 // cadastro.js — cria usuário via /api/register e exige confirmação de e-mail
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 1) MÁSCARAS ---
   const docInput = document.getElementById("document");
   const phoneInput = document.getElementById("whatsapp");
+  const form = document.getElementById("register-form");
 
-  if (!docInput || !phoneInput) return;
+  if (!docInput || !phoneInput || !form) return;
 
   // Máscara CPF/CNPJ
   docInput.addEventListener("input", (e) => {
@@ -34,10 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = value;
   });
 
-  // --- 2) MOSTRAR SENHA ---
+  // Toggle senha
   const toggleBtn = document.getElementById("toggle-password");
   const passInput = document.getElementById("password");
-
   if (toggleBtn && passInput) {
     toggleBtn.addEventListener("click", () => {
       const type = passInput.getAttribute("type") === "password" ? "text" : "password";
@@ -50,10 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
-  // --- 3) SUBMIT (via /api/register) ---
-  const form = document.getElementById("register-form");
-  if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -92,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         email: emailValue,
         password: passwordValue,
         cpf: cpfCnpj,
-        whatsapp: whatsapp,
+        whatsapp,
       };
 
       const r = await fetch("/api/register", {
@@ -100,6 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      // 429: rate limit
+      if (r.status === 429) {
+        alert("Muitas tentativas em pouco tempo. Aguarde 1 minuto e tente novamente.");
+        return;
+      }
 
       const out = await r.json().catch(() => null);
 
@@ -111,27 +112,21 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        if (err === "auth_error") {
+        if (err === "email_exists") {
           alert("Este e-mail já está cadastrado.");
           return;
         }
 
-        if (err === "missing_fields") {
-          alert("Preencha os campos obrigatórios.");
+        if (err === "weak_password") {
+          alert("Senha fraca. Use pelo menos 8 caracteres.");
           return;
         }
 
-        alert(out?.detail || "Erro ao cadastrar. Verifique os dados e tente novamente.");
+        alert(out?.detail || "Erro ao cadastrar. Tente novamente.");
         return;
       }
 
-      // Sucesso: exigir confirmação de e-mail antes de entrar
-      if (out?.needs_email_confirmation) {
-        alert("Conta criada. Verifique seu e-mail para confirmar antes de fazer login.");
-      } else {
-        alert("Conta criada com sucesso.");
-      }
-
+      alert("Conta criada. Verifique seu e-mail para confirmar antes de fazer login.");
       window.location.href = "../login/login.html";
     } catch (error) {
       console.error("Erro:", error);

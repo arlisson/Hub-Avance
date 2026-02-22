@@ -23,30 +23,18 @@ export default async function handler(req, res) {
       req.headers.origin ||
       `https://${req.headers.host}`;
 
-    // Para onde o usuário vai após clicar no e-mail de confirmação
     const EMAIL_REDIRECT_TO =
       process.env.EMAIL_REDIRECT_TO || `${APP_ORIGIN}/login/login.html`;
 
-    if (!SUPABASE_URL) {
-      return res.status(500).json({ ok: false, error: "missing_supabase_url" });
-    }
-    if (!SERVICE_ROLE) {
-      return res.status(500).json({ ok: false, error: "missing_supabase_service_role" });
-    }
-    if (!SUPABASE_ANON_KEY) {
-      return res.status(500).json({ ok: false, error: "missing_supabase_anon_key" });
-    }
+    if (!SUPABASE_URL) return res.status(500).json({ ok: false, error: "missing_supabase_url" });
+    if (!SERVICE_ROLE) return res.status(500).json({ ok: false, error: "missing_supabase_service_role" });
+    if (!SUPABASE_ANON_KEY) return res.status(500).json({ ok: false, error: "missing_supabase_anon_key" });
 
     if (!GS_WEBAPP_URL || !HUB_SECRET) {
-      return res.status(500).json({
-        ok: false,
-        error: "missing_sheets_env",
-        has_gs_url: !!GS_WEBAPP_URL,
-        has_hub_secret: !!HUB_SECRET,
-      });
+      return res.status(500).json({ ok: false, error: "missing_sheets_env" });
     }
 
-    // 1) checa CPF duplicado (service role)
+    // 1) checa CPF duplicado
     const cpfCheck = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpf)}&limit=1`,
       {
@@ -62,7 +50,7 @@ export default async function handler(req, res) {
       return res.status(409).json({ ok: false, error: "cpf_exists" });
     }
 
-    // 2) cria usuário via SIGNUP (usa ANON KEY para disparar confirmação)
+    // 2) signup com ANON KEY (dispara confirmação)
     const signUpResp = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: "POST",
       headers: {
@@ -72,9 +60,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         email,
         password,
-        options: {
-          emailRedirectTo: EMAIL_REDIRECT_TO,
-        },
+        options: { emailRedirectTo: EMAIL_REDIRECT_TO },
         data: {
           name: name || null,
           cpf,
@@ -83,10 +69,26 @@ export default async function handler(req, res) {
       }),
     });
 
+    // repassa 429 (rate limit)
+    if (signUpResp.status === 429) {
+      return res.status(429).json({ ok: false, error: "rate_limited" });
+    }
+
     const signUpData = await signUpResp.json().catch(() => ({}));
 
     if (!signUpResp.ok) {
-      const msg = signUpData?.msg || signUpData?.message || "signup_failed";
+      const msg = String(signUpData?.msg || signUpData?.message || "signup_failed");
+
+      // e-mail já registrado
+      if (msg.toLowerCase().includes("already registered")) {
+        return res.status(409).json({ ok: false, error: "email_exists" });
+      }
+
+      // senha fraca (depende de política)
+      if (msg.toLowerCase().includes("password")) {
+        return res.status(400).json({ ok: false, error: "weak_password", detail: msg });
+      }
+
       return res.status(signUpResp.status).json({
         ok: false,
         error: "auth_error",
@@ -99,11 +101,10 @@ export default async function handler(req, res) {
       return res.status(500).json({
         ok: false,
         error: "signup_missing_user_id",
-        detail: "Supabase signup did not return a user id.",
       });
     }
 
-    // 3) atualiza profile (linha criada por trigger) - service role
+    // 3) atualiza profile com service role (se trigger já criou linha)
     const upd = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`,
       {
@@ -123,7 +124,7 @@ export default async function handler(req, res) {
     );
 
     if (!upd.ok) {
-      // rollback: remove usuário criado (admin delete)
+      // rollback user
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -133,14 +134,10 @@ export default async function handler(req, res) {
       });
 
       const detail = await upd.text().catch(() => "");
-      return res.status(409).json({
-        ok: false,
-        error: "profile_update_failed",
-        detail,
-      });
+      return res.status(409).json({ ok: false, error: "profile_update_failed", detail });
     }
 
-    // 4) registra licença no Google Sheets (upsert)
+    // 4) sheets
     const sheetsPayload = {
       action: "upsert_license",
       secret: HUB_SECRET,
@@ -159,7 +156,6 @@ export default async function handler(req, res) {
     const sheetsData = await sheetsResp.json().catch(() => null);
 
     if (!sheetsResp.ok || !sheetsData?.ok) {
-      // rollback: remove usuário criado (admin delete)
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -168,8 +164,6 @@ export default async function handler(req, res) {
         },
       });
 
-      console.error("Sheets failed:", sheetsData);
-
       return res.status(502).json({
         ok: false,
         error: "sheets_failed",
@@ -177,17 +171,12 @@ export default async function handler(req, res) {
       });
     }
 
-    // Se confirmação de e-mail estiver ativa, o usuário não entra até confirmar.
     return res.status(200).json({
       ok: true,
       needs_email_confirmation: true,
       email_redirect_to: EMAIL_REDIRECT_TO,
     });
   } catch (e) {
-    return res.status(500).json({
-      ok: false,
-      error: "server_error",
-      detail: String(e),
-    });
+    return res.status(500).json({ ok: false, error: "server_error", detail: String(e) });
   }
 }
