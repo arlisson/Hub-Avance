@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar Conta - Agente IA</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="cadastro.css" />
+  </head>
+  <body>
+    <div class="register-container">
+      <div class="register-card">
+        <div class="register-header">
+          <div class="register-logo-container">
+            <img src="../../img/avanceVip.png" alt="Logo" />
+          </div>
+          <h1>Crie sua conta</h1>
+          <p>Preencha os dados abaixo para começar</p>
+        </div>
+
+        <form id="register-form">
+          <div class="input-group">
+            <label for="name">Nome completo ou Razão Social</label>
+            <div class="input-wrapper">
+              <i class="ph ph-user input-icon"></i>
+              <input
+                type="text"
+                id="name"
+                placeholder="Ex: João Silva ou Empresa LTDA"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="document">CPF ou CNPJ</label>
+            <div class="input-wrapper">
+              <i class="ph ph-identification-card input-icon"></i>
+              <input
+                type="text"
+                id="document"
+                placeholder="000.000.000-00"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="whatsapp">WhatsApp</label>
+            <div class="input-wrapper">
+              <i class="ph ph-whatsapp-logo input-icon"></i>
+              <input
+                type="tel"
+                id="whatsapp"
+                placeholder="(00) 00000-0000"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="email">Seu melhor E-mail</label>
+            <div class="input-wrapper">
+              <i class="ph ph-envelope-simple input-icon"></i>
+              <input
+                type="email"
+                id="email"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Senha</label>
+            <div class="input-wrapper">
+              <i class="ph ph-lock input-icon"></i>
+              <input
+                type="password"
+                id="password"
+                placeholder="Mínimo 8 caracteres"
+                required
+                minlength="8"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                id="toggle-password"
+              >
+                <i class="ph ph-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="register-btn">Cadastrar</button>
+        </form>
+
+        <div class="register-footer">
+          <p>Já tem uma conta? <a href="../login/login.html">Fazer login</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../supabaseClient.js"></script>
+    <script src="./cadastro.js" defer></script>
+  </body>
+</html>

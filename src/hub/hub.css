@@ -1,0 +1,179 @@
+/* hub.css - estilos específicos do Hub */
+
+.hub-container {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hub-head {
+  margin-bottom: 18px;
+}
+
+.hub-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.hub-subtitle {
+  margin: 6px 0 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 980px) {
+  .hub-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hub-card {
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+}
+
+body.dark-mode .hub-card {
+  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hub-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.hub-badge {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.10);
+}
+
+body.dark-mode .hub-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hub-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .hub-icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hub-icon i {
+  font-size: 20px;
+}
+
+.hub-card-title {
+  margin: 6px 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hub-card-desc {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 14px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.hub-card-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.hub-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.06);
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+body.dark-mode .hub-btn {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hub-btn-primary {
+  border-color: rgba(0, 0, 0, 0.14);
+  background: rgba(0, 0, 0, 0.10);
+}
+
+body.dark-mode .hub-btn-primary {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.hub-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hub-card-disabled {
+  opacity: 0.8;
+}
+
+.hub-footer {
+  padding: 14px 20px 18px;
+  opacity: 0.7;
+  font-size: 12px;
+  text-align: center;
+}
+.assistant-avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .assistant-avatar{
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.assistant-avatar img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

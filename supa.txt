@@ -1,0 +1,2 @@
+url:https://mgfmdkjfhqriyvnrkgmx.supabase.co
+api_key: sb_publishable_MNNmP8Q9k7LEwqol4Fsz0A_DHUN9jpl

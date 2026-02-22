@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hub | AVANCE</title>
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Seu CSS atual -->
+    <link rel="stylesheet" href="../../style.css" />
+    <!-- CSS do Hub -->
+    <link rel="stylesheet" href="./hub.css" />
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="logo-container">
+        <!-- Ajuste o caminho conforme sua estrutura -->
+        <img src="../../img/avanceVip.png" alt="Logo AVANCE" class="company-logo" />
+      </div>
+
+      <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
+        <div style="width: 100%;">
+          <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
+          <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
+        </div>
+
+        <button class="new-chat-btn" id="logout-btn" type="button">
+          <i class="ph ph-sign-out"></i>
+          <span>Sair</span>
+        </button>
+      </div>
+
+      <div class="chat-list">
+        <div class="chat-item active">
+          <i class="ph ph-squares-four"></i>
+          <div class="chat-info">
+            <div class="chat-title">Hub de Aplicações</div>
+            <div class="chat-date">Produtos disponíveis</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle" id="theme-toggle" type="button">
+          <i class="ph ph-moon"></i>
+          <span>Modo escuro</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="chat-header">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
+          <i class="ph ph-list"></i>
+        </button>
+
+        <div class="assistant-info">
+          <div class="assistant-avatar">
+            <img src="../../img/icone.jpg" alt="Avatar" />
+            </div>
+          <div class="assistant-details">
+            <span class="name">Hub AVANCE</span>
+            <span class="status">Acesso controlado por login</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="hub-container">
+        <div class="hub-head">
+          <h1 class="hub-title">Aplicações</h1>
+          <p class="hub-subtitle">Selecione um produto para acessar.</p>
+        </div>
+
+        <div class="hub-grid">
+          <!-- CARD 1: Aplicação Web -->
+          <article class="hub-card">
+            <div class="hub-card-top">
+              <div class="hub-badge">Web</div>
+              <div class="hub-icon">
+                <i class="ph ph-globe"></i>
+              </div>
+            </div>
+
+            <h2 class="hub-card-title">Aplicação Web</h2>
+            <p class="hub-card-desc">
+              Acesse o sistema online (Vercel). Ideal para uso em qualquer dispositivo.
+            </p>
+
+            <div class="hub-card-actions">
+              <a
+                class="hub-btn hub-btn-primary"
+                href="https://SEU-LINK-DA-WEB-APP.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track="open_web_app"
+              >
+                <i class="ph ph-arrow-square-out"></i>
+                <span>Acessar</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- CARD 2: Desktop -->
+          <article class="hub-card">
+            <div class="hub-card-top">
+              <div class="hub-badge">Desktop</div>
+              <div class="hub-icon">
+                <i class="ph ph-desktop"></i>
+              </div>
+            </div>
+
+            <h2 class="hub-card-title">Aplicação Desktop</h2>
+            <p class="hub-card-desc">
+              Faça download e instale no Windows. O acesso é vinculado ao seu e-mail.
+            </p>
+
+            <div class="hub-card-actions">
+              <a
+                class="hub-btn"
+                href="https://SEU-LINK-DE-DOWNLOAD/LeadsApp.exe"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track="download_desktop"
+              >
+                <i class="ph ph-download-simple"></i>
+                <span>Baixar</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- CARD 3: Placeholder -->
+          <article class="hub-card hub-card-disabled">
+            <div class="hub-card-top">
+              <div class="hub-badge">Em breve</div>
+              <div class="hub-icon">
+                <i class="ph ph-rocket-launch"></i>
+              </div>
+            </div>
+
+            <h2 class="hub-card-title">Novo Produto</h2>
+            <p class="hub-card-desc">
+              Espaço reservado para próximos aplicativos do hub.
+            </p>
+
+            <div class="hub-card-actions">
+              <button class="hub-btn" type="button" disabled>
+                <i class="ph ph-lock"></i>
+                <span>Indisponível</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="hub-footer">
+        <span>AVANCE • Hub de Distribuição</span>
+      </footer>
+    </main>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../supabaseClient.js"></script>
+
+    <!-- Hub JS -->
+    <script src="./hub.js" defer></script>
+  </body>
+</html>
