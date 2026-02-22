@@ -1,17 +1,4 @@
 // hub.js — guarda de sessão + tema + logout
-async function getSupabaseClient() {
-  if (window.__sb) return window.__sb;
-  if (typeof supabase === "undefined") throw new Error("supabase-js não carregou.");
-
-  const r = await fetch("/api/public-supabase-config");
-  const cfg = await r.json().catch(() => null);
-  if (!r.ok || !cfg?.ok) throw new Error("Falha ao obter config do Supabase.");
-
-  window.__sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-  return window.__sb;
-}
-
-
 document.addEventListener("DOMContentLoaded", async () => {
 
   const sb = await getSupabaseClient();

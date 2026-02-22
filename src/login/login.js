@@ -1,19 +1,8 @@
 // login.js — versão para Supabase (sem n8n, sem localStorage de auth)
 // Mantém apenas: verificação de elementos, máscara, toggle de senha e submit.
 
-async function getSupabaseClient() {
-  if (window.__sb) return window.__sb;
-  if (typeof supabase === "undefined") throw new Error("supabase-js não carregou.");
 
-  const r = await fetch("/api/public-supabase-config");
-  const cfg = await r.json().catch(() => null);
-  if (!r.ok || !cfg?.ok) throw new Error("Falha ao obter config do Supabase.");
-
-  window.__sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-  return window.__sb;
-}
-
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
   
 
   const identifierInput = document.getElementById("identifier");
@@ -92,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     try {
-      const supabase = window.supabaseClient;
+      const supabase = await window.getSupabaseClient();
       if (!supabase) throw new Error("Supabase client não carregado.");
 
       const { error } = await supabase.auth.signInWithPassword({
@@ -128,7 +117,7 @@ if (forgotLink) {
       return;
     }
 
-    const supabase = window.supabaseClient;
+    const supabase = await window.getSupabaseClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset/reset.html`,
     });
