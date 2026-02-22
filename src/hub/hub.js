@@ -66,3 +66,27 @@ function updateThemeIcon(themeToggle, isDark) {
     text.textContent = "Modo escuro";
   }
 }
+
+const menuBtn = document.getElementById("mobile-menu-btn");
+
+menuBtn?.addEventListener("click", () => {
+  document.body.classList.toggle("sidebar-open");
+});
+
+/* Fecha ao clicar no overlay */
+document.addEventListener("click", (e) => {
+  if (!document.body.classList.contains("sidebar-open")) return;
+
+  const sidebar = document.querySelector(".sidebar");
+  const clickedInsideSidebar = sidebar?.contains(e.target);
+  const clickedMenuBtn = menuBtn?.contains(e.target);
+
+  if (!clickedInsideSidebar && !clickedMenuBtn) {
+    document.body.classList.remove("sidebar-open");
+  }
+});
+
+/* Opcional: fecha com ESC */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") document.body.classList.remove("sidebar-open");
+});

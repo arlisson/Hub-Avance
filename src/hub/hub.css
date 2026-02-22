@@ -5,6 +5,9 @@
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
+
+  /* importante: ocupa espaço e empurra o footer */
+  flex: 1;
 }
 
 .hub-head {
@@ -44,8 +47,11 @@
 .hub-card {
   border-radius: 14px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+
+  /* melhora compatibilidade com tema claro/escuro */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+
   display: flex;
   flex-direction: column;
   min-height: 220px;
@@ -119,6 +125,7 @@ body.dark-mode .hub-icon {
   padding: 10px 12px;
   border-radius: 10px;
   text-decoration: none;
+
   border: 1px solid rgba(0, 0, 0, 0.12);
   background: rgba(0, 0, 0, 0.06);
   color: inherit;
@@ -150,13 +157,17 @@ body.dark-mode .hub-btn-primary {
   opacity: 0.8;
 }
 
+/* Footer sempre no final do main */
 .hub-footer {
   padding: 14px 20px 18px;
   opacity: 0.7;
   font-size: 12px;
   text-align: center;
+  margin-top: auto; /* sticky footer */
 }
-.assistant-avatar{
+
+/* Avatar do header do hub (você usa no hub.html) */
+.assistant-avatar {
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -167,13 +178,38 @@ body.dark-mode .hub-btn-primary {
   background: rgba(0, 0, 0, 0.08);
 }
 
-body.dark-mode .assistant-avatar{
+body.dark-mode .assistant-avatar {
   background: rgba(255, 255, 255, 0.10);
 }
 
-.assistant-avatar img{
+.assistant-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Ajustes finos em telas pequenas */
+@media (max-width: 900px) {
+  .hub-container {
+    padding: 16px;
+  }
+
+  .hub-title {
+    font-size: 20px;
+  }
+
+  .hub-subtitle {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hub-card-actions {
+    flex-direction: column;
+  }
+
+  .hub-btn {
+    width: 100%;
+  }
 }
