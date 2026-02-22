@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     if (!email || !password || !cpf) return res.status(400).json({ ok: false, error: "missing_fields" });
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const SERVICE_ROLE = process.env.SUPABASE_ANON_KEY;
 
     if (!SUPABASE_URL || !SERVICE_ROLE) {
       return res.status(500).json({ ok: false, error: "missing_env" });
