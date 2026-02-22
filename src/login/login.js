@@ -1,13 +1,36 @@
 // login.js — versão para Supabase (sem n8n, sem localStorage de auth)
 // Mantém apenas: verificação de elementos, máscara, toggle de senha e submit.
 
-document.addEventListener("DOMContentLoaded", () => {
+async function getSupabaseClient() {
+  if (window.__sb) return window.__sb;
+  if (typeof supabase === "undefined") throw new Error("supabase-js não carregou.");
+
+  const r = await fetch("/api/public-supabase-config");
+  const cfg = await r.json().catch(() => null);
+  if (!r.ok || !cfg?.ok) throw new Error("Falha ao obter config do Supabase.");
+
+  window.__sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  return window.__sb;
+}
+
+document.addEventListener("DOMContentLoaded", async() => {
+  
+
   const identifierInput = document.getElementById("identifier");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("login-form");
   const toggleBtn = document.getElementById("toggle-password");
 
   if (!identifierInput || !passwordInput || !loginForm) return;
+
+  const sb = await getSupabaseClient();
+  const { data } = await sb.auth.getSession();
+
+  if (data?.session) {
+    window.location.href = "../hub/hub.html";
+    return;
+  }
+
 
   // --- MÁSCARA (mantida) ---
   identifierInput.addEventListener("input", (e) => {

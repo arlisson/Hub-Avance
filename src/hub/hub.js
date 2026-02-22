@@ -1,6 +1,16 @@
 // hub.js — guarda de sessão + tema + logout
 document.addEventListener("DOMContentLoaded", async () => {
-  const supabase = window.supabaseClient;
+
+  const sb = await getSupabaseClient();
+  const { data } = await sb.auth.getSession();
+
+  if (!data?.session) {
+    window.location.href = "../login/login.html";
+    return;
+  }
+
+  
+  const supabase = window.getSupabaseClient();
   if (!supabase) {
     console.error("Supabase client não carregado.");
     return;
@@ -21,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       window.location.href = "../login/login.html";
     });
   }

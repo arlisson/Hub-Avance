@@ -1,11 +1,31 @@
 // cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/Email já existem)
 // Mantém: máscaras, toggle senha, submit
 // Faz: chama endpoint server-side /api/register (Vercel Function) que valida e cria usuário+perfil de forma atômica
+async function getSupabaseClient() {
+  if (window.__sb) return window.__sb;
+  if (typeof supabase === "undefined") throw new Error("supabase-js não carregou.");
 
-document.addEventListener("DOMContentLoaded", () => {
+  const r = await fetch("/api/public-supabase-config");
+  const cfg = await r.json().catch(() => null);
+  if (!r.ok || !cfg?.ok) throw new Error("Falha ao obter config do Supabase.");
+
+  window.__sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  return window.__sb;
+}
+document.addEventListener("DOMContentLoaded", async () => {
   // --- 1) MÁSCARAS ---
   const docInput = document.getElementById("document");
   const phoneInput = document.getElementById("whatsapp");
+
+
+  const sb = await getSupabaseClient();
+  const { data } = await sb.auth.getSession();
+
+  if (data?.session) {
+    window.location.href = "../hub/hub.html";
+    return;
+  }
+
 
   if (!docInput || !phoneInput) return;
 
