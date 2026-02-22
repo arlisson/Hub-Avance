@@ -92,3 +92,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+const forgotLink = document.getElementById("forgot-password-link");
+
+if (forgotLink) {
+  forgotLink.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const email = (identifierInput.value || "").trim();
+    if (!email || !/[^\s@]+@[^\s@]+\.[^\s@]+/.test(email)) {
+      alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
+      return;
+    }
+
+    const supabase = window.supabaseClient;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset/reset.html`,
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Se esse e-mail existir, enviaremos um link para redefinir a senha.");
+  });
+}
