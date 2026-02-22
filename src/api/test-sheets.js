@@ -1,3 +1,4 @@
+//teste de api
 export default async function handler(req, res) {
   try {
     const scriptUrl = process.env.GS_WEBAPP_URL;
