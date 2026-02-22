@@ -1,10 +1,13 @@
-// cadastro.js — cria usuário via /api/register e exige confirmação de e-mail
+// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/Email já existem)
+// Mantém: máscaras, toggle senha, submit
+// Faz: chama endpoint server-side /api/register (Vercel Function) que valida e cria usuário+perfil de forma atômica
+
 document.addEventListener("DOMContentLoaded", () => {
+  // --- 1) MÁSCARAS ---
   const docInput = document.getElementById("document");
   const phoneInput = document.getElementById("whatsapp");
-  const form = document.getElementById("register-form");
 
-  if (!docInput || !phoneInput || !form) return;
+  if (!docInput || !phoneInput) return;
 
   // Máscara CPF/CNPJ
   docInput.addEventListener("input", (e) => {
@@ -34,12 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = value;
   });
 
-  // Toggle senha
+  // --- 2) MOSTRAR SENHA ---
   const toggleBtn = document.getElementById("toggle-password");
   const passInput = document.getElementById("password");
+
   if (toggleBtn && passInput) {
     toggleBtn.addEventListener("click", () => {
-      const type = passInput.getAttribute("type") === "password" ? "text" : "password";
+      const type =
+        passInput.getAttribute("type") === "password" ? "text" : "password";
       passInput.setAttribute("type", type);
 
       const icon = toggleBtn.querySelector("i");
@@ -49,6 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // --- 3) SUBMIT (via /api/register) ---
+  const form = document.getElementById("register-form");
+  if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -60,21 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cpfCnpj = docInput.value.replace(/\D/g, "");
     const whatsapp = phoneInput.value.replace(/\D/g, "");
 
-    if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
-      alert("Informe um e-mail válido.");
-      return;
-    }
-    if (!passwordValue || passwordValue.length < 8) {
-      alert("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
-    if (!cpfCnpj) {
-      alert("Informe CPF/CNPJ.");
-      return;
-    }
-
     const btn = form.querySelector(".register-btn");
-    const originalText = btn?.innerText || "Cadastrar";
+    const originalText = btn?.innerText || "Criar conta";
 
     if (btn) {
       btn.innerText = "Criando conta...";
@@ -82,12 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      // Payload para o backend (Vercel Function)
       const payload = {
         name: nameValue,
         email: emailValue,
         password: passwordValue,
         cpf: cpfCnpj,
-        whatsapp,
+        whatsapp: whatsapp,
       };
 
       const r = await fetch("/api/register", {
@@ -96,37 +93,32 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload),
       });
 
-      // 429: rate limit
-      if (r.status === 429) {
-        alert("Muitas tentativas em pouco tempo. Aguarde 1 minuto e tente novamente.");
-        return;
-      }
-
       const out = await r.json().catch(() => null);
 
       if (!r.ok || !out?.ok) {
         const err = out?.error || "unknown_error";
 
         if (err === "cpf_exists") {
-          alert("Este CPF/CNPJ já está cadastrado.");
+          alert("Este CPF já está cadastrado.");
           return;
         }
 
-        if (err === "email_exists") {
+        if (err === "auth_error") {
+          // normalmente email já cadastrado
           alert("Este e-mail já está cadastrado.");
           return;
         }
 
-        if (err === "weak_password") {
-          alert("Senha fraca. Use pelo menos 8 caracteres.");
+        if (err === "missing_fields") {
+          alert("Preencha os campos obrigatórios.");
           return;
         }
 
-        alert(out?.detail || "Erro ao cadastrar. Tente novamente.");
+        alert("Erro ao cadastrar. Verifique os dados e tente novamente.");
         return;
       }
 
-      alert("Conta criada. Verifique seu e-mail para confirmar antes de fazer login.");
+      alert("Conta criada com sucesso! Redirecionando para o login...");
       window.location.href = "../login/login.html";
     } catch (error) {
       console.error("Erro:", error);
