@@ -1,5 +1,0 @@
-// supabaseClient.js
-const SUPABASE_URL = "https://mgfmdkjfhqriyvnrkgmx.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_MNNmP8Q9k7LEwqol4Fsz0A_DHUN9jpl";
-const SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nZm1ka2pmaHFyaXl2bnJrZ214Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTcwMjE4MSwiZXhwIjoyMDg3Mjc4MTgxfQ.EknZL6fJzb823UVZiRbUot9s5xb9uxXlrkT0DL4BJI4";
-window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

@@ -1,3 +1,2 @@
-
-./src/api/test-sheets.js
-./src/supabaseClient.js
+src/api/test-sheets.js
+src/supabaseClient.js
