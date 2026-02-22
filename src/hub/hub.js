@@ -9,15 +9,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  
-  const supabase = window.getSupabaseClient();
-  if (!supabase) {
-    console.error("Supabase client não carregado.");
-    return;
-  }
+ 
 
   // Guard (se não tiver sessão, volta para login)
-  const { data: sessionData } = await supabase.auth.getSession();
+  const { data: sessionData } = await sb.auth.getSession();
   if (!sessionData?.session) {
     window.location.href = "../login/login.html";
     return;
