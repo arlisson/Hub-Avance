@@ -1,7 +1,6 @@
-// cadastro.js — Supabase (sem n8n)
+// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/Email já existem)
 // Mantém: máscaras, toggle senha, submit
-// Faz: auth.signUp + UPDATE em public.profiles
-// Requer: trigger no Supabase para criar a linha em profiles ao criar o usuário
+// Faz: chama endpoint server-side /api/register (Vercel Function) que valida e cria usuário+perfil de forma atômica
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- 1) MÁSCARAS ---
@@ -56,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- 3) SUBMIT (Supabase) ---
+  // --- 3) SUBMIT (via /api/register) ---
   const form = document.getElementById("register-form");
   if (!form) return;
 
@@ -79,65 +78,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const supabase = window.supabaseClient;
-      if (!supabase) throw new Error("Supabase client não carregado.");
+      // Payload para o backend (Vercel Function)
+      const payload = {
+        name: nameValue,
+        email: emailValue,
+        password: passwordValue,
+        cpf: cpfCnpj,
+        whatsapp: whatsapp,
+      };
 
-      // 1) cria usuário no Auth
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email: emailValue,
-          password: passwordValue,
-        });
+      const r = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      if (signUpError) throw signUpError;
+      const out = await r.json().catch(() => null);
 
-      // Se confirmação de e-mail estiver ligada, user pode vir null aqui.
-      // Mesmo assim, o trigger (no Supabase) cria a linha em profiles.
-      const userId = signUpData?.user?.id;
+      if (!r.ok || !out?.ok) {
+        const err = out?.error || "unknown_error";
 
-      // 2) se tiver userId (sessão imediata), completa o profile com UPDATE
-      if (userId) {
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({
-            name: nameValue,
-            cpf: cpfCnpj,
-            whatsapp: whatsapp,
-          })
-          .eq("id", userId);
+        if (err === "cpf_exists") {
+          alert("Este CPF já está cadastrado.");
+          return;
+        }
 
-        if (updateError) throw updateError;
+        if (err === "auth_error") {
+          // normalmente email já cadastrado
+          alert("Este e-mail já está cadastrado.");
+          return;
+        }
 
-        alert("Conta criada com sucesso! Redirecionando para o login...");
-        window.location.href = "../login/login.html";
+        if (err === "missing_fields") {
+          alert("Preencha os campos obrigatórios.");
+          return;
+        }
+
+        alert("Erro ao cadastrar. Verifique os dados e tente novamente.");
         return;
       }
 
-      // 3) sem userId: confirmação ligada ou sessão não criada agora
-      alert(
-        "Conta criada. Verifique seu e-mail para confirmar e então faça login.",
-      );
+      alert("Conta criada com sucesso! Redirecionando para o login...");
       window.location.href = "../login/login.html";
     } catch (error) {
       console.error("Erro:", error);
-
-      const msg = (error?.message || "").toLowerCase();
-
-      if (msg.includes("user already registered") || msg.includes("already")) {
-        alert("Este e-mail já está cadastrado.");
-      } else if (msg.includes("duplicate key") || msg.includes("unique")) {
-        alert("CPF ou e-mail já existem.");
-      } else if (msg.includes("row-level security") || msg.includes("rls")) {
-        alert(
-          "Erro de permissão ao salvar o perfil. Confirme se o trigger/policies do profiles estão configurados.",
-        );
-      } else {
-        alert(
-          `Erro ao cadastrar: ${
-            error?.message || "Verifique os dados e tente novamente."
-          }`,
-        );
-      }
+      alert("Erro de conexão. Tente novamente.");
     } finally {
       if (btn) {
         btn.innerText = originalText;
