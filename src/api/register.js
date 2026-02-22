@@ -19,11 +19,23 @@ export default async function handler(req, res) {
     const GS_WEBAPP_URL = process.env.GS_WEBAPP_URL;
     const HUB_SECRET = process.env.HUB_SECRET;
 
+
     if (!SUPABASE_URL || !SERVICE_ROLE) {
-      return res.status(500).json({ ok: false, error: "missing_supabase_env" });
+      return res.status(500).json({
+        ok: false,
+        error: "missing_supabase_env",
+        has_url: !!SUPABASE_URL,
+        has_service_role: !!SERVICE_ROLE,
+      });
     }
+
     if (!GS_WEBAPP_URL || !HUB_SECRET) {
-      return res.status(500).json({ ok: false, error: "missing_sheets_env" });
+      return res.status(500).json({
+        ok: false,
+        error: "missing_sheets_env",
+        has_gs_url: !!GS_WEBAPP_URL,
+        has_hub_secret: !!HUB_SECRET,
+      });
     }
 
     // 1) checa CPF duplicado (service role)
