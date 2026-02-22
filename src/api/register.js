@@ -130,13 +130,13 @@ export default async function handler(req, res) {
           Authorization: `Bearer ${SERVICE_ROLE}`,
         },
       });
-      console.warn("Sheets failed:", sheetsData || await sheetsResp.text());
-      // tenta limpar profile também (opcional; geralmente cascade resolve ao deletar user)
-      // return res.status(502).json({
-      //   ok: false,
-      //   error: "sheets_failed",
-      //   detail: sheetsData || (await sheetsResp.text()),
-      // });
+      alert("Sheets failed:", sheetsData || await sheetsResp.text());
+     // tenta limpar profile também (opcional; geralmente cascade resolve ao deletar user)
+      return res.status(502).json({
+        ok: false,
+        error: "sheets_failed",
+        detail: sheetsData || (await sheetsResp.text()),
+      });
     }
 
     return res.status(200).json({ ok: true });
