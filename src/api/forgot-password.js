@@ -26,28 +26,23 @@ export default async function handler(req, res) {
       return res.status(500).json({ ok: false, error: "missing_supabase_env" });
     }
 
-    // Supabase GoTrue recover endpoint
-    const r = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+    const url =
+      `${SUPABASE_URL}/auth/v1/recover` +
+      `?redirect_to=${encodeURIComponent(RESET_REDIRECT_TO)}`;
+
+    const r = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apikey: SERVICE_ROLE,
+        Authorization: `Bearer ${SERVICE_ROLE}`,
       },
-      body: JSON.stringify({
-        email,
-        gotrue_meta_security: {},
-        options: {
-          redirectTo: RESET_REDIRECT_TO,
-        },
-      }),
+      body: JSON.stringify({ email }),
     });
 
     const out = await r.json().catch(() => ({}));
 
-    // Por segurança, não exponha se o e-mail existe ou não.
-    // Mesmo com erro, você pode retornar ok: true (se preferir).
     if (!r.ok) {
-      // Retorne falha explícita apenas se você quiser depurar.
       return res.status(r.status).json({
         ok: false,
         error: "recover_failed",
@@ -55,6 +50,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // Não revela se o e-mail existe (boa prática)
     return res.status(200).json({ ok: true });
   } catch (e) {
     return res.status(500).json({
