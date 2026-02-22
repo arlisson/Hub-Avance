@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       window.location.href = "../hub/hub.html";
     } catch (error) {
-      console.error(error);
+      //console.error(error);
       alert(`Erro: ${error?.message || "Falha no login."}`);
     } finally {
       if (btn) {
