@@ -1,20 +1,18 @@
-// login.js — versão para Supabase (sem n8n, sem localStorage de auth)
-// Mantém apenas: verificação de elementos, máscara, toggle de senha e submit.
-
+// login.js — Supabase Auth + confirmação de e-mail + reenviar confirmação + esqueci senha
 document.addEventListener("DOMContentLoaded", () => {
   const identifierInput = document.getElementById("identifier");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("login-form");
   const toggleBtn = document.getElementById("toggle-password");
+  const forgotLink = document.getElementById("forgot-password-link");
 
   if (!identifierInput || !passwordInput || !loginForm) return;
 
-  // --- MÁSCARA (mantida) ---
+  // Máscara WhatsApp (mantida)
   identifierInput.addEventListener("input", (e) => {
     let value = e.target.value;
     const isEmail = /[a-zA-Z@]/.test(value);
 
-    // Para o hub, o login será por e-mail. Ainda assim, a máscara não atrapalha.
     if (!isEmail) {
       value = value.replace(/\D/g, "");
       if (value.length > 11) value = value.slice(0, 11);
@@ -24,24 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- MOSTRAR SENHA (mantido) ---
+  // Toggle senha
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
-      const type =
-        passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
 
       const icon = toggleBtn.querySelector("i");
       if (icon) {
-        icon.classList.replace(
-          type === "text" ? "ph-eye" : "ph-eye-slash",
-          type === "text" ? "ph-eye-slash" : "ph-eye",
-        );
+        icon.classList.toggle("ph-eye");
+        icon.classList.toggle("ph-eye-slash");
       }
     });
   }
 
-  // --- LOGIN (Supabase) ---
+  // Login
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -50,11 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rawIdentifier = identifierInput.value || "";
     const password = passwordInput.value || "";
-
-    // No hub, login por e-mail (Supabase Auth)
     const email = rawIdentifier.trim();
 
-    if (!email || !/[^\s@]+@[^\s@]+\.[^\s@]+/.test(email)) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       alert("Informe um e-mail válido para entrar.");
       return;
     }
@@ -72,17 +65,43 @@ document.addEventListener("DOMContentLoaded", () => {
       const supabase = window.supabaseClient;
       if (!supabase) throw new Error("Supabase client não carregado.");
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-      if (error) throw error;
+      if (error) {
+        console.log("LOGIN ERROR:", error);
 
-      
+        const msg = String(error.message || "").toLowerCase();
+
+        // Caso: e-mail não confirmado
+        if (msg.includes("confirm") || msg.includes("verified")) {
+          // Opcional: reenviar confirmação
+          try {
+            await supabase.auth.resend({
+              type: "signup",
+              email,
+              options: {
+                emailRedirectTo: `${window.location.origin}/login/login.html`,
+              },
+            });
+            alert("Seu e-mail ainda não foi confirmado. Reenviamos o link de confirmação. Verifique caixa de entrada e spam.");
+          } catch {
+            alert("Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e spam.");
+          }
+          return;
+        }
+
+        // Caso: credenciais inválidas
+        if (msg.includes("invalid login") || msg.includes("credentials")) {
+          alert("E-mail ou senha inválidos.");
+          return;
+        }
+
+        alert(error.message || "Falha no login.");
+        return;
+      }
+
       window.location.href = "../hub/hub.html";
     } catch (error) {
-      //console.error(error);
       alert(`Erro: ${error?.message || "Falha no login."}`);
     } finally {
       if (btn) {
@@ -91,30 +110,36 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-});
 
-const forgotLink = document.getElementById("forgot-password-link");
+  // Esqueci minha senha (se você estiver usando /api/forgot-password)
+  if (forgotLink) {
+    forgotLink.addEventListener("click", async (e) => {
+      e.preventDefault();
 
-if (forgotLink) {
-  forgotLink.addEventListener("click", async (e) => {
-    e.preventDefault();
+      const email = (identifierInput.value || "").trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
+        return;
+      }
 
-    const email = (document.getElementById("identifier")?.value || "").trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
-      return;
-    }
+      try {
+        const r = await fetch("/api/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
 
-    const supabase = window.supabaseClient;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset/reset.html`,
+        const out = await r.json().catch(() => null);
+
+        if (!r.ok || !out?.ok) {
+          alert(out?.detail || "Falha ao solicitar redefinição. Tente novamente.");
+          return;
+        }
+
+        alert("Se esse e-mail existir, enviaremos um link para redefinir a senha.");
+      } catch {
+        alert("Erro de conexão. Tente novamente.");
+      }
     });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    alert("Se esse e-mail existir, enviaremos um link para redefinir a senha.");
-  });
-}
+  }
+});
