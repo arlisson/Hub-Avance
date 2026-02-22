@@ -1,4 +1,4 @@
-// login.js — Supabase Auth + verificação de e-mail + esqueci a senha via /api/forgot-password
+// login.js — Supabase Auth + confirmação de e-mail + reenviar confirmação + esqueci senha
 document.addEventListener("DOMContentLoaded", () => {
   const identifierInput = document.getElementById("identifier");
   const passwordInput = document.getElementById("password");
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!identifierInput || !passwordInput || !loginForm) return;
 
-  // --- MÁSCARA (mantida) ---
+  // Máscara WhatsApp (mantida)
   identifierInput.addEventListener("input", (e) => {
     let value = e.target.value;
     const isEmail = /[a-zA-Z@]/.test(value);
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- MOSTRAR SENHA ---
+  // Toggle senha
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const isPassword = passwordInput.getAttribute("type") === "password";
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- LOGIN (Supabase) ---
+  // Login
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -68,12 +68,36 @@ document.addEventListener("DOMContentLoaded", () => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
+        console.log("LOGIN ERROR:", error);
+
         const msg = String(error.message || "").toLowerCase();
+
+        // Caso: e-mail não confirmado
         if (msg.includes("confirm") || msg.includes("verified")) {
-          alert("Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e spam.");
+          // Opcional: reenviar confirmação
+          try {
+            await supabase.auth.resend({
+              type: "signup",
+              email,
+              options: {
+                emailRedirectTo: `${window.location.origin}/login/login.html`,
+              },
+            });
+            alert("Seu e-mail ainda não foi confirmado. Reenviamos o link de confirmação. Verifique caixa de entrada e spam.");
+          } catch {
+            alert("Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e spam.");
+          }
           return;
         }
-        throw error;
+
+        // Caso: credenciais inválidas
+        if (msg.includes("invalid login") || msg.includes("credentials")) {
+          alert("E-mail ou senha inválidos.");
+          return;
+        }
+
+        alert(error.message || "Falha no login.");
+        return;
       }
 
       window.location.href = "../hub/hub.html";
@@ -87,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- ESQUECI A SENHA (via backend para garantir redirect correto) ---
+  // Esqueci minha senha (se você estiver usando /api/forgot-password)
   if (forgotLink) {
     forgotLink.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -113,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Se esse e-mail existir, enviaremos um link para redefinir a senha.");
-      } catch (err) {
+      } catch {
         alert("Erro de conexão. Tente novamente.");
       }
     });

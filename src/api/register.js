@@ -13,23 +13,30 @@ export default async function handler(req, res) {
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
     const GS_WEBAPP_URL = process.env.GS_WEBAPP_URL;
     const HUB_SECRET = process.env.HUB_SECRET;
 
-    // Opcional: defina explicitamente no env
     const APP_ORIGIN =
       process.env.APP_ORIGIN ||
       req.headers.origin ||
       `https://${req.headers.host}`;
 
-    // Para onde o usuário vai após clicar no link de confirmação do e-mail
+    // Para onde o usuário vai após clicar no e-mail de confirmação
     const EMAIL_REDIRECT_TO =
       process.env.EMAIL_REDIRECT_TO || `${APP_ORIGIN}/login/login.html`;
 
     if (!SUPABASE_URL) {
       return res.status(500).json({ ok: false, error: "missing_supabase_url" });
     }
+    if (!SERVICE_ROLE) {
+      return res.status(500).json({ ok: false, error: "missing_supabase_service_role" });
+    }
+    if (!SUPABASE_ANON_KEY) {
+      return res.status(500).json({ ok: false, error: "missing_supabase_anon_key" });
+    }
+
     if (!GS_WEBAPP_URL || !HUB_SECRET) {
       return res.status(500).json({
         ok: false,
@@ -40,13 +47,6 @@ export default async function handler(req, res) {
     }
 
     // 1) checa CPF duplicado (service role)
-    if (!SERVICE_ROLE) {
-      return res.status(500).json({
-        ok: false,
-        error: "missing_supabase_service_role",
-      });
-    }
-
     const cpfCheck = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpf)}&limit=1`,
       {
@@ -62,31 +62,29 @@ export default async function handler(req, res) {
       return res.status(409).json({ ok: false, error: "cpf_exists" });
     }
 
-    // 2) cria usuário via SIGNUP (envia e-mail de confirmação quando o projeto exigir)
-    // Não use /admin/users aqui, pois ele não envia confirmação e você estava confirmando automaticamente.
+    // 2) cria usuário via SIGNUP (usa ANON KEY para disparar confirmação)
     const signUpResp = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: SERVICE_ROLE, // pode ser anon key também, mas aqui já temos service role
+        apikey: SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({
         email,
         password,
+        options: {
+          emailRedirectTo: EMAIL_REDIRECT_TO,
+        },
         data: {
           name: name || null,
           cpf,
           whatsapp: whatsapp || null,
         },
-        gotrue_meta_security: {},
-        // redirect após confirmar e-mail
-        options: {
-          emailRedirectTo: EMAIL_REDIRECT_TO,
-        },
       }),
     });
 
     const signUpData = await signUpResp.json().catch(() => ({}));
+
     if (!signUpResp.ok) {
       const msg = signUpData?.msg || signUpData?.message || "signup_failed";
       return res.status(signUpResp.status).json({
@@ -96,7 +94,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // GoTrue pode retornar user em "user" ou direto em "id" dependendo do formato.
     const userId = signUpData?.user?.id || signUpData?.id;
     if (!userId) {
       return res.status(500).json({
@@ -106,7 +103,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 3) atualiza profile (linha criada por trigger) - usando service role
+    // 3) atualiza profile (linha criada por trigger) - service role
     const upd = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`,
       {
@@ -126,7 +123,7 @@ export default async function handler(req, res) {
     );
 
     if (!upd.ok) {
-      // rollback: remove usuário criado
+      // rollback: remove usuário criado (admin delete)
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -162,7 +159,7 @@ export default async function handler(req, res) {
     const sheetsData = await sheetsResp.json().catch(() => null);
 
     if (!sheetsResp.ok || !sheetsData?.ok) {
-      // rollback: remove usuário criado
+      // rollback: remove usuário criado (admin delete)
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -180,7 +177,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // Observação: quando confirmação de e-mail estiver ativa, sessão geralmente é null
+    // Se confirmação de e-mail estiver ativa, o usuário não entra até confirmar.
     return res.status(200).json({
       ok: true,
       needs_email_confirmation: true,
