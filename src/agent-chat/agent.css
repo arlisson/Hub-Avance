@@ -19,8 +19,8 @@
 
 /* Variáveis de Cores (Tema Escuro) */
 body.dark-mode {
-  --bg-body: #111827; /* Fundo bem escuro */
-  --bg-sidebar: #1f2937; /* Sidebar levemente mais clara */
+  --bg-body: #111827;
+  --bg-sidebar: #1f2937;
   --border-color: #374151;
 
   --text-primary: #f9fafb;
@@ -28,7 +28,7 @@ body.dark-mode {
 
   --msg-bot-bg: #374151;
   --msg-bot-text: #f3f4f6;
-  --msg-user-bg: #3b82f6; /* Azul mais vibrante no escuro */
+  --msg-user-bg: #3b82f6;
   --msg-user-text: #ffffff;
 
   --input-bg: #1f2937;
@@ -51,7 +51,7 @@ body {
   transition:
     background-color 0.3s,
     color 0.3s;
-  overflow: hidden; /* Evita scroll na página inteira */
+  overflow: hidden;
 }
 
 /* --- SIDEBAR --- */
@@ -78,7 +78,7 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .new-chat-btn:hover {
@@ -156,8 +156,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
-  background-color: var(--bg-body); /* Transparente/Igual ao fundo */
-  /* Se quiser header destacado, use var(--bg-sidebar) */
+  background-color: var(--bg-body);
 }
 
 .mobile-menu-btn {
@@ -232,12 +231,10 @@ body {
   font-weight: bold;
 }
 
-/* Avatar Bot */
 .message.bot .message-avatar {
   background-color: var(--text-secondary);
   color: white;
 }
-/* Avatar User (Escondido no layout clean ou apenas iniciais) */
 .message.user .message-avatar {
   display: none;
 }
@@ -250,7 +247,6 @@ body {
   max-width: 80%;
 }
 
-/* Cores dos Balões */
 .message.bot .message-bubble {
   background-color: var(--msg-bot-bg);
   color: var(--msg-bot-text);
@@ -278,7 +274,7 @@ body {
   border-radius: 0.75rem;
   padding: 0.5rem;
   display: flex;
-  align-items: flex-end; /* Alinha o botão em baixo se o texto crescer */
+  align-items: flex-end;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
@@ -306,7 +302,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-bottom: 4px; /* Ajuste fino */
+  margin-bottom: 4px;
   margin-right: 4px;
   transition: background 0.2s;
 }
@@ -343,44 +339,76 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Responsividade Mobile */
-@media (max-width: 768px) {
-  .sidebar {
-    position: absolute;
-    left: -100%;
-    height: 100%;
-    z-index: 50;
-  }
-  .sidebar.open {
-    left: 0;
-  }
-  .mobile-menu-btn {
-    display: block;
-  }
-  .message {
-    max-width: 100%;
-  }
-}
-
+/* Logo */
 .logo-container {
-  padding: 0.5rem 0.5rem 1.5rem 0.5rem; /* Espaço embaixo da logo */
+  padding: 0.5rem 0.5rem 1.5rem 0.5rem;
   display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
+  justify-content: center;
   align-items: center;
 }
 
 .company-logo {
-  max-width: 100%; /* Não deixa estourar a largura */
-  height: auto; /* Mantém proporção */
-  max-height: 45px; /* Define a altura máxima visual */
-  object-fit: contain; /* Garante que a logo caiba sem distorcer */
-
-  /* Dica: Se sua logo for preta e sumir no modo escuro, 
-       use este filtro para inverter as cores automaticamente: */
-  /* filter: brightness(0) invert(var(--logo-invert, 0)); */
+  max-width: 100%;
+  height: auto;
+  max-height: 45px;
+  object-fit: contain;
 }
 
-/* Ajuste fino para o Modo Escuro (Opcional) */
 body.dark-mode {
-  --logo-invert: 1; /* Ativa a inversão de cor se usar o filtro acima */
+  --logo-invert: 1;
+}
+
+/* =========================
+   Responsividade / Mobile
+   - Usa body.sidebar-open (padrão Hub)
+   - Inclui overlay via ::before
+   ========================= */
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+  }
+
+  /* Sidebar off-canvas */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 60;
+    transform: translateX(-110%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  /* Overlay quando sidebar aberta */
+  body.sidebar-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 55;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .chat-messages {
+    padding: 1rem;
+  }
+
+  .input-area {
+    padding: 1rem;
+  }
+
+  .message {
+    max-width: 100%;
+  }
+
+  .message-bubble {
+    max-width: 92%;
+  }
 }
