@@ -13,7 +13,7 @@
  * - window.getSupabaseClient() definido em supabaseClient.js
  */
 
-let AGENT_CHAT_URL = "/apps/agente-chat/index.html";
+let AGENT_CHAT_URL = "/agente-chat/agent.html";
 let LOGIN_URL = "/login/login.html";
 
 document.addEventListener("DOMContentLoaded", async () => {
