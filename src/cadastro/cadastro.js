@@ -76,7 +76,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const emailValue = (document.getElementById("email")?.value || "").trim();
     const passwordValue = document.getElementById("password")?.value || "";
 
-    const cpfCnpj = docInput.value.replace(/\D/g, "");
+    const doc = docInput.value.replace(/\D/g, "");
+
+    if (doc.length === 11) {
+      if (!validarCPF(doc)) {
+        alert("CPF inválido.");
+        return;
+      }
+    } else if (doc.length === 14) {
+      if (!validarCNPJ(doc)) {
+        alert("CNPJ inválido.");
+        return;
+      }
+    } else {
+      alert("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos).");
+      return;
+    }
+
     const whatsapp = phoneInput.value.replace(/\D/g, "");
 
     const btn = form.querySelector(".register-btn");
@@ -93,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         name: nameValue,
         email: emailValue,
         password: passwordValue,
-        cpf: cpfCnpj,
+        cpf: doc,
         whatsapp: whatsapp,
       };
 
@@ -140,4 +156,67 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
   });
+
+
+
+
+  // Valida CPF (aceita com ou sem máscara)
+// Retorna true/false
+function validarCPF(cpf) {
+  const c = String(cpf || "").replace(/\D/g, "");
+
+  if (c.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(c)) return false; // rejeita 000... 111... etc.
+
+  const calcDV = (base, fatorInicial) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * (fatorInicial - i);
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+
+  const dv1 = calcDV(c.slice(0, 9), 10);
+  const dv2 = calcDV(c.slice(0, 9) + dv1, 11);
+
+  return c === c.slice(0, 9) + String(dv1) + String(dv2);
+}
+
+// Valida CNPJ (aceita com ou sem máscara)
+// Retorna true/false
+function validarCNPJ(cnpj) {
+  const c = String(cnpj || "").replace(/\D/g, "");
+
+  if (c.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(c)) return false; // rejeita 000... 111... etc.
+
+  const calcDV = (base, pesos) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * pesos[i];
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+
+  const base12 = c.slice(0, 12);
+  const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  const dv1 = calcDV(base12, pesos1);
+
+  const base13 = base12 + String(dv1);
+  const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  const dv2 = calcDV(base13, pesos2);
+
+  return c === base12 + String(dv1) + String(dv2);
+}
+
+// (Opcional) Valida CPF ou CNPJ automaticamente pelo tamanho
+function validarCpfOuCnpj(doc) {
+  const d = String(doc || "").replace(/\D/g, "");
+  if (d.length === 11) return validarCPF(d);
+  if (d.length === 14) return validarCNPJ(d);
+  return false;
+}
+
 });

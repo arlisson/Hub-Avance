@@ -24,16 +24,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   // --- MÁSCARA (mantida) ---
   identifierInput.addEventListener("input", (e) => {
     let value = e.target.value;
-    const isEmail = /[a-zA-Z@]/.test(value);
+    // const isEmail = /[a-zA-Z@]/.test(value);
 
-    // Para o hub, o login será por e-mail. Ainda assim, a máscara não atrapalha.
-    if (!isEmail) {
-      value = value.replace(/\D/g, "");
-      if (value.length > 11) value = value.slice(0, 11);
-      if (value.length > 2) value = value.replace(/^(\d{2})(\d)/, "($1) $2");
-      if (value.length > 7) value = value.replace(/(\d)(\d{4})$/, "$1-$2");
-      e.target.value = value;
-    }
+    // // Para o hub, o login será por e-mail. Ainda assim, a máscara não atrapalha.
+    // if (!isEmail) {
+    //   value = value.replace(/\D/g, "");
+    //   if (value.length > 11) value = value.slice(0, 11);
+    //   if (value.length > 2) value = value.replace(/^(\d{2})(\d)/, "($1) $2");
+    //   if (value.length > 7) value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+    //   e.target.value = value;
+    // }
   });
 
   // --- MOSTRAR SENHA (mantido) ---
