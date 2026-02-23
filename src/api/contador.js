@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
     // Mapeia app -> URL final (configure via env vars)
     const targets = {
-      web: process.env.TARGET_WEB_APP_URL,
+     
       desktop: process.env.TARGET_DESKTOP_URL,
 
       // NOVO: agente
