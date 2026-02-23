@@ -12,13 +12,16 @@ export default async function handler(req, res) {
     const targets = {
       web: process.env.TARGET_WEB_APP_URL,
       desktop: process.env.TARGET_DESKTOP_URL,
+
+      // NOVO: agente
+      // Use uma ENV dedicada, ou reaproveite AGENT_CHAT_URL
+      agent: process.env.TARGET_AGENT_URL || process.env.AGENT_CHAT_URL,
     };
 
     const target = targets[app];
     if (!target) return res.status(400).send("unknown_app");
 
-    // Incremento atômico via RPC (ver passo 3) OU via update SQL.
-    // Aqui vamos usar RPC para ser seguro.
+    // Incremento atômico via RPC
     const rpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_access`, {
       method: "POST",
       headers: {
@@ -30,8 +33,6 @@ export default async function handler(req, res) {
     });
 
     if (!rpc.ok) {
-      // não bloqueia o acesso se falhar o contador
-      // mas loga para você ver no Vercel logs
       const t = await rpc.text();
       console.warn("increment_access failed:", t);
     }

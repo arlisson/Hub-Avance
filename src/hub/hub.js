@@ -99,6 +99,15 @@ async function loadPublicAgentConfig() {
   }
 }
 
+const agentLink = document.getElementById("open-agent-link");
+if (agentLink) {
+  agentLink.href = AGENT_CHAT_URL || "/agente-chat/agent.html";
+
+  // Se você quer abrir em nova aba, descomente:
+  // agentLink.target = "_blank";
+  // agentLink.rel = "noopener noreferrer";
+}
+
 function normalizeLoginUrl(url) {
   // Garante URL absoluta (evita problema de path relativo em /hub/hub.html)
   // Se já começar com "http" ou "/", retorna como está.
