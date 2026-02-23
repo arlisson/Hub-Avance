@@ -7,8 +7,6 @@
 
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
     <link rel="stylesheet" href="./agent.css" />
   </head>
   <body>
@@ -20,8 +18,20 @@
           class="company-logo"
         />
       </div>
-      <div class="sidebar-header">
-        <button class="new-chat-btn" id="new-chat-btn">
+
+      <!-- Header da sidebar: email + logout + reset -->
+      <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
+        <div style="width: 100%;">
+          <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
+          <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
+        </div>
+
+        <button class="new-chat-btn" id="logout-btn" type="button">
+          <i class="ph ph-sign-out"></i>
+          <span>Sair</span>
+        </button>
+
+        <button class="new-chat-btn" id="new-chat-btn" type="button">
           <i class="ph ph-plus"></i>
           <span>Resetar conversa</span>
         </button>
@@ -38,7 +48,7 @@
       </div>
 
       <div class="sidebar-footer">
-        <button class="theme-toggle" id="theme-toggle">
+        <button class="theme-toggle" id="theme-toggle" type="button">
           <i class="ph ph-moon"></i>
           <span>Modo escuro</span>
         </button>
@@ -47,9 +57,10 @@
 
     <main class="main-content">
       <header class="chat-header">
-        <button class="mobile-menu-btn" id="mobile-menu-btn">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
           <i class="ph ph-list"></i>
         </button>
+
         <div class="assistant-info">
           <div class="assistant-avatar">
             <i class="ph ph-robot"></i>
@@ -61,16 +72,7 @@
         </div>
       </header>
 
-      <div class="chat-messages" id="chat-messages">
-        <!-- <div class="message bot">
-          <div class="message-avatar">
-            <span>AI</span>
-          </div>
-          <div class="message-bubble">
-            Olá! Sou seu assistente virtual. Como posso ajudar você hoje? 
-          </div>
-        </div> -->
-      </div>
+      <div class="chat-messages" id="chat-messages"></div>
 
       <div class="input-area">
         <div class="input-container">
@@ -83,7 +85,7 @@
               this.style.height = this.scrollHeight + 'px';
             "
           ></textarea>
-          <button id="send-btn" class="send-btn">
+          <button id="send-btn" class="send-btn" type="button">
             <i class="ph ph-paper-plane-right"></i>
           </button>
         </div>
@@ -91,11 +93,12 @@
       </div>
     </main>
 
+    <!-- Dependências -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabaseClient.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../supabaseClient.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="/agent-chat/agent.js"></script>
+    <!-- JS do agente -->
+    <script src="./agent.js"></script>
   </body>
 </html>

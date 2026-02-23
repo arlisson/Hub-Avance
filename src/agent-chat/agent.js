@@ -1,9 +1,4 @@
-// apps/agente-chat/chat.js (completo, atualizado)
-// Mudanças principais:
-// - Tratamento melhor de erro do /api/agent (mostra status + response no chat)
-// - Se /api/agent retornar JSON {ok:false,...} mostra detalhes legíveis
-// - Timeout para evitar travar indefinidamente
-// - Sempre remove loading em qualquer fluxo
+// agent.js — chat responsivo + guarda de sessão + logout (padrão hub)
 
 document.addEventListener("DOMContentLoaded", async () => {
   const chatMessages = document.getElementById("chat-messages");
@@ -11,18 +6,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sendBtn = document.getElementById("send-btn");
   const themeToggle = document.getElementById("theme-toggle");
   const newChatBtn = document.getElementById("new-chat-btn");
+  const logoutBtn = document.getElementById("logout-btn");
+  const userEmailEl = document.getElementById("user-email");
+  const menuBtn = document.getElementById("mobile-menu-btn");
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
 
   const cfg = await loadAgentConfig().catch(() => null);
   const LOGIN_URL = cfg?.loginUrl || "/login/login.html";
+  const HUB_URL = cfg?.hubUrl || "/hub/hub.html";
   const AGENT_PROXY_URL = cfg?.agentProxyUrl || "/api/agent";
 
-  // Supabase (sessão do Hub)
+  // Supabase (sessão)
   let sb;
   try {
     if (typeof window.getSupabaseClient !== "function") {
-      throw new Error("getSupabaseClient não existe. Verifique /supabaseClient.js e supabase-js carregado.");
+      throw new Error("getSupabaseClient não existe. Verifique /supabaseClient.js e supabase-js.");
     }
     sb = await window.getSupabaseClient();
   } catch (e) {
@@ -43,6 +42,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  if (userEmailEl) userEmailEl.textContent = emailUser;
+
+  // Logout (igual hub)
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await sb.auth.signOut();
+      } finally {
+        clearAgentChatSessionStorage();
+        window.location.href = LOGIN_URL;
+      }
+    });
+  }
+
   // Estado por sessão (aba)
   const storageKey = `agente_chat_state:${emailUser}`;
   const chatState = loadState(storageKey);
@@ -55,7 +68,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Tema
   initTheme(themeToggle);
 
-  // Eventos
+  // Menu mobile (padrão hub: sidebar-open no body)
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      document.body.classList.toggle("sidebar-open");
+    });
+  }
+
+  // Fecha ao clicar fora da sidebar
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
+
+    const sidebar = document.querySelector(".sidebar");
+    const clickedInsideSidebar = sidebar?.contains(e.target);
+    const clickedMenuBtn = menuBtn?.contains(e.target);
+
+    if (!clickedInsideSidebar && !clickedMenuBtn) {
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+
+  // Fecha com ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") document.body.classList.remove("sidebar-open");
+  });
+
+  // Enviar mensagem
   sendBtn.addEventListener("click", () => sendMessage());
   userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -64,6 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // Reset conversa
   newChatBtn.addEventListener("click", () => {
     chatState.sessionId = newSessionId();
     chatState.messages = [];
@@ -116,9 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       removeLoading();
 
       if (!resp.ok) {
-        // tenta extrair JSON de erro do backend
-        const friendly = formatBackendError(resp.status, raw);
-        appendMessage(chatMessages, chatState, storageKey, "bot", friendly);
+        appendMessage(chatMessages, chatState, storageKey, "bot", formatBackendError(resp.status, raw));
         return;
       }
 
@@ -131,7 +168,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         data = { output: raw };
       }
 
-      // Se o backend devolver {ok:false,...} mesmo com 200, trata
       if (data && data.ok === false) {
         appendMessage(chatMessages, chatState, storageKey, "bot", formatAgentApiJsonError(data));
         return;
@@ -143,32 +179,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       removeLoading();
 
       if (err?.name === "AbortError") {
-        appendMessage(
-          chatMessages,
-          chatState,
-          storageKey,
-          "bot",
-          "Tempo limite ao contatar o servidor. Tente novamente.",
-        );
+        appendMessage(chatMessages, chatState, storageKey, "bot", "Tempo limite ao contatar o servidor. Tente novamente.");
         return;
       }
 
-      appendMessage(
-        chatMessages,
-        chatState,
-        storageKey,
-        "bot",
-        "Erro de conexão com o servidor. Tente novamente.",
-      );
+      appendMessage(chatMessages, chatState, storageKey, "bot", "Erro de conexão com o servidor. Tente novamente.");
     }
   }
 });
 
 // -------- config --------
 async function loadAgentConfig() {
+  // Mantém compatível se você já tiver /api/public-agent-config
   const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-  const j = await r.json();
-  if (!r.ok || !j?.ok) throw new Error("missing_agent_config");
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !j?.ok) return null;
   return j;
 }
 
@@ -188,6 +213,16 @@ function loadState(key) {
 
 function saveState(key, state) {
   sessionStorage.setItem(key, JSON.stringify(state));
+}
+
+function clearAgentChatSessionStorage() {
+  try {
+    Object.keys(sessionStorage)
+      .filter((k) => k.startsWith("agente_chat_state:"))
+      .forEach((k) => sessionStorage.removeItem(k));
+  } catch {
+    // ignora
+  }
 }
 
 // -------- UI --------
@@ -285,15 +320,12 @@ function updateThemeIcon(themeToggle, isDark) {
 // -------- error helpers --------
 function formatBackendError(status, raw) {
   const base = `Erro no servidor (${status}).`;
-
   if (!raw) return `${base} Resposta vazia.`;
 
-  // tenta JSON
   try {
     const j = JSON.parse(raw);
     return formatAgentApiJsonError(j, status);
   } catch {
-    // texto puro (limita tamanho)
     const t = raw.length > 600 ? raw.slice(0, 600) + "…" : raw;
     return `${base}\n\nDetalhes:\n${t}`;
   }
@@ -307,7 +339,6 @@ function formatAgentApiJsonError(j, statusOverride) {
   const msg = j.message ? `\nMensagem: ${j.message}` : "";
   const details = j.details ? `\nDetalhes: ${String(j.details)}` : "";
 
-  // missing env (bem comum)
   if (j.error === "missing_env" && j.missing && typeof j.missing === "object") {
     const missingKeys = Object.entries(j.missing)
       .filter(([, v]) => !!v)
@@ -323,18 +354,12 @@ function formatAgentApiJsonError(j, statusOverride) {
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (m) => {
     switch (m) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case '"':
-        return "&quot;";
-      case "'":
-        return "&#039;";
-      default:
-        return m;
+      case "&": return "&amp;";
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case '"': return "&quot;";
+      case "'": return "&#039;";
+      default: return m;
     }
   });
 }
