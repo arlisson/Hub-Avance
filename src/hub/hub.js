@@ -117,7 +117,7 @@ function normalizeLoginUrl(url) {
 }
 
 function abrirAgente() {
-  window.location.href = AGENT_CHAT_URL || "/apps/agente-chat/index.html";
+  window.location.href = TARGET_AGENT_URL || "/agente-chat/agent.html";
 }
 
 // -------------------------
