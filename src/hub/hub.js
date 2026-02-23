@@ -1,26 +1,21 @@
 /**
- * hub.js — Hub AVANCE
+ * hub.js — Hub AVANCE (corrigido)
  *
- * - Guarda de sessão (Supabase) e redireciona para login se não autenticado
- * - Mostra e-mail do usuário no sidebar e no card
- * - Logout
- * - Tema dark/light (persistência em localStorage)
- * - Tracking simples em elementos com data-track
- * - Menu mobile (abre/fecha sidebar, fecha ao clicar fora e com ESC)
- * - Carrega config do agente via /api/public-agent-config (URLs vindas de ENV na Vercel)
- *
- * Requisitos:
- * - window.getSupabaseClient() definido em supabaseClient.js
+ * Correções:
+ * - Não sobrescreve o href do card do agente (mantém /api/contador?app=agent)
+ * - Remove referência a variável inexistente TARGET_WEB_APP_URL em abrirAgente()
  */
 
-let AGENT_CHAT_URL = "/agente-chat/agent.html";
 let LOGIN_URL = "/login/login.html";
 
+// Endpoint do contador (use absoluto para evitar problemas de path)
+const COUNTER_AGENT_URL = "/api/contador?app=agent";
+
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1) Carrega config pública (ENV via Vercel -> /api/public-agent-config)
+  // (Opcional) se você usa /api/public-agent-config para centralizar LOGIN_URL
   await loadPublicAgentConfig();
 
-  // 2) Supabase session guard
+  // Supabase session guard
   let sb;
   try {
     sb = await window.getSupabaseClient();
@@ -38,32 +33,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const email = sessionData.session.user?.email || "";
 
-  // 3) Mostra email no sidebar e card
+  // Mostra email no sidebar e card
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = email;
 
   const userEmailCardEl = document.getElementById("user-email-card");
   if (userEmailCardEl) userEmailCardEl.textContent = email;
 
-  // 4) Logout
+  // Logout
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
         await sb.auth.signOut();
       } finally {
-        // limpa estados por sessão (opcional, mas recomendado)
         clearAgentChatSessionStorage();
         window.location.href = normalizeLoginUrl(LOGIN_URL);
       }
     });
   }
 
-  // 5) Tema
+  // Tema
   const themeToggle = document.getElementById("theme-toggle");
   initTheme(themeToggle);
 
-  // 6) Tracking (opcional)
+  // Tracking (opcional)
   document.querySelectorAll("[data-track]").forEach((el) => {
     el.addEventListener("click", () => {
       const evt = el.getAttribute("data-track");
@@ -71,53 +65,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // 7) Botão/Card do agente (se existir no DOM)
-  //    Opção A: botão com id fixo
+  // GARANTIA: o card do agente continua indo para o contador
+  const agentLink = document.getElementById("open-agent-link");
+  if (agentLink) {
+    agentLink.href = COUNTER_AGENT_URL;
+    // Se quiser abrir em nova aba, habilite:
+    // agentLink.target = "_blank";
+    // agentLink.rel = "noopener noreferrer";
+  }
+
+  // Se você estiver usando clique via JS em algum lugar:
   const agentBtn = document.getElementById("open-agent-btn");
   if (agentBtn) agentBtn.addEventListener("click", abrirAgente);
 
-  //    Opção B: qualquer elemento com data-open-agent="true"
   document.querySelectorAll('[data-open-agent="true"]').forEach((el) => {
     el.addEventListener("click", abrirAgente);
   });
 });
 
 // -------------------------
-// Config do agente (ENV)
+// Config pública (opcional)
 // -------------------------
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
     const j = await r.json().catch(() => null);
     if (r.ok && j?.ok) {
-      if (j.agentChatUrl) AGENT_CHAT_URL = j.agentChatUrl;
       if (j.loginUrl) LOGIN_URL = j.loginUrl;
     }
   } catch (e) {
-    // fallback mantém defaults
     console.warn("Falha ao carregar /api/public-agent-config:", e);
   }
 }
 
-const agentLink = document.getElementById("open-agent-link");
-if (agentLink) {
-  agentLink.href = AGENT_CHAT_URL || "/agente-chat/agent.html";
-
-  // Se você quer abrir em nova aba, descomente:
-  // agentLink.target = "_blank";
-  // agentLink.rel = "noopener noreferrer";
-}
-
 function normalizeLoginUrl(url) {
-  // Garante URL absoluta (evita problema de path relativo em /hub/hub.html)
-  // Se já começar com "http" ou "/", retorna como está.
   if (!url) return "/login/login.html";
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
   return "/" + url.replace(/^\.?\//, "");
 }
 
 function abrirAgente() {
-  window.location.href = TARGET_WEB_APP_URL || "/agente-chat/agent.html";
+  window.location.href = COUNTER_AGENT_URL;
 }
 
 // -------------------------
@@ -161,7 +149,6 @@ menuBtn?.addEventListener("click", () => {
   document.body.classList.toggle("sidebar-open");
 });
 
-// Fecha ao clicar fora
 document.addEventListener("click", (e) => {
   if (!document.body.classList.contains("sidebar-open")) return;
 
@@ -174,13 +161,12 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Fecha com ESC
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") document.body.classList.remove("sidebar-open");
 });
 
 // -------------------------
-// Limpeza opcional de estados por sessão
+// Limpeza opcional
 // -------------------------
 function clearAgentChatSessionStorage() {
   try {
