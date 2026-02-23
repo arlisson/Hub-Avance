@@ -1,3 +1,24 @@
+/**
+ * Initializes the hub page with session guard, theme management, and event listeners.
+ * 
+ * - Validates user session and redirects to login if not authenticated
+ * - Displays user email in sidebar and card elements
+ * - Sets up logout functionality
+ * - Manages dark/light theme toggle with localStorage persistence
+ * - Initializes tracking for elements with data-track attribute
+ * - Handles mobile sidebar menu toggle and overlay click handling
+ * - Closes sidebar on Escape key press
+ * 
+ * @async
+ * @returns {Promise<void>}
+ * 
+ * @requires getSupabaseClient - Function to get authenticated Supabase client
+ * @requires updateThemeIcon - Function to update theme toggle icon and text
+ * 
+ * @listens DOMContentLoaded
+ * @listens click - On logout button, menu button, and document for sidebar overlay
+ * @listens keydown - For Escape key to close sidebar
+ */
 // hub.js — guarda de sessão + tema + logout
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -60,6 +81,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
+
+/**
+ * Updates the theme toggle button icon and text based on the current theme mode.
+ * 
+ * @param {HTMLElement|null} themeToggle - The theme toggle button element containing an icon and text.
+ * @param {boolean} isDark - Whether the current theme is dark mode.
+ * @returns {void}
+ * 
+ * @description
+ * If isDark is true, replaces the moon icon with a sun icon and sets text to "Modo claro" (Light mode).
+ * If isDark is false, replaces the sun icon with a moon icon and sets text to "Modo escuro" (Dark mode).
+ * Returns early if themeToggle is null or if the icon/text elements are not found.
+ */
 function updateThemeIcon(themeToggle, isDark) {
   if (!themeToggle) return;
   const icon = themeToggle.querySelector("i");
