@@ -1,0 +1,397 @@
+{
+  "name": "WebhoookV2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Recebe pergunta').item.json.body.chatInput }}",
+        "options": {
+          "systemMessage": "=[DIRETRIZ MÁXIMA E CONTEXTO]\n- ANTES DE ENVIAR QUALQUER PERGUNTA, BUSQUE A RESPOSTA NO DADOS DO CLIENTE, caso não ache, pergunte ao usuário.\n[DADOS DO CLIENTE]\nnome: {{ $('Traz dados salvos do usuário').item.json.dados.nome }}\nsetor: {{ $('Traz dados salvos do usuário').item.json.dados.setor }}\nproduto/servico: {{ $('Traz dados salvos do usuário').item.json.dados['produto/servico'] }}\nmissao: {{ $('Traz dados salvos do usuário').item.json.dados.missao }}\nvisao: {{ $('Traz dados salvos do usuário').item.json.dados.visao }}\nvalores: {{ $('Traz dados salvos do usuário').item.json.dados.valores }}\nprospeccao: {{ $('Traz dados salvos do usuário').item.json.dados.prospeccao }}\nnegociacao: {{ $('Traz dados salvos do usuário').item.json.dados.negociacao }}\nfechamento: {{ $('Traz dados salvos do usuário').item.json.dados.fechamento }}\ndor: {{ $('Traz dados salvos do usuário').item.json.dados.dor }}\nmetodologias: {{ $json.dados.metodologias }}\n[PERSONA]\nVocê é a Ludmilla, Consultora Estratégica de Vendas sênior e uma escritora genial. Sua comunicação é empática, altamente profissional, focada em resultados e, acima de tudo, acessível e por isso deve EVITA ACIMA DE TUDO utilizar muitos termos técnicos, busque ser explicativa. Você precisa se tornar especialista no negócio do usuário.\n[REGRAS RÍGIDAS DE COMUNICAÇÃO]\n1. UMA PERGUNTA POR VEZ: Nunca, sob nenhuma circunstância, envie uma lista de perguntas. Faça estritamente uma pergunta e aguarde a resposta.\n2. ACESSIBILIDADE E CLAREZA: Toda pergunta deve ser extremamente fácil de entender. SEMPRE forneça um exemplo prático ou um cenário para ilustrar o que você está perguntando.\n3. INVESTIGAÇÃO LIVRE: Você tem tópicos principais a seguir, mas SOMENTE SE NECESSÁRIO você para fazer perguntas secundárias e se aprofundar. ATENÇÃO PARA NÃO SER REDUNDANTE!\n[FLUXO DE ATENDIMENTO - SIGA ESTA ORDEM - ANTES DE ENTRAR VEJA O DADOS DO CLIENTE ACIMA]\nFASE 1: DIAGNÓSTICO PROFUNDO E VALIDAÇÃO ITERATIVA\nSeu objetivo é mapear os 4 pilares abaixo (um por vez):\n1. Identidade: Nome, setor de atuação e o que exatamente a empresa vende.\n2. Cultura: Missão, visão e valores centrais.\n3. Processo: Como é o ciclo de vendas atual (prospecção, negociação, fechamento).\n4. Dor Principal: Qual o maior obstáculo que impede o time de vender mais hoje.\n-> REGRA CRÍTICA DE VALIDAÇÃO: \nSempre que você terminar de investigar um desses pilares e sentir que compreendeu 100% daquele ponto, PARE as perguntas e envie um RESUMO BEM ESCRITO do que você entendeu. \nPeça para o usuário validar: \"Foi isso mesmo que entendi? Podemos avançar ou deixei algo passar?\"\n- Se o usuário validar, avance para o próximo pilar.\n- Se o usuário corrigir ou disser \"Não\": Faça mais perguntas sobre o mesmo pilar até o entendimento ser perfeito.\n- Ao concluir todos os pilares: Avance para FASE 2: APRESENTAÇÃO DE METODOLOGIAS\nFASE 2: APRESENTAÇÃO DE METODOLOGIAS\nAssim que todos os 4 pilares forem mapeados e validados, NÃO gere o material final ainda.\n- Analise o cenário e apresente as metodologias de vendas (ex: SPIN Selling, MEDDIC, Receita Previsível, etc.) que você julga serem as melhores para resolver a Dor Principal da empresa.\n- Explique essas metodologias por completo de forma muito didática.\n- Ao final da explicação, pergunte: \"Essa abordagem e essas metodologias fazem sentido para a realidade do seu negócio?\" (Aguarde a aprovação do usuário).\n- Ao obter a aprovação do usuário: Avance para FASE 3: A ENTREGA(O E-BOOK FINAL)\nFASE 3: A ENTREGA (ACIONAMENTO DA FERRAMENTA)\nQuando o usuário validar as metodologias da Fase 2, o diagnóstico estará 100% concluído. \nA partir deste momento, você DEVE OBRIGATORIAMENTE acionar a ferramenta de gerar o PDF. \nREGRA DE USO DA FERRAMENTA:\n1. Você deve criar EXATAMENTE 4 capítulos bem definidos para resolver o problema do cliente. (Nem mais, nem menos).\n2. Para chamar a ferramenta, envie APENAS o parâmetro chamado `estrutura_capitulos`.\n3. O parâmetro `estrutura_capitulos` DEVE SER um Array JSON válido com as chaves 'titulo' e 'instrucoes'.\nPROIBIÇÕES ABSOLUTAS:\n- NUNCA envie o código JSON como mensagem de texto no chat.\n- NUNCA adicione parâmetros soltos como 'dor', 'setor' ou 'nome' na chamada da ferramenta. Use ÚNICA e EXCLUSIVAMENTE o parâmetro `estrutura_capitulos`.\n[AÇÃO INICIAL]\nSe os DADOS DO CLIENTE estiver vazio, apresente-se brevemente como Ludmilla, Consultora Estratégica, e inicie a Fase 1."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1616,
+        176
+      ],
+      "id": "ca482972-380b-473a-b434-08a68f549473",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Recebe pergunta').item.json.body.email }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        496
+      ],
+      "id": "13dfcc97-6ac9-44b0-a146-e96c7da728ab",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        384
+      ],
+      "id": "fea38334-0a0a-4f8e-9506-ea02824523fe",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "0n2tIVmWPkzrj6CD",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"output\": $('AI Agent1').item.json.output } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2000,
+        144
+      ],
+      "id": "9ae2f537-7879-46a4-b006-5e23cf393608",
+      "name": "Envia resposta"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "POST"
+        ],
+        "path": "agente-avance-v2",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "49f3237d-2e6b-45b0-8446-392a00cff6e9",
+      "name": "Recebe pergunta",
+      "webhookId": "06881bfd-dfcd-4438-85f2-d467cb6fc4e8"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT dados \nFROM perfil_cliente \nWHERE user_email = '{{ $json.body.email }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1344,
+        144
+      ],
+      "id": "8c1fa3a7-fb7d-45c6-92e9-c96a7a3fad40",
+      "name": "Traz dados salvos do usuário",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "MAfJs87e2N7YFQg4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        368
+      ],
+      "id": "39ab7d31-8b3c-4846-bbe6-15e2c4f42528",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Txn8pb2M3AEPP5wX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Recebe pergunta').item.json.body.chatInput }}\n\n{{ $('AI Agent1').item.json.output }}",
+        "options": {
+          "systemMessage": "=Seu objetivo é analisar a última interação e extrair APENAS informações NOVAS ou atualizadas sobre a empresa do cliente (Identidade, Cultura, Público, Processo, Dor, Metodologias).\n[REGRAS]\n- Retorne APENAS um JSON válido com os dados novos. Não inclua informações que o usuário ou a IA não mencionou nesta rodada. Retire os dados tanto do cliente, quanto da IA\n- Caso não encontre nada relevante, não retorne nada, nem json, NADA NADA NÃO RESPONDA\n- Na aba de metodologia escreva APENAS metodologias de vendas\nExemplo: Se algum deles só falou da dor agora, retorne: {\"Dor\": \"Minha equipe tem vergonha de ligar.\"}\nMODELO DE JSON A SER SEGUIDO SEMPRE NÃO ADICIONE NENHUM CAMPO A MAIS:\n{\n\t\"nome\":\n\t\"setor\":\n\t\"produto/servico\":\n\t\"missao\":\n\t\"visao\":\n\t\"valores\":\n\t\"prospeccao\":\n\t\"negociacao\":\n\t\"fechamento\":\n\t\"dor\":\n    \"metodologias\":\n    \"dadosCompletos\":\n    \"ebookGerado\":\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2224,
+        144
+      ],
+      "id": "f17f8882-919b-440c-89d0-f3f4de14bd0e",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO perfil_cliente (user_email, dados, atualizado_em)\nVALUES (\n  '{{ $('Recebe pergunta').item.json.body.email }}', \n  '{{ JSON.stringify($json.dados_finais).replace(/'/g, \"''\") }}'::jsonb, -- Usa o dado do nó Code\n  NOW()\n)\nON CONFLICT (user_email) \nDO UPDATE SET \n  dados = EXCLUDED.dados, \n  atualizado_em = NOW();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3008,
+        112
+      ],
+      "id": "41975cf4-fc86-4a8d-8800-a16b30b7ae08",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "MAfJs87e2N7YFQg4",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let fichaAntiga = {};\ntry {\n  fichaAntiga = $('Traz dados salvos do usuário').first().json.dados || {};\n} catch(e) {\n  fichaAntiga = {};\n}\n\nlet fichaNova = {};\ntry {\n  let outputIA = $json.output || $json.message.content; \n  fichaNova = JSON.parse(outputIA);\n} catch(e) {\n  fichaNova = {};\n}\n\n// Junta as duas\nconst fichaFundida = { ...fichaAntiga, ...fichaNova };\n\n// Verifica se a IA mandou algo novo (se o JSON não está vazio)\nconst temDadoNovo = Object.keys(fichaNova).length > 0;\n\nreturn [{ \n  json: { \n    dados_finais: fichaFundida,\n    salvar_no_banco: temDadoNovo // Vai ser 'true' se tiver novidade, e 'false' se for {}\n  } \n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        112
+      ],
+      "id": "5cbdf008-831a-410e-a49d-f1bc07cb2928",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "faafb892-a780-487a-922d-cb5036aa466d",
+              "leftValue": "={{ $json.salvar_no_banco }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2800,
+        224
+      ],
+      "id": "b4df3a88-3cd1-4946-b71a-a60569d85ec1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "description": "Use esta ferramenta ÚNICA E EXCLUSIVAMENTE quando o diagnóstico estiver 100% concluído, todas as 4 perguntas foram respondidas e o usuário já validou as metodologias sugeridas. Esta ferramenta serve para gerar e enviar o E-book final para o cliente",
+        "workflowId": {
+          "__rl": true,
+          "value": "CEy0kszlePkDG8NW",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CEy0kszlePkDG8NW",
+          "cachedResultName": "CriarPDF"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1920,
+        464
+      ],
+      "id": "4ea270fc-b856-4d8e-bb22-8b5640c628f2",
+      "name": "Call 'CriarPDF'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Envia resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envia resposta": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebe pergunta": {
+      "main": [
+        [
+          {
+            "node": "Traz dados salvos do usuário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traz dados salvos do usuário": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'CriarPDF'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "81637bf5-a7b0-4602-8589-be7eb214d796",
+  "meta": {
+    "instanceId": "42c932039a0f20f70679cdffdef01bc1a175401141a90115ce5da7c8c4998b60"
+  },
+  "id": "7G55goSY51hCBf6o",
+  "tags": []
+}

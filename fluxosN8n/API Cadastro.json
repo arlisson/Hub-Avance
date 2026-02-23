@@ -1,0 +1,153 @@
+{
+  "name": "API Cadastro",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cadastro",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "84f20841-4404-4491-93bb-4b2a84330997",
+      "name": "Webhook",
+      "webhookId": "6d0de2ee-27ec-425a-99c2-2a7d0eff5b90"
+    },
+    {
+      "parameters": {
+        "value": "={{ $json.body.password }}"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -64
+      ],
+      "id": "e1224455-693b-4e38-a040-ca51b26b1861",
+      "name": "Crypto"
+    },
+    {
+      "parameters": {
+        "tableId": "usuarios",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.body.name }}"
+            },
+            {
+              "fieldId": "documento",
+              "fieldValue": "={{ $json.body.document }}"
+            },
+            {
+              "fieldId": "whatsapp",
+              "fieldValue": "={{ $json.body.whatsapp }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.body.email }}"
+            },
+            {
+              "fieldId": "senha",
+              "fieldValue": "={{ $json.data }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "31f814f6-7cef-4e89-b4b5-e67d78e8a9f6",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "9LnndEaB8zXhO5eG",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \n  \"status\": \"success\", \n  \"message\": \"Usuário criado com sucesso!\" \n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        0
+      ],
+      "id": "b05cfc71-80bb-4493-963f-7b978ef8aa8d",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Crypto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0bb7af1f-fc7d-4b8d-8e8f-7a66920c8d50",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e37a019ad700bea86115ac8a7438081a96f4a734456c05c08b94f1b32a1ad050"
+  },
+  "id": "RS3mHju8CNfJb8ud",
+  "tags": []
+}

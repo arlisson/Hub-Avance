@@ -1,0 +1,333 @@
+{
+  "name": "API Login",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "login",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "69cd3a7e-a5be-4101-a50c-690e198238b6",
+      "name": "Webhook - Login",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        128
+      ],
+      "webhookId": "328881f0-fb58-4644-9d50-74a02670e2b3"
+    },
+    {
+      "parameters": {
+        "value": "={{ $json.body.password }}",
+        "dataPropertyName": "password_hash"
+      },
+      "id": "33c20a91-211a-4235-8849-74c1b804ce6c",
+      "name": "Crypto - Hash Senha",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "34033a56-81d4-4e87-87ef-9bdef2361285",
+      "name": "Achou Usuário?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        176,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"auth\": true,\n  \"user\": {\n    \"name\": \"{{ $json.nome }}\",\n    \"id\": \"{{ $json.id }}\"\n  }\n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "da76bac3-967b-459d-ad93-0ad6f235ab2e",
+      "name": "Resposta Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        480,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"auth\": false,\n  \"message\": \"Usuário ou senha incorretos\"\n}",
+        "options": {
+          "responseCode": 401,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "7da442b9-0e86-435f-acf3-67bcb4150370",
+      "name": "Resposta Falha",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        496,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "email",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "be4b0e43-fbec-433a-847b-512aa17be078"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Email"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3805cade-4be6-4d30-a1f7-6d74071481d5",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "whatsapp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "WhatsApp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        128
+      ],
+      "id": "83eea9b5-569e-4f91-9e14-738c30159ef9",
+      "name": "Email ou WhatsApp?"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "usuarios",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.identifier }}"
+            }
+          ]
+        }
+      },
+      "id": "2e49725a-f04b-479c-a10e-e16fe1540cdc",
+      "name": "Verifica Email",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "9LnndEaB8zXhO5eG",
+          "name": "Supabase account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "usuarios",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.identifier.toString().replace(/\\D/g, '') }}"
+            }
+          ]
+        }
+      },
+      "id": "25e0f78c-2558-444a-bc13-addd1acb8e5c",
+      "name": "Verifica WhatsApp",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        272
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "9LnndEaB8zXhO5eG",
+          "name": "Supabase account"
+        }
+      },
+      "continueOnFail": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Login": {
+      "main": [
+        [
+          {
+            "node": "Crypto - Hash Senha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto - Hash Senha": {
+      "main": [
+        [
+          {
+            "node": "Email ou WhatsApp?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Achou Usuário?": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email ou WhatsApp?": {
+      "main": [
+        [
+          {
+            "node": "Verifica Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verifica WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Email": {
+      "main": [
+        [
+          {
+            "node": "Achou Usuário?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Achou Usuário?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5de00f87-2aa9-434b-ba0a-28aed01dfd55",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e37a019ad700bea86115ac8a7438081a96f4a734456c05c08b94f1b32a1ad050"
+  },
+  "id": "nlFLt0U3lxKjHqvX",
+  "tags": []
+}

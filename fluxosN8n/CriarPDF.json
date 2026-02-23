@@ -1,0 +1,116 @@
+{
+  "name": "CriarPDF",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "estrutura_parametros"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        752,
+        352
+      ],
+      "id": "841ac900-563a-4b9d-a8ec-ba6a3f6e20a2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        640,
+        592
+      ],
+      "id": "ed863cd1-4650-4039-af10-3c3fd596a50c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "0n2tIVmWPkzrj6CD",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "separator": "\\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserItemList",
+      "typeVersion": 1,
+      "position": [
+        400,
+        480
+      ],
+      "id": "f47c7563-4294-4156-b29a-7dc0136b6f83",
+      "name": "Item List Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2f1e32b1-161e-4dbb-860b-9b2dee5ee376",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42c932039a0f20f70679cdffdef01bc1a175401141a90115ce5da7c8c4998b60"
+  },
+  "id": "CEy0kszlePkDG8NW",
+  "tags": []
+}
