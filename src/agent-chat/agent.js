@@ -10,28 +10,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const cfg = await loadAgentConfig().catch(() => null);
   const LOGIN_URL = cfg?.loginUrl || "/login/login.html";
-  
+  const AGENT_PROXY_URL = cfg?.agentProxyUrl || "/api/agent";
 
   // Supabase (sessão do Hub)
-let sb;
-try {
-  if (typeof window.getSupabaseClient !== "function") {
-    throw new Error("getSupabaseClient não existe em window. Verifique /supabaseClient.js carregado.");
+  let sb;
+  try {
+    sb = await window.getSupabaseClient();
+  } catch (e) {
+    console.error("Supabase client não carregado:", e);
+    window.location.href = LOGIN_URL;
+    return;
   }
-  sb = await window.getSupabaseClient();
-} catch (e) {
-  console.error("Supabase client não carregado:", e);
-
-  // Para não “piscar e voltar”, segure na tela e mostre o erro:
-  document.body.innerHTML = `
-    <div style="padding:16px;font-family:Arial">
-      <h3>Falha ao inicializar Supabase</h3>
-      <pre style="white-space:pre-wrap">${String(e?.message || e)}</pre>
-      <p>Verifique se <b>/supabaseClient.js</b> e <b>/api/public-supabase-config</b> estão acessíveis.</p>
-    </div>
-  `;
-  return;
-}
 
   const { data: s1 } = await sb.auth.getSession();
   if (!s1?.session) {
