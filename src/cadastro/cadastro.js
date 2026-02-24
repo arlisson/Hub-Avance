@@ -1,7 +1,8 @@
-// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/CNPJ/Email já existem)
+// cadastro.js — Supabase (fluxo com confirmação de e-mail)
 // Mantém: máscaras, toggle senha, submit
 // Faz: validação em tempo real (CPF/CNPJ e e-mail) com destaque vermelho + mensagem abaixo
-// e chama endpoint server-side /api/register (Vercel Function)
+// Chama endpoint server-side /api/register (Vercel Function)
+// Agora: ao sucesso, informa que foi enviado link de confirmação e redireciona para login
 
 function validarCPF(cpf) {
   const c = String(cpf || "").replace(/\D/g, "");
@@ -84,6 +85,24 @@ function setValid(inputEl) {
   if (err) err.textContent = "";
 }
 
+function friendlyAuthMessage(detailOrMessage) {
+  const t = String(detailOrMessage || "").toLowerCase();
+
+  if (t.includes("user already registered") || t.includes("already registered")) {
+    return "Este e-mail já está cadastrado.";
+  }
+  if (t.includes("invalid email")) {
+    return "E-mail inválido.";
+  }
+  if (t.includes("password")) {
+    return "Senha inválida. Verifique os requisitos e tente novamente.";
+  }
+  if (t.includes("rate") || t.includes("too many")) {
+    return "Muitas tentativas. Aguarde um pouco e tente novamente.";
+  }
+  return "Não foi possível concluir o cadastro. Verifique os dados e tente novamente.";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   // --- ELEMENTOS ---
   const docInput = document.getElementById("document");
@@ -141,7 +160,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const validateDocSoft = () => {
     const raw = docInput.value.replace(/\D/g, "");
 
-    // enquanto digita: só valida quando chegar a 11 ou 14; antes disso não “pune”
     if (!raw) {
       setValid(docInput);
       return true;
@@ -173,7 +191,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const validateEmailSoft = () => {
     const v = emailInput.value.trim();
 
-    // enquanto digita: só marca inválido se houver texto e já estiver claramente errado
     if (!v) {
       setValid(emailInput);
       return true;
@@ -229,7 +246,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const docRaw = docInput.value.replace(/\D/g, "");
     const whatsapp = phoneInput.value.replace(/\D/g, "");
 
-    // validação final antes de enviar (garante que não passa se estiver inválido)
     const okDoc = validateDocHard();
     const okEmail = validateEmailHard();
 
@@ -248,7 +264,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         name: nameValue,
         email: emailValue,
         password: passwordValue,
-        cpf: docRaw, // mantém a chave "cpf" para não quebrar seu backend
+        cpf: docRaw,
         whatsapp: whatsapp,
       };
 
@@ -270,8 +286,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (err === "auth_error") {
-          setInvalid(emailInput, "E-mail já cadastrado");
-          alert("Este e-mail já está cadastrado.");
+          // tenta mostrar uma mensagem mais precisa se o backend devolver "detail"
+          const msg = friendlyAuthMessage(out?.detail || out?.message);
+          setInvalid(emailInput, msg);
+          alert(msg);
           return;
         }
 
@@ -280,11 +298,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           return;
         }
 
+        if (err === "sheets_failed") {
+          alert("Cadastro indisponível no momento. Tente novamente em instantes.");
+          return;
+        }
+
         alert("Erro ao cadastrar. Verifique os dados e tente novamente.");
         return;
       }
 
-      alert("Conta criada com sucesso! Redirecionando para o login...");
+      // NOVO: fluxo com confirmação de e-mail
+      alert(
+        "Cadastro realizado. Enviamos um link de confirmação para seu e-mail. " +
+          "Confirme o link para liberar o login. Verifique também a caixa de spam."
+      );
       window.location.href = "../login/login.html";
     } catch (error) {
       console.error("Erro:", error);
