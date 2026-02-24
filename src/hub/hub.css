@@ -170,7 +170,7 @@ body.dark-mode .hub-btn-primary {
 .assistant-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   flex: 0 0 40px;
   display: grid;
@@ -298,7 +298,7 @@ body.dark-mode .assistant-avatar {
 
   width: 56px;
   height: 56px;
-  border-radius: 14px;
+  border-radius: 16px;
 
   background: rgba(255, 255, 255, 0.12);
   overflow: hidden;
