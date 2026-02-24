@@ -214,33 +214,38 @@ body.dark-mode .assistant-avatar {
   }
 }
 /* Toast (mensagem flutuante) */
+/* Toast (mensagem flutuante) — 80% da tela */
 .toast {
   position: fixed;
   top: 18px;
-  right: 18px;
+  left: 50%;
+  transform: translate(-50%, -10px);
   z-index: 9999;
-  width: min(420px, calc(100vw - 36px));
+
+  width: 80vw;            /* 80% da largura da tela */
+  max-width: 900px;       /* limite em telas grandes (ajuste se quiser) */
   border-radius: 14px;
+
   padding: 0;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
-  transform: translateY(-10px);
+
   opacity: 0;
   pointer-events: none;
 }
 
 .toast.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   pointer-events: auto;
   transition: opacity 220ms ease, transform 220ms ease;
 }
 
 .toast.hide {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translate(-50%, -10px);
   pointer-events: none;
   transition: opacity 180ms ease, transform 180ms ease;
 }
