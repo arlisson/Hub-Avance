@@ -19,11 +19,6 @@ const SUPABASE_ANON_KEY = "sb_publishable_MNNmP8Q9k7LEwqol4Fsz0A_DHUN9jpl";
 
     window.__sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
     return window.__sb;
-
-    // OPÇÃO B (alternativa): hardcode (descomente e remova a opção A)
-    // const SUPABASE_URL = "https://mgfmdkjfhqriyvnrkgmx.supabase.co";
-    // const SUPABASE_ANON_KEY = "sb_publishable_MNNmP8Q9k7LEwqol4Fsz0A_DHUN9jpl";
-    // window.__sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // return window.__sb;
+ 
   };
 })();
