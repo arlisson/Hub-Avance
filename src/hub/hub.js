@@ -33,6 +33,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const email = sessionData.session.user?.email || "";
 
+    // Toast de boas-vindas (mensagem editável)
+  const WELCOME_TOAST = {
+    title: "Bem-vindo!",
+    message: "Mensagem editável aqui.",
+    durationMs: 4500, // 0 = não fecha automaticamente
+  };
+  showToast(WELCOME_TOAST);
+
   // Mostra email no sidebar e card
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = email;
@@ -211,5 +219,52 @@ function clearAgentChatSessionStorage() {
       .forEach((k) => sessionStorage.removeItem(k));
   } catch {
     // ignora
+  }
+}
+
+/**
+ * Exibe um toast (mensagem flutuante) com título e texto, com opção de auto-fechar.
+ *
+ * @param {Object} opts
+ * @param {string} opts.title - Título do toast.
+ * @param {string} opts.message - Mensagem do toast.
+ * @param {number} [opts.durationMs=4500] - Tempo para auto-fechar. Use 0 para não fechar automaticamente.
+ * @returns {void}
+ */
+function showToast({ title, message, durationMs = 4500 }) {
+  const toast = document.getElementById("welcome-toast");
+  if (!toast) return;
+
+  const titleEl = document.getElementById("welcome-toast-title");
+  const msgEl = document.getElementById("welcome-toast-message");
+  const closeBtn = document.getElementById("welcome-toast-close");
+
+  if (titleEl) titleEl.textContent = title || "Bem-vindo!";
+  if (msgEl) msgEl.textContent = message || "";
+
+  // Garantir estado inicial
+  toast.hidden = false;
+  toast.classList.remove("hide");
+  // Força reflow para animação funcionar consistentemente
+  // eslint-disable-next-line no-unused-expressions
+  toast.offsetHeight;
+  toast.classList.add("show");
+
+  const hide = () => {
+    toast.classList.remove("show");
+    toast.classList.add("hide");
+    window.setTimeout(() => {
+      toast.hidden = true;
+    }, 200);
+  };
+
+  // Fechar ao clicar
+  if (closeBtn) {
+    closeBtn.onclick = hide;
+  }
+
+  // Auto-fechar (opcional)
+  if (durationMs && durationMs > 0) {
+    window.setTimeout(hide, durationMs);
   }
 }

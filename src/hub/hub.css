@@ -213,3 +213,108 @@ body.dark-mode .assistant-avatar {
     width: 100%;
   }
 }
+/* Toast (mensagem flutuante) */
+.toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+  width: min(420px, calc(100vw - 36px));
+  border-radius: 14px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.toast.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast-content {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px;
+}
+
+.toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  flex: 0 0 auto;
+}
+
+.toast-icon i {
+  font-size: 18px;
+}
+
+.toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 1px 0 2px;
+}
+
+.toast-message {
+  font-size: 13px;
+  opacity: 0.88;
+  line-height: 1.25rem;
+  word-break: break-word;
+}
+
+.toast-close {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 10px;
+  opacity: 0.75;
+  flex: 0 0 auto;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.toast-close i {
+  font-size: 18px;
+}
+
+/* Dark mode (reaproveita sua classe .dark-mode no body) */
+body.dark-mode .toast {
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+body.dark-mode .toast-icon {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode .toast-close:hover {
+  background: rgba(255, 255, 255, 0.10);
+}

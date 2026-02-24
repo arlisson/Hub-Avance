@@ -162,6 +162,27 @@
       </footer>
     </main>
 
+    <!-- Toast (mensagem flutuante de boas-vindas) -->
+    <div id="welcome-toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+      <div class="toast-content">
+        <div class="toast-icon">
+          <i class="ph ph-hand-waving"></i>
+        </div>
+
+        <div class="toast-text">
+          <div class="toast-title" id="welcome-toast-title">Bem-vindo!</div>
+          <div class="toast-message" id="welcome-toast-message">
+            <!-- Mensagem editável (pode trocar depois) -->
+            Estamos felizes em ter você aqui. ✅
+          </div>
+        </div>
+
+        <button type="button" class="toast-close" id="welcome-toast-close" aria-label="Fechar mensagem">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../supabaseClient.js"></script>
