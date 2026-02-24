@@ -213,8 +213,8 @@ body.dark-mode .assistant-avatar {
     width: 100%;
   }
 }
-/* Toast (mensagem flutuante) */
-/* Toast (mensagem flutuante) — 80% da tela */
+
+/* Toast (mensagem flutuante) — 80% da tela + imagem no fundo */
 .toast {
   position: fixed;
   top: 18px;
@@ -222,18 +222,43 @@ body.dark-mode .assistant-avatar {
   transform: translate(-50%, -10px);
   z-index: 9999;
 
-  width: 80vw;            /* 80% da largura da tela */
-  max-width: 900px;       /* limite em telas grandes (ajuste se quiser) */
+  width: 80vw;
+  max-width: 900px;
   border-radius: 14px;
+  overflow: hidden; /* necessário para recortar o fundo no border-radius */
 
   padding: 0;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+
+  /* IMAGEM DE FUNDO (edite o caminho aqui) */
+  background-image: url("../../img/sua-imagem.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
 
   opacity: 0;
   pointer-events: none;
+}
+
+/* Camada para contraste do texto por cima da imagem */
+.toast::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45); /* ajuste a opacidade */
+  backdrop-filter: blur(6px);      /* pode remover se não quiser blur */
+}
+
+/* Conteúdo acima da camada */
+.toast-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px;
 }
 
 .toast.show {
@@ -250,27 +275,25 @@ body.dark-mode .assistant-avatar {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.toast-content {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 14px 14px;
-}
-
+/* Ícone/imagem pequena (opcional) */
 .toast-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.06);
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
   flex: 0 0 auto;
 }
 
-/* .toast-icon i {
-  font-size: 18px;
-} */
+.toast-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 .toast-text {
   flex: 1;
@@ -281,13 +304,15 @@ body.dark-mode .assistant-avatar {
   font-weight: 700;
   font-size: 14px;
   margin: 1px 0 2px;
+  color: #fff;
 }
 
 .toast-message {
   font-size: 13px;
-  opacity: 0.88;
+  opacity: 0.92;
   line-height: 1.25rem;
   word-break: break-word;
+  color: #fff;
 }
 
 .toast-close {
@@ -296,49 +321,30 @@ body.dark-mode .assistant-avatar {
   cursor: pointer;
   padding: 6px;
   border-radius: 10px;
-  opacity: 0.75;
+  opacity: 0.85;
   flex: 0 0 auto;
+  color: #fff;
 }
 
 .toast-close:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .toast-close i {
   font-size: 18px;
 }
 
-/* Dark mode (reaproveita sua classe .dark-mode no body) */
+/* Dark mode: mantém a mesma lógica (o overlay já garante contraste) */
 body.dark-mode .toast {
-  background: rgba(20, 20, 20, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
 body.dark-mode .toast-icon {
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 body.dark-mode .toast-close:hover {
-  background: rgba(255, 255, 255, 0.10);
-}
-
-.toast-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
-.toast-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ou 'contain' se não quiser cortar */
-  display: block;
+  background: rgba(255, 255, 255, 0.12);
 }

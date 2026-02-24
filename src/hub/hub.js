@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     title: "Bem-vindo!",
     message: "Mensagem editável aqui.",
     durationMs: 0, // 0 = não fecha automaticamente
+    backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
   };
   showToast(WELCOME_TOAST);
 
@@ -229,9 +230,10 @@ function clearAgentChatSessionStorage() {
  * @param {string} opts.title - Título do toast.
  * @param {string} opts.message - Mensagem do toast.
  * @param {number} [opts.durationMs=4500] - Tempo para auto-fechar. Use 0 para não fechar automaticamente.
+ * @param {string} [opts.backgroundImage] - URL de imagem para usar como fundo do toast.
  * @returns {void}
  */
-function showToast({ title, message, durationMs = 4500 }) {
+function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
   const toast = document.getElementById("welcome-toast");
   if (!toast) return;
 
@@ -241,6 +243,10 @@ function showToast({ title, message, durationMs = 4500 }) {
 
   if (titleEl) titleEl.textContent = title || "Bem-vindo!";
   if (msgEl) msgEl.textContent = message || "";
+
+  if (backgroundImage) {
+    toast.style.backgroundImage = `url("${backgroundImage}")`;
+  }
 
   // Garantir estado inicial
   toast.hidden = false;
