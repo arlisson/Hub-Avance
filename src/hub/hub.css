@@ -268,9 +268,9 @@ body.dark-mode .assistant-avatar {
   flex: 0 0 auto;
 }
 
-.toast-icon i {
+/* .toast-icon i {
   font-size: 18px;
-}
+} */
 
 .toast-text {
   flex: 1;
@@ -322,4 +322,23 @@ body.dark-mode .toast-icon {
 
 body.dark-mode .toast-close:hover {
   background: rgba(255, 255, 255, 0.10);
+}
+
+.toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.toast-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ou 'contain' se não quiser cortar */
+  display: block;
 }

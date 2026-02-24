@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const WELCOME_TOAST = {
     title: "Bem-vindo!",
     message: "Mensagem editável aqui.",
-    durationMs: 4500, // 0 = não fecha automaticamente
+    durationMs: 0, // 0 = não fecha automaticamente
   };
   showToast(WELCOME_TOAST);
 
