@@ -1,3 +1,30 @@
+/**
+ * API handler that increments an access counter and redirects to a target URL.
+ * 
+ * @param {Object} req - The HTTP request object
+ * @param {Object} req.query - Query parameters
+ * @param {string} req.query.app - The application identifier (required)
+ * @param {Object} res - The HTTP response object
+ * 
+ * @returns {void} Redirects to the target URL for the specified app or sends an error response
+ * 
+ * @throws {string} Returns error messages:
+ *   - "missing_app" (400) - if app parameter is empty or not provided
+ *   - "missing_env" (500) - if SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables are missing
+ *   - "unknown_app" (400) - if the app is not found in the targets mapping
+ *   - "server_error" (500) - if an unexpected error occurs during execution
+ * 
+ * @description
+ * This serverless function:
+ * 1. Validates the 'app' query parameter
+ * 2. Checks for required Supabase environment variables
+ * 3. Maps the app to its target URL using environment variables
+ * 4. Calls Supabase RPC to atomically increment access counter
+ * 5. Redirects user to the target URL with HTTP 302 status
+ * 
+ * @example
+ * GET /api/contador?app=desktop
+ */
 export default async function handler(req, res) {
   try {
     const app = String(req.query.app || "").trim();

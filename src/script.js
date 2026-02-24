@@ -1,14 +1,25 @@
 // script.js (Hub) — Supabase
 
 document.addEventListener("DOMContentLoaded", async () => {
+  /**
+   * Instância do Supabase Client exposta globalmente.
+   * Deve ser inicializada previamente em `supabaseClient.js`.
+   *
+   * @type {import('@supabase/supabase-js').SupabaseClient | undefined}
+   */
   const supabase = window.supabaseClient;
+
   if (!supabase) {
-    console.error("Supabase client não encontrado. Verifique supabase-js e supabaseClient.js.");
+    console.error(
+      "Supabase client não encontrado. Verifique supabase-js e supabaseClient.js.",
+    );
     return;
   }
 
   // Guard: exige sessão válida
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+
   if (sessionError || !sessionData?.session) {
     window.location.href = "./login/login.html";
     return;
@@ -62,6 +73,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+/**
+ * Atualiza o ícone e o texto do botão de tema (modo escuro/claro).
+ *
+ * Requer a seguinte estrutura dentro do botão:
+ * - Um elemento `<i>` para o ícone (Phosphor Icons).
+ * - Um elemento `<span>` para o texto.
+ *
+ * @param {HTMLElement|null|undefined} themeToggle - Elemento do botão de toggle.
+ * @param {boolean} isDark - `true` para modo escuro, `false` para modo claro.
+ * @returns {void}
+ */
 function updateThemeIcon(themeToggle, isDark) {
   if (!themeToggle) return;
   const icon = themeToggle.querySelector("i");

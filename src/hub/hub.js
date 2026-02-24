@@ -86,6 +86,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 // -------------------------
 // Config pública (opcional)
 // -------------------------
+/**
+ * Loads the public agent configuration from the server.
+ * 
+ * Fetches the public agent configuration endpoint and updates the global LOGIN_URL
+ * if the response is successful and contains a loginUrl property.
+ * 
+ * @async
+ * @function loadPublicAgentConfig
+ * @returns {Promise<void>}
+ * @throws Will log a warning to console if the fetch fails or if JSON parsing fails
+ */
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
@@ -111,6 +122,20 @@ function abrirAgente() {
 // -------------------------
 // Tema
 // -------------------------
+/**
+ * Initializes the theme system for the application.
+ * Restores the user's previously saved theme preference from localStorage,
+ * applies it to the document, and sets up a click listener for theme toggling.
+ * 
+ * @param {HTMLElement|null} themeToggle - The DOM element that triggers theme switching.
+ *                                         If null or falsy, theme initialization occurs
+ *                                         but no event listener is attached.
+ * @returns {void}
+ * 
+ * @example
+ * const toggleButton = document.getElementById('theme-toggle');
+ * initTheme(toggleButton);
+ */
 function initTheme(themeToggle) {
   const isDark = localStorage.getItem("theme") === "dark";
   document.body.classList.toggle("dark-mode", isDark);
@@ -125,6 +150,12 @@ function initTheme(themeToggle) {
   });
 }
 
+/**
+ * Updates the theme toggle button's icon and text based on the current theme.
+ * @param {HTMLElement} themeToggle - The theme toggle button element
+ * @param {boolean} isDark - Whether dark mode is currently enabled
+ * @returns {void}
+ */
 function updateThemeIcon(themeToggle, isDark) {
   if (!themeToggle) return;
   const icon = themeToggle.querySelector("i");
@@ -168,6 +199,11 @@ document.addEventListener("keydown", (e) => {
 // -------------------------
 // Limpeza opcional
 // -------------------------
+/**
+ * Clears all agent chat session storage entries.
+ * Removes all sessionStorage items that start with the "agente_chat_state:" prefix.
+ * Silently catches and ignores any errors that occur during the clearing process.
+ */
 function clearAgentChatSessionStorage() {
   try {
     Object.keys(sessionStorage)

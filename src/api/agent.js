@@ -1,4 +1,30 @@
 // api/agent.js
+/**
+ * Handles POST requests to forward data to an n8n webhook after validating user authentication.
+ * 
+ * This API route validates the incoming request using a Bearer token against Supabase,
+ * extracts the user's email, and forwards the request body along with the email to an n8n webhook.
+ * 
+ * @async
+ * @param {Object} req - The HTTP request object
+ * @param {string} req.method - The HTTP method (only POST is allowed)
+ * @param {Object} req.headers - Request headers containing authorization token
+ * @param {string} req.headers.authorization - Bearer token for authentication
+ * @param {Object|string} req.body - The request body to forward to n8n
+ * @param {Object} res - The HTTP response object
+ * @param {Function} res.status - Sets the HTTP status code
+ * @param {Function} res.json - Sends a JSON response
+ * @param {Function} res.send - Sends a text response
+ * @param {Function} res.setHeader - Sets response headers
+ * 
+ * @returns {Promise<void>} Sends HTTP response with n8n webhook response or error message
+ * 
+ * @throws {401} If no token is provided or token is invalid
+ * @throws {405} If request method is not POST
+ * @throws {500} If required environment variables are missing or n8n request fails
+ * 
+ * @requires Environment variables: N8N_WEBHOOK_URL, SUPABASE_URL, SUPABASE_ANON_KEY
+ */
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");

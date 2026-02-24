@@ -1,4 +1,38 @@
 // api/register.js
+/**
+ * Handles user registration with email, password, and profile information.
+ * 
+ * This handler performs the following operations in sequence:
+ * 1. Validates the request method (POST only)
+ * 2. Checks for duplicate CPF in the database
+ * 3. Creates a new user account via Supabase Auth
+ * 4. Updates the user profile with additional information
+ * 5. Registers a license in Google Sheets
+ * 
+ * @async
+ * @param {Object} req - Express request object
+ * @param {string} req.method - HTTP method (must be POST or OPTIONS)
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.email - User email (required)
+ * @param {string} req.body.password - User password (required)
+ * @param {string} req.body.cpf - User CPF/ID number (required)
+ * @param {string} [req.body.name] - User full name (optional)
+ * @param {string} [req.body.whatsapp] - User WhatsApp number (optional)
+ * @param {Object} res - Express response object
+ * 
+ * @returns {Promise<void>} JSON response with status
+ * @returns {Object} res.json - Response object
+ * @returns {boolean} res.json.ok - Success flag
+ * @returns {boolean} [res.json.needs_email_confirmation] - Indicates email confirmation required (on success)
+ * @returns {string} [res.json.error] - Error code if failed
+ * @returns {string} [res.json.detail] - Error detail message if failed
+ * 
+ * @throws {Error} Returns 400 if required fields are missing
+ * @throws {Error} Returns 405 if request method is not POST
+ * @throws {Error} Returns 409 if CPF already exists
+ * @throws {Error} Returns 500 if environment variables are missing
+ * @throws {Error} Returns 502 if Google Sheets integration fails
+ */
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     return res.status(200).end();

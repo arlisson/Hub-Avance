@@ -4,6 +4,26 @@
 // Chama endpoint server-side /api/register (Vercel Function)
 // Agora: ao sucesso, informa que foi enviado link de confirmação e redireciona para login
 
+/**
+ * Validates a Brazilian CPF (Cadastro de Pessoas Físicas) number.
+ * 
+ * @param {string|number} cpf - The CPF number to validate. Can be a string or number,
+ *                               with or without formatting characters.
+ * @returns {boolean} Returns true if the CPF is valid, false otherwise.
+ * 
+ * @example
+ * validarCPF("123.456.789-09"); // returns true or false
+ * validarCPF("12345678909");    // returns true or false
+ * validarCPF(12345678909);      // returns true or false
+ * 
+ * @description
+ * The function validates a CPF by:
+ * 1. Removing all non-digit characters
+ * 2. Checking if the length is exactly 11 digits
+ * 3. Rejecting sequences of identical digits
+ * 4. Verifying the first check digit (position 9)
+ * 5. Verifying the second check digit (position 10)
+ */
 function validarCPF(cpf) {
   const c = String(cpf || "").replace(/\D/g, "");
   if (c.length !== 11) return false;
@@ -24,6 +44,23 @@ function validarCPF(cpf) {
   return c === c.slice(0, 9) + String(dv1) + String(dv2);
 }
 
+/**
+ * Validates a Brazilian CNPJ (Cadastro Nacional da Pessoa Jurídica) number.
+ * 
+ * @param {string|number} cnpj - The CNPJ number to validate. Can be provided as a string or number.
+ * @returns {boolean} True if the CNPJ is valid, false otherwise.
+ * 
+ * @description
+ * This function validates a CNPJ by:
+ * 1. Removing all non-digit characters
+ * 2. Checking if the length is exactly 14 digits
+ * 3. Rejecting CNPJs where all digits are the same
+ * 4. Validating the two check digits using modulo 11 algorithm
+ * 
+ * @example
+ * validarCNPJ("11.222.333/0001-81"); // returns true or false
+ * validarCNPJ(11222333000181); // returns true or false
+ */
 function validarCNPJ(cnpj) {
   const c = String(cnpj || "").replace(/\D/g, "");
   if (c.length !== 14) return false;
@@ -49,6 +86,11 @@ function validarCNPJ(cnpj) {
   return c === base12 + String(dv1) + String(dv2);
 }
 
+/**
+ * Validates a CPF or CNPJ document number.
+ * @param {string|number} doc - The CPF or CNPJ document number to validate (with or without formatting).
+ * @returns {boolean} True if the document is a valid CPF (11 digits) or CNPJ (14 digits), false otherwise.
+ */
 function validarCpfOuCnpj(doc) {
   const d = String(doc || "").replace(/\D/g, "");
   if (d.length === 11) return validarCPF(d);
@@ -56,11 +98,22 @@ function validarCpfOuCnpj(doc) {
   return false;
 }
 
+/**
+ * Validates if a given string is a valid email address.
+ * @param {string} email - The email address to validate.
+ * @returns {boolean} True if the email is valid, false otherwise.
+ */
 function validarEmail(email) {
   const v = String(email || "").trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
+/**
+ * Marks an input element as invalid and displays an error message.
+ * @param {HTMLElement} inputEl - The input element to mark as invalid
+ * @param {string} [message="Inválido"] - The error message to display
+ * @returns {void}
+ */
 function setInvalid(inputEl, message) {
   const group = inputEl?.closest?.(".input-group");
   if (!group) return;
@@ -76,6 +129,11 @@ function setInvalid(inputEl, message) {
   err.textContent = message || "Inválido";
 }
 
+/**
+ * Removes the invalid state from an input group and clears any associated error message.
+ * @param {HTMLElement} inputEl - The input element whose parent input group should be validated.
+ * @returns {void}
+ */
 function setValid(inputEl) {
   const group = inputEl?.closest?.(".input-group");
   if (!group) return;
@@ -85,6 +143,14 @@ function setValid(inputEl) {
   if (err) err.textContent = "";
 }
 
+/**
+ * Converts authentication error messages into user-friendly Portuguese messages.
+ * @param {string|*} detailOrMessage - The error message or detail to be converted.
+ * @returns {string} A user-friendly error message in Portuguese.
+ * @example
+ * friendlyAuthMessage("user already registered");
+ * // Returns: "Este e-mail já está cadastrado."
+ */
 function friendlyAuthMessage(detailOrMessage) {
   const t = String(detailOrMessage || "").toLowerCase();
 
