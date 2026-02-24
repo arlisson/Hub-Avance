@@ -1,24 +1,114 @@
-// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/Email já existem)
+// cadastro.js — Supabase (fluxo correto para não “sujar” o Auth quando CPF/CNPJ/Email já existem)
 // Mantém: máscaras, toggle senha, submit
-// Faz: chama endpoint server-side /api/register (Vercel Function) que valida e cria usuário+perfil de forma atômica
+// Faz: validação em tempo real (CPF/CNPJ e e-mail) com destaque vermelho + mensagem abaixo
+// e chama endpoint server-side /api/register (Vercel Function)
+
+function validarCPF(cpf) {
+  const c = String(cpf || "").replace(/\D/g, "");
+  if (c.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(c)) return false;
+
+  const calcDV = (base, fatorInicial) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * (fatorInicial - i);
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+
+  const dv1 = calcDV(c.slice(0, 9), 10);
+  const dv2 = calcDV(c.slice(0, 9) + String(dv1), 11);
+
+  return c === c.slice(0, 9) + String(dv1) + String(dv2);
+}
+
+function validarCNPJ(cnpj) {
+  const c = String(cnpj || "").replace(/\D/g, "");
+  if (c.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(c)) return false;
+
+  const calcDV = (base, pesos) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * pesos[i];
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+
+  const base12 = c.slice(0, 12);
+  const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  const dv1 = calcDV(base12, pesos1);
+
+  const base13 = base12 + String(dv1);
+  const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  const dv2 = calcDV(base13, pesos2);
+
+  return c === base12 + String(dv1) + String(dv2);
+}
+
+function validarCpfOuCnpj(doc) {
+  const d = String(doc || "").replace(/\D/g, "");
+  if (d.length === 11) return validarCPF(d);
+  if (d.length === 14) return validarCNPJ(d);
+  return false;
+}
+
+function validarEmail(email) {
+  const v = String(email || "").trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function setInvalid(inputEl, message) {
+  const group = inputEl?.closest?.(".input-group");
+  if (!group) return;
+
+  group.classList.add("is-invalid");
+
+  let err = group.querySelector(".input-error");
+  if (!err) {
+    err = document.createElement("div");
+    err.className = "input-error";
+    group.appendChild(err);
+  }
+  err.textContent = message || "Inválido";
+}
+
+function setValid(inputEl) {
+  const group = inputEl?.closest?.(".input-group");
+  if (!group) return;
+
+  group.classList.remove("is-invalid");
+  const err = group.querySelector(".input-error");
+  if (err) err.textContent = "";
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // --- 1) MÁSCARAS ---
+  // --- ELEMENTOS ---
   const docInput = document.getElementById("document");
   const phoneInput = document.getElementById("whatsapp");
+  const emailInput = document.getElementById("email");
+  const passInput = document.getElementById("password");
+  const toggleBtn = document.getElementById("toggle-password");
+  const form = document.getElementById("register-form");
 
+  // --- REDIRECIONA SE JÁ ESTIVER LOGADO ---
+  try {
+    const sb = await getSupabaseClient();
+    const { data } = await sb.auth.getSession();
 
-  const sb = await getSupabaseClient();
-  const { data } = await sb.auth.getSession();
-
-  if (data?.session) {
-    window.location.href = "../hub/hub.html";
-    return;
+    if (data?.session) {
+      window.location.href = "../hub/hub.html";
+      return;
+    }
+  } catch (_) {
+    // se falhar, apenas segue (sem travar tela)
   }
 
+  if (!docInput || !phoneInput || !emailInput || !passInput || !form) return;
 
-  if (!docInput || !phoneInput) return;
-
+  // --- 1) MÁSCARAS ---
   // Máscara CPF/CNPJ
   docInput.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -47,14 +137,77 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.target.value = value;
   });
 
-  // --- 2) MOSTRAR SENHA ---
-  const toggleBtn = document.getElementById("toggle-password");
-  const passInput = document.getElementById("password");
+  // --- 2) VALIDAÇÃO EM TEMPO REAL (CPF/CNPJ e E-mail) ---
+  const validateDocSoft = () => {
+    const raw = docInput.value.replace(/\D/g, "");
 
-  if (toggleBtn && passInput) {
+    // enquanto digita: só valida quando chegar a 11 ou 14; antes disso não “pune”
+    if (!raw) {
+      setValid(docInput);
+      return true;
+    }
+    if (raw.length !== 11 && raw.length !== 14) {
+      setValid(docInput);
+      return true;
+    }
+
+    if (!validarCpfOuCnpj(raw)) {
+      setInvalid(docInput, "CPF/CNPJ inválido");
+      return false;
+    }
+
+    setValid(docInput);
+    return true;
+  };
+
+  const validateDocHard = () => {
+    const raw = docInput.value.replace(/\D/g, "");
+    if (!raw || (raw.length !== 11 && raw.length !== 14) || !validarCpfOuCnpj(raw)) {
+      setInvalid(docInput, "CPF/CNPJ inválido");
+      return false;
+    }
+    setValid(docInput);
+    return true;
+  };
+
+  const validateEmailSoft = () => {
+    const v = emailInput.value.trim();
+
+    // enquanto digita: só marca inválido se houver texto e já estiver claramente errado
+    if (!v) {
+      setValid(emailInput);
+      return true;
+    }
+
+    if (!validarEmail(v)) {
+      setInvalid(emailInput, "E-mail inválido");
+      return false;
+    }
+
+    setValid(emailInput);
+    return true;
+  };
+
+  const validateEmailHard = () => {
+    const v = emailInput.value.trim();
+    if (!validarEmail(v)) {
+      setInvalid(emailInput, "E-mail inválido");
+      return false;
+    }
+    setValid(emailInput);
+    return true;
+  };
+
+  docInput.addEventListener("input", validateDocSoft);
+  docInput.addEventListener("blur", validateDocHard);
+
+  emailInput.addEventListener("input", validateEmailSoft);
+  emailInput.addEventListener("blur", validateEmailHard);
+
+  // --- 3) MOSTRAR SENHA ---
+  if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
-      const type =
-        passInput.getAttribute("type") === "password" ? "text" : "password";
+      const type = passInput.getAttribute("type") === "password" ? "text" : "password";
       passInput.setAttribute("type", type);
 
       const icon = toggleBtn.querySelector("i");
@@ -65,38 +218,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // --- 3) SUBMIT (via /api/register) ---
-  const form = document.getElementById("register-form");
-  if (!form) return;
-
+  // --- 4) SUBMIT (via /api/register) ---
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const nameValue = (document.getElementById("name")?.value || "").trim();
-    const emailValue = (document.getElementById("email")?.value || "").trim();
-    const passwordValue = document.getElementById("password")?.value || "";
+    const emailValue = emailInput.value.trim();
+    const passwordValue = passInput.value || "";
 
-    const doc = docInput.value.replace(/\D/g, "");
-
-    if (doc.length === 11) {
-      if (!validarCPF(doc)) {
-        alert("CPF inválido.");
-        return;
-      }
-    } else if (doc.length === 14) {
-      if (!validarCNPJ(doc)) {
-        alert("CNPJ inválido.");
-        return;
-      }
-    } else {
-      alert("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos).");
-      return;
-    }
-
+    const docRaw = docInput.value.replace(/\D/g, "");
     const whatsapp = phoneInput.value.replace(/\D/g, "");
 
+    // validação final antes de enviar (garante que não passa se estiver inválido)
+    const okDoc = validateDocHard();
+    const okEmail = validateEmailHard();
+
+    if (!okDoc || !okEmail) return;
+
     const btn = form.querySelector(".register-btn");
-    const originalText = btn?.innerText || "Criar conta";
+    const originalText = btn?.innerText || "Cadastrar";
 
     if (btn) {
       btn.innerText = "Criando conta...";
@@ -104,12 +244,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      // Payload para o backend (Vercel Function)
       const payload = {
         name: nameValue,
         email: emailValue,
         password: passwordValue,
-        cpf: doc,
+        cpf: docRaw, // mantém a chave "cpf" para não quebrar seu backend
         whatsapp: whatsapp,
       };
 
@@ -125,12 +264,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const err = out?.error || "unknown_error";
 
         if (err === "cpf_exists") {
-          alert("Este CPF já está cadastrado.");
+          setInvalid(docInput, "CPF/CNPJ já cadastrado");
+          alert("Este CPF/CNPJ já está cadastrado.");
           return;
         }
 
         if (err === "auth_error") {
-          // normalmente email já cadastrado
+          setInvalid(emailInput, "E-mail já cadastrado");
           alert("Este e-mail já está cadastrado.");
           return;
         }
@@ -156,67 +296,4 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
   });
-
-
-
-
-  // Valida CPF (aceita com ou sem máscara)
-// Retorna true/false
-function validarCPF(cpf) {
-  const c = String(cpf || "").replace(/\D/g, "");
-
-  if (c.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(c)) return false; // rejeita 000... 111... etc.
-
-  const calcDV = (base, fatorInicial) => {
-    let soma = 0;
-    for (let i = 0; i < base.length; i++) {
-      soma += Number(base[i]) * (fatorInicial - i);
-    }
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
-
-  const dv1 = calcDV(c.slice(0, 9), 10);
-  const dv2 = calcDV(c.slice(0, 9) + dv1, 11);
-
-  return c === c.slice(0, 9) + String(dv1) + String(dv2);
-}
-
-// Valida CNPJ (aceita com ou sem máscara)
-// Retorna true/false
-function validarCNPJ(cnpj) {
-  const c = String(cnpj || "").replace(/\D/g, "");
-
-  if (c.length !== 14) return false;
-  if (/^(\d)\1{13}$/.test(c)) return false; // rejeita 000... 111... etc.
-
-  const calcDV = (base, pesos) => {
-    let soma = 0;
-    for (let i = 0; i < base.length; i++) {
-      soma += Number(base[i]) * pesos[i];
-    }
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
-
-  const base12 = c.slice(0, 12);
-  const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  const dv1 = calcDV(base12, pesos1);
-
-  const base13 = base12 + String(dv1);
-  const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  const dv2 = calcDV(base13, pesos2);
-
-  return c === base12 + String(dv1) + String(dv2);
-}
-
-// (Opcional) Valida CPF ou CNPJ automaticamente pelo tamanho
-function validarCpfOuCnpj(doc) {
-  const d = String(doc || "").replace(/\D/g, "");
-  if (d.length === 11) return validarCPF(d);
-  if (d.length === 14) return validarCNPJ(d);
-  return false;
-}
-
 });

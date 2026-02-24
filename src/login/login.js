@@ -1,10 +1,36 @@
-// login.js — versão para Supabase (sem n8n, sem localStorage de auth)
-// Mantém apenas: verificação de elementos, máscara, toggle de senha e submit.
+// login.js — versão para Supabase (com validação de e-mail em tempo real)
+// Mantém: verificação de elementos, máscara, toggle de senha e submit.
 
+function validarEmail(email) {
+  const v = String(email || "").trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function setInvalid(inputEl, message) {
+  const group = inputEl?.closest?.(".input-group");
+  if (!group) return;
+
+  group.classList.add("is-invalid");
+
+  let err = group.querySelector(".input-error");
+  if (!err) {
+    err = document.createElement("div");
+    err.className = "input-error";
+    group.appendChild(err);
+  }
+  err.textContent = message || "Inválido";
+}
+
+function setValid(inputEl) {
+  const group = inputEl?.closest?.(".input-group");
+  if (!group) return;
+
+  group.classList.remove("is-invalid");
+  const err = group.querySelector(".input-error");
+  if (err) err.textContent = "";
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
-  
-
   const identifierInput = document.getElementById("identifier");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("login-form");
@@ -20,21 +46,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-
   // --- MÁSCARA (mantida) ---
   identifierInput.addEventListener("input", (e) => {
     let value = e.target.value;
-    // const isEmail = /[a-zA-Z@]/.test(value);
+    const isEmail = /[a-zA-Z@]/.test(value);
 
-    // // Para o hub, o login será por e-mail. Ainda assim, a máscara não atrapalha.
-    // if (!isEmail) {
-    //   value = value.replace(/\D/g, "");
-    //   if (value.length > 11) value = value.slice(0, 11);
-    //   if (value.length > 2) value = value.replace(/^(\d{2})(\d)/, "($1) $2");
-    //   if (value.length > 7) value = value.replace(/(\d)(\d{4})$/, "$1-$2");
-    //   e.target.value = value;
-    // }
+    if (!isEmail) {
+      value = value.replace(/\D/g, "");
+      if (value.length > 11) value = value.slice(0, 11);
+      if (value.length > 2) value = value.replace(/^(\d{2})(\d)/, "($1) $2");
+      if (value.length > 7) value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+      e.target.value = value;
+    }
   });
+
+  // --- VALIDAÇÃO EM TEMPO REAL (E-MAIL) ---
+  const validateEmailSoft = () => {
+    const v = identifierInput.value.trim();
+
+    // só marca inválido quando o usuário já digitou algo
+    if (!v) {
+      setValid(identifierInput);
+      return true;
+    }
+
+    if (!validarEmail(v)) {
+      setInvalid(identifierInput, "E-mail inválido");
+      return false;
+    }
+
+    setValid(identifierInput);
+    return true;
+  };
+
+  const validateEmailHard = () => {
+    const v = identifierInput.value.trim();
+    if (!validarEmail(v)) {
+      setInvalid(identifierInput, "E-mail inválido");
+      return false;
+    }
+    setValid(identifierInput);
+    return true;
+  };
+
+  identifierInput.addEventListener("input", validateEmailSoft);
+  identifierInput.addEventListener("blur", validateEmailHard);
 
   // --- MOSTRAR SENHA (mantido) ---
   if (toggleBtn) {
@@ -60,16 +116,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btn = document.querySelector(".login-btn");
     const originalText = btn?.innerText || "Entrar";
 
-    const rawIdentifier = identifierInput.value || "";
+    const email = (identifierInput.value || "").trim();
     const password = passwordInput.value || "";
 
-    // No hub, login por e-mail (Supabase Auth)
-    const email = rawIdentifier.trim();
+    // validação final antes de enviar
+    if (!validateEmailHard()) return;
 
-    if (!email || !/[^\s@]+@[^\s@]+\.[^\s@]+/.test(email)) {
-      alert("Informe um e-mail válido para entrar.");
-      return;
-    }
     if (!password) {
       alert("Informe sua senha.");
       return;
@@ -91,10 +143,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (error) throw error;
 
-      
       window.location.href = "../hub/hub.html";
     } catch (error) {
-      //console.error(error);
       alert(`Erro: ${error?.message || "Falha no login."}`);
     } finally {
       if (btn) {
@@ -105,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
+// Reset senha (mantido)
 const forgotLink = document.getElementById("forgot-password-link");
 
 if (forgotLink) {
@@ -112,7 +163,7 @@ if (forgotLink) {
     e.preventDefault();
 
     const email = (document.getElementById("identifier")?.value || "").trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!validarEmail(email)) {
       alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
       return;
     }
