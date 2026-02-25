@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     title: "Bem-vindo!",
     message: "Mensagem editável aqui.",
     durationMs: 0, // 0 = não fecha automaticamente
-    backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
+    //backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
   };
   showToast(WELCOME_TOAST);
 
