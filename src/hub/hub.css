@@ -337,6 +337,7 @@ body.dark-mode .assistant-avatar {
   line-height: 1.55rem;
   word-break: break-word;
   color: #fff;
+  text-align: justify;
 
   overflow: auto;
   padding-right: 6px;
