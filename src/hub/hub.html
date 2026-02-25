@@ -107,7 +107,7 @@
           <!-- CARD 2: Desktop -->
           <article class="hub-card">
             <div class="hub-card-top">
-              <div class="hub-badge">Mini CRM Desktop</div>
+              <div class="hub-badge">Preenche Fácil</div>
               <div class="hub-icon">
                 <i class="ph ph-desktop"></i>
               </div>
@@ -162,6 +162,33 @@
         <span>AVANCE • Hub de Distribuição</span>
       </footer>
     </main>
+
+    <!-- Toast (mensagem flutuante de boas-vindas) -->
+    <div id="toast-backdrop" class="toast-backdrop" hidden>
+      <div id="welcome-toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <div class="toast-content">
+          <div class="toast-icon">
+            <img
+              id="welcome-toast-image"
+              src="../img/icone.jpg"
+              alt="Boas-vindas"
+            />
+          </div>
+
+          <div class="toast-text">
+            <div class="toast-title" id="welcome-toast-title">Bem-vindo!</div>
+            <div class="toast-message" id="welcome-toast-message">
+             
+             
+            </div>
+          </div>
+
+          <button type="button" class="toast-close" id="welcome-toast-close" aria-label="Fechar mensagem">
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

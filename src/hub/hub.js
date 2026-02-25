@@ -33,6 +33,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const email = sessionData.session.user?.email || "";
 
+    // Toast de boas-vindas (mensagem editável)
+  const WELCOME_TOAST = {
+    title: "Bem-vindo!",
+    message: "Seja bem-vindo ao Hub AVANCE. Explore os recursos disponíveis e acesse seu agente personalizado.",
+    durationMs: 0, // 0 = não fecha automaticamente
+    //backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
+  };
+  showToast(WELCOME_TOAST);
+
   // Mostra email no sidebar e card
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = email;
@@ -86,6 +95,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 // -------------------------
 // Config pública (opcional)
 // -------------------------
+/**
+ * Loads the public agent configuration from the server.
+ * 
+ * Fetches the public agent configuration endpoint and updates the global LOGIN_URL
+ * if the response is successful and contains a loginUrl property.
+ * 
+ * @async
+ * @function loadPublicAgentConfig
+ * @returns {Promise<void>}
+ * @throws Will log a warning to console if the fetch fails or if JSON parsing fails
+ */
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
@@ -111,6 +131,20 @@ function abrirAgente() {
 // -------------------------
 // Tema
 // -------------------------
+/**
+ * Initializes the theme system for the application.
+ * Restores the user's previously saved theme preference from localStorage,
+ * applies it to the document, and sets up a click listener for theme toggling.
+ * 
+ * @param {HTMLElement|null} themeToggle - The DOM element that triggers theme switching.
+ *                                         If null or falsy, theme initialization occurs
+ *                                         but no event listener is attached.
+ * @returns {void}
+ * 
+ * @example
+ * const toggleButton = document.getElementById('theme-toggle');
+ * initTheme(toggleButton);
+ */
 function initTheme(themeToggle) {
   const isDark = localStorage.getItem("theme") === "dark";
   document.body.classList.toggle("dark-mode", isDark);
@@ -125,6 +159,12 @@ function initTheme(themeToggle) {
   });
 }
 
+/**
+ * Updates the theme toggle button's icon and text based on the current theme.
+ * @param {HTMLElement} themeToggle - The theme toggle button element
+ * @param {boolean} isDark - Whether dark mode is currently enabled
+ * @returns {void}
+ */
 function updateThemeIcon(themeToggle, isDark) {
   if (!themeToggle) return;
   const icon = themeToggle.querySelector("i");
@@ -168,6 +208,11 @@ document.addEventListener("keydown", (e) => {
 // -------------------------
 // Limpeza opcional
 // -------------------------
+/**
+ * Clears all agent chat session storage entries.
+ * Removes all sessionStorage items that start with the "agente_chat_state:" prefix.
+ * Silently catches and ignores any errors that occur during the clearing process.
+ */
 function clearAgentChatSessionStorage() {
   try {
     Object.keys(sessionStorage)
@@ -175,5 +220,68 @@ function clearAgentChatSessionStorage() {
       .forEach((k) => sessionStorage.removeItem(k));
   } catch {
     // ignora
+  }
+}
+
+/**
+ * Exibe um toast (mensagem flutuante) com título e texto, com opção de auto-fechar.
+ *
+ * @param {Object} opts
+ * @param {string} opts.title - Título do toast.
+ * @param {string} opts.message - Mensagem do toast.
+ * @param {number} [opts.durationMs=4500] - Tempo para auto-fechar. Use 0 para não fechar automaticamente.
+ * @param {string} [opts.backgroundImage] - URL de imagem para usar como fundo do toast.
+ * @returns {void}
+ */
+function showToast({ title, message, durationMs = 4500, backgroundImage }) {
+  const toast = document.getElementById("welcome-toast");
+  if (!toast) return;
+
+  const titleEl = document.getElementById("welcome-toast-title");
+  const msgEl = document.getElementById("welcome-toast-message");
+  const backdrop = document.getElementById("toast-backdrop");
+  const closeBtn = document.getElementById("welcome-toast-close");
+
+  if (titleEl) titleEl.textContent = title || "Bem-vindo!";
+  if (msgEl) msgEl.textContent = message || "";
+
+  if (backgroundImage) {
+    toast.style.backgroundImage = `url("${backgroundImage}")`;
+  }
+
+  // Mostra backdrop + trava scroll (bloqueia interação fora do toast)
+  if (backdrop) backdrop.hidden = false;
+  document.body.classList.add("modal-open");
+
+  // Garante que o foco fique no toast (acessibilidade e evita interação fora)
+  toast.setAttribute("tabindex", "-1");
+  toast.focus();
+
+  // Garantir estado inicial
+  toast.hidden = false;
+  toast.classList.remove("hide");
+
+  // Força reflow para animação funcionar consistentemente
+  // eslint-disable-next-line no-unused-expressions
+  toast.offsetHeight;
+  toast.classList.add("show");
+
+  const hide = () => {
+    toast.classList.remove("show");
+    toast.classList.add("hide");
+
+    window.setTimeout(() => {
+      toast.hidden = true;
+      if (backdrop) backdrop.hidden = true;
+      document.body.classList.remove("modal-open");
+    }, 200);
+  };
+
+  // Fecha apenas no X (não fecha ao clicar fora)
+  if (closeBtn) closeBtn.onclick = hide;
+
+  // Auto-fechar (opcional)
+  if (durationMs && durationMs > 0) {
+    window.setTimeout(hide, durationMs);
   }
 }

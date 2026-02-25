@@ -1,11 +1,32 @@
 // login.js — versão para Supabase (com validação de e-mail em tempo real)
 // Mantém: verificação de elementos, máscara, toggle de senha e submit.
 
+/**
+ * Valida se uma string tem formato básico de e-mail.
+ *
+ * Observação: valida apenas o padrão (ex.: "nome@dominio.com"),
+ * não garante existência real do e-mail.
+ *
+ * @param {string} email - E-mail a validar.
+ * @returns {boolean} `true` se o formato for válido, senão `false`.
+ */
 function validarEmail(email) {
   const v = String(email || "").trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
+/**
+ * Marca um campo como inválido no UI e exibe uma mensagem de erro dentro
+ * do `.input-group` mais próximo.
+ *
+ * Estrutura esperada:
+ * - O input deve estar dentro de um elemento `.input-group`.
+ * - Um `.input-error` será criado se não existir.
+ *
+ * @param {HTMLElement|null|undefined} inputEl - Elemento de input alvo.
+ * @param {string} message - Mensagem de erro a exibir.
+ * @returns {void}
+ */
 function setInvalid(inputEl, message) {
   const group = inputEl?.closest?.(".input-group");
   if (!group) return;
@@ -21,6 +42,13 @@ function setInvalid(inputEl, message) {
   err.textContent = message || "Inválido";
 }
 
+/**
+ * Remove o estado inválido do UI do `.input-group` mais próximo
+ * e limpa a mensagem de erro (se existir).
+ *
+ * @param {HTMLElement|null|undefined} inputEl - Elemento de input alvo.
+ * @returns {void}
+ */
 function setValid(inputEl) {
   const group = inputEl?.closest?.(".input-group");
   if (!group) return;
@@ -61,6 +89,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // --- VALIDAÇÃO EM TEMPO REAL (E-MAIL) ---
+
+  /**
+   * Validação “leve” do e-mail durante digitação.
+   * Só marca como inválido quando o usuário já digitou algo;
+   * quando vazio, apenas limpa o erro.
+   *
+   * @returns {boolean} `true` se estiver válido (ou vazio), senão `false`.
+   */
   const validateEmailSoft = () => {
     const v = identifierInput.value.trim();
 
@@ -79,6 +115,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     return true;
   };
 
+  /**
+   * Validação “forte” do e-mail (para submissão/saída do campo).
+   * Quando inválido, marca o campo e impede continuidade.
+   *
+   * @returns {boolean} `true` se válido, senão `false`.
+   */
   const validateEmailHard = () => {
     const v = identifierInput.value.trim();
     if (!validarEmail(v)) {

@@ -170,7 +170,7 @@ body.dark-mode .hub-btn-primary {
 .assistant-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   flex: 0 0 40px;
   display: grid;
@@ -212,4 +212,186 @@ body.dark-mode .assistant-avatar {
   .hub-btn {
     width: 100%;
   }
+}
+
+/* =========================
+   TOAST (mensagem flutuante)
+   80% largura + 80% altura
+   Fundo (background-image) definido via JavaScript
+   ========================= */
+
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 10px));
+  z-index: 9999;
+
+  width: 80vw;     /* 80% da largura da tela */
+  height: 80vh;    /* 80% da altura da tela */
+  max-width: 1100px;
+  max-height: 800px;
+
+  border-radius: 14px;
+  overflow: hidden; /* recorta o fundo no border-radius */
+
+  padding: 0;
+
+  /* A imagem de fundo vem do JS:
+     toast.style.backgroundImage = `url("...")`;
+  */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Camada para contraste do texto por cima da imagem */
+.toast::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45); /* ajuste a opacidade */
+  backdrop-filter: blur(6px);      /* pode remover se não quiser blur */
+}
+
+/* Conteúdo acima da camada */
+.toast-content {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+
+  padding: 18px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Estado visível */
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+/* Estado escondendo */
+.toast.hide {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% - 10px));
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+/* Ícone/imagem pequena (opcional) */
+.toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+
+  flex: 0 0 auto;
+}
+
+.toast-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ou 'contain' se não quiser cortar */
+  display: block;
+}
+
+/* Área de texto */
+.toast-text {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Título */
+.toast-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 2px 0 10px;
+  color: #fff;
+}
+
+/* Mensagem (rolagem se exceder a altura) */
+.toast-message {
+  font-size: 14px;
+  opacity: 0.92;
+  line-height: 1.55rem;
+  word-break: break-word;
+  color: #fff;
+  text-align: justify;
+
+  overflow: auto;
+  padding-right: 6px;
+  flex: 1 1 auto;
+}
+
+/* Botão fechar */
+.toast-close {
+  border: 0;
+  background: rgba(255, 255, 255, 0.10);
+  cursor: pointer;
+
+  padding: 10px;
+  border-radius: 12px;
+
+  opacity: 0.9;
+  flex: 0 0 auto;
+  color: #fff;
+  align-self: flex-start;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.toast-close i {
+  font-size: 20px;
+}
+
+/* Backdrop para bloquear cliques fora do toast */
+.toast-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;              /* abaixo do toast (9999) */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+/* Bloqueia rolagem quando modal estiver ativo */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Dark mode: mantém a mesma lógica (overlay já garante contraste) */
+body.dark-mode .toast {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+body.dark-mode .toast-icon {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .toast-close:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
