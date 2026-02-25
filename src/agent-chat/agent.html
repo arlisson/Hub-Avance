@@ -31,6 +31,24 @@
           <span>Sair</span>
         </button>
 
+        <div class="card-formulario">
+        <h2>Ativar Sofia (IA)</h2>
+        <form id="formApi">
+            <div class="grupo-input">
+                <label for="telefone">WhatsApp (com DDD):</label>
+                <input type="text" id="telefone" placeholder="Ex: 5521999999999" required>
+            </div>
+            
+            <div class="grupo-input">
+                <label for="apiKey">Sua OpenAI API Key:</label>
+                <input type="password" id="apiKey" placeholder="sk-..." required>
+            </div>
+
+            <button type="submit" id="btnSubmit">Conectar Chave</button>
+        </form>
+        <div id="mensagem"></div>
+    </div>
+
         <button class="new-chat-btn" id="new-chat-btn" type="button">
           <i class="ph ph-plus"></i>
           <span>Resetar conversa</span>
