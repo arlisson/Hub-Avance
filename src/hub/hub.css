@@ -367,6 +367,20 @@ body.dark-mode .assistant-avatar {
   font-size: 20px;
 }
 
+/* Backdrop para bloquear cliques fora do toast */
+.toast-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;              /* abaixo do toast (9999) */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+/* Bloqueia rolagem quando modal estiver ativo */
+body.modal-open {
+  overflow: hidden;
+}
+
 /* Dark mode: mantém a mesma lógica (overlay já garante contraste) */
 body.dark-mode .toast {
   border: 1px solid rgba(255, 255, 255, 0.18);

@@ -239,8 +239,9 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
 
   const titleEl = document.getElementById("welcome-toast-title");
   const msgEl = document.getElementById("welcome-toast-message");
+  const backdrop = document.getElementById("toast-backdrop");
   const closeBtn = document.getElementById("welcome-toast-close");
-
+  
   if (titleEl) titleEl.textContent = title || "Bem-vindo!";
   if (msgEl) msgEl.textContent = message || "";
 
@@ -248,9 +249,14 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
     toast.style.backgroundImage = `url("${backgroundImage}")`;
   }
 
+   // Mostra backdrop + trava scroll
+  backdrop.hidden = false;
+  document.body.classList.add("modal-open");
+
   // Garantir estado inicial
   toast.hidden = false;
   toast.classList.remove("hide");
+
   // Força reflow para animação funcionar consistentemente
   // eslint-disable-next-line no-unused-expressions
   toast.offsetHeight;
@@ -264,11 +270,9 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
     }, 200);
   };
 
-  // Fechar ao clicar
-  if (closeBtn) {
-    closeBtn.onclick = hide;
-  }
-
+  // Fecha apenas no X (não fecha ao clicar fora)
+  if (closeBtn) closeBtn.onclick = hide;
+  
   // Auto-fechar (opcional)
   if (durationMs && durationMs > 0) {
     window.setTimeout(hide, durationMs);
