@@ -37,7 +37,7 @@ document.getElementById('formApi').addEventListener('submit', async function(eve
     divMensagem.innerText = '';
 
     // Lembre-se de colocar a URL do seu nó Webhook da Railway aqui
-    const webhookUrl = 'https://SEU-DOMINIO-RAILWAY.up.railway.app/webhook-test/cadastrar-chave';
+    const webhookUrl = 'https://primary-production-335ec.up.railway.app/webhook-test/registro_api';
 
     try {
         const resposta = await fetch(webhookUrl, {
