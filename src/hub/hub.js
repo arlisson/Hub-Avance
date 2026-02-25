@@ -233,7 +233,7 @@ function clearAgentChatSessionStorage() {
  * @param {string} [opts.backgroundImage] - URL de imagem para usar como fundo do toast.
  * @returns {void}
  */
-function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
+function showToast({ title, message, durationMs = 4500, backgroundImage }) {
   const toast = document.getElementById("welcome-toast");
   if (!toast) return;
 
@@ -241,7 +241,7 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
   const msgEl = document.getElementById("welcome-toast-message");
   const backdrop = document.getElementById("toast-backdrop");
   const closeBtn = document.getElementById("welcome-toast-close");
-  
+
   if (titleEl) titleEl.textContent = title || "Bem-vindo!";
   if (msgEl) msgEl.textContent = message || "";
 
@@ -249,9 +249,13 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
     toast.style.backgroundImage = `url("${backgroundImage}")`;
   }
 
-   // Mostra backdrop + trava scroll
-  backdrop.hidden = false;
+  // Mostra backdrop + trava scroll (bloqueia interação fora do toast)
+  if (backdrop) backdrop.hidden = false;
   document.body.classList.add("modal-open");
+
+  // Garante que o foco fique no toast (acessibilidade e evita interação fora)
+  toast.setAttribute("tabindex", "-1");
+  toast.focus();
 
   // Garantir estado inicial
   toast.hidden = false;
@@ -265,14 +269,17 @@ function showToast({ title, message, durationMs = 4500, backgroundImage  }) {
   const hide = () => {
     toast.classList.remove("show");
     toast.classList.add("hide");
+
     window.setTimeout(() => {
       toast.hidden = true;
+      if (backdrop) backdrop.hidden = true;
+      document.body.classList.remove("modal-open");
     }, 200);
   };
 
   // Fecha apenas no X (não fecha ao clicar fora)
   if (closeBtn) closeBtn.onclick = hide;
-  
+
   // Auto-fechar (opcional)
   if (durationMs && durationMs > 0) {
     window.setTimeout(hide, durationMs);
