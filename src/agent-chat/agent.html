@@ -1,122 +1,123 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Agente IA</title>
 
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agente IA</title>
 
-    <link rel="stylesheet" href="./agent.css" />
-  </head>
-  <body>
-    <aside class="sidebar">
-      <div class="logo-container">
-        <img
-          src="../img/avanceVip.png"
-          alt="Logo da Empresa"
-          class="company-logo"
-        />
-      </div>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-      <!-- Header da sidebar: email + logout + reset -->
-      <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
-        <div style="width: 100%;">
-          <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
-          <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
-        </div>
+  <link rel="stylesheet" href="./agent.css" />
+</head>
 
-        <button class="new-chat-btn" id="logout-btn" type="button">
-          <i class="ph ph-sign-out"></i>
-          <span>Sair</span>
-        </button>
-
-        <div class="card-formulario">
-        <h2>Ativar Sofia (IA)</h2>
-        <form id="formApi">
-            <div class="grupo-input">
-                <label for="telefone">WhatsApp (com DDD):</label>
-                <input type="text" id="telefone" placeholder="Ex: 5521999999999" required>
-            </div>
-            
-            <div class="grupo-input">
-                <label for="apiKey">Sua OpenAI API Key:</label>
-                <input type="password" id="apiKey" placeholder="sk-..." required>
-            </div>
-
-            <button type="submit" id="btnSubmit">Conectar Chave</button>
-        </form>
-        <div id="mensagem"></div>
+<body>
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
     </div>
 
-        <button class="new-chat-btn" id="new-chat-btn" type="button">
-          <i class="ph ph-plus"></i>
-          <span>Resetar conversa</span>
-        </button>
+    <!-- Header da sidebar: email + logout + reset -->
+    <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
+      <div style="width: 100%;">
+        <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
+        <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
       </div>
 
-      <div class="chat-list">
-        <div class="chat-item active">
-          <i class="ph ph-chat-circle"></i>
-          <div class="chat-info">
-            <div class="chat-title">Consultora de Vendas</div>
-            <div class="chat-date">Ludmilla</div>
+      <button class="new-chat-btn" id="logout-btn" type="button">
+        <i class="ph ph-sign-out"></i>
+        <span>Sair</span>
+      </button>
+      <div id="mensagem"></div>
+    </div>
+
+    <button id="btnAbrirModalApi" class="btn-abrir-modal">Cadastrar Chave API</button>
+
+    <div id="modalApi" class="modal-oculto">
+      <div class="modal-conteudo">
+        <span id="btnFecharModal" class="fechar-modal">&times;</span>
+
+        <h2 style="margin-top: 0; text-align: center;">Ativar Sofia</h2>
+
+        <form id="formApi">
+          <div class="grupo-input">
+            <label for="telefone">WhatsApp (com DDD):</label>
+            <input type="text" id="telefone" placeholder="Ex: 5521999999999" required>
           </div>
+          <div class="grupo-input">
+            <label for="apiKey">Sua OpenAI API Key:</label>
+            <input type="password" id="apiKey" placeholder="sk-..." required>
+          </div>
+          <button type="submit" id="btnSubmit">Conectar Chave</button>
+        </form>
+        <div id="mensagem"></div>
+      </div>
+    </div>
+
+    <button class="new-chat-btn" id="new-chat-btn" type="button">
+      <i class="ph ph-plus"></i>
+      <span>Resetar conversa</span>
+    </button>
+    </div>
+
+    <div class="chat-list">
+      <div class="chat-item active">
+        <i class="ph ph-chat-circle"></i>
+        <div class="chat-info">
+          <div class="chat-title">Consultora de Vendas</div>
+          <div class="chat-date">Ludmilla</div>
         </div>
       </div>
+    </div>
 
-      <div class="sidebar-footer">
-        <button class="theme-toggle" id="theme-toggle" type="button">
-          <i class="ph ph-moon"></i>
-          <span>Modo escuro</span>
-        </button>
-      </div>
-    </aside>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" type="button">
+        <i class="ph ph-moon"></i>
+        <span>Modo escuro</span>
+      </button>
+    </div>
+  </aside>
 
-    <main class="main-content">
-      <header class="chat-header">
-        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
-          <i class="ph ph-list"></i>
-        </button>
+  <main class="main-content">
+    <header class="chat-header">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
+        <i class="ph ph-list"></i>
+      </button>
 
-        <div class="assistant-info">
-          <div class="assistant-avatar">
-            <i class="ph ph-robot"></i>
-          </div>
-          <div class="assistant-details">
-            <span class="name">Consultora Estratégico de Vendas</span>
-            <span class="status">Online</span>
-          </div>
+      <div class="assistant-info">
+        <div class="assistant-avatar">
+          <i class="ph ph-robot"></i>
         </div>
-      </header>
+        <div class="assistant-details">
+          <span class="name">Consultora Estratégico de Vendas</span>
+          <span class="status">Online</span>
+        </div>
+      </div>
+    </header>
 
-      <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-messages" id="chat-messages"></div>
 
-      <div class="input-area">
-        <div class="input-container">
-          <textarea
-            id="user-input"
-            placeholder="Digite sua mensagem..."
-            rows="1"
-            oninput="
+    <div class="input-area">
+      <div class="input-container">
+        <textarea id="user-input" placeholder="Digite sua mensagem..." rows="1" oninput="
               this.style.height = '';
               this.style.height = this.scrollHeight + 'px';
-            "
-          ></textarea>
-          <button id="send-btn" class="send-btn" type="button">
-            <i class="ph ph-paper-plane-right"></i>
-          </button>
-        </div>
-        <p class="disclaimer">IA Avance</p>
+            "></textarea>
+        <button id="send-btn" class="send-btn" type="button">
+          <i class="ph ph-paper-plane-right"></i>
+        </button>
       </div>
-    </main>
+      <p class="disclaimer">IA Avance</p>
+    </div>
+  </main>
 
-    <!-- Dependências -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabaseClient.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Dependências -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabaseClient.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- JS do agente -->
-    <script src="./agent.js"></script>
-  </body>
+  <!-- JS do agente -->
+  <script src="./agent.js"></script>
+</body>
+
 </html>
