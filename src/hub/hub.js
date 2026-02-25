@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Toast de boas-vindas (mensagem editável)
   const WELCOME_TOAST = {
     title: "Bem-vindo!",
-    message: "Seja bem-vindo ao Hub AVANCE. Explore os recursos disponíveis e acesse seu agente personalizado.",
+    message: "Seja bem-vindo ao Hub AVANCE. Explore os recursos disponíveis.",
     durationMs: 0, // 0 = não fecha automaticamente
     //backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
   };
