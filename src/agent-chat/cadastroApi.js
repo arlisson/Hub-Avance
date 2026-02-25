@@ -45,7 +45,7 @@ document.getElementById('formApi').addEventListener('submit', async function(eve
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 telefone_cliente: telefone,
-                chave_openai_recebida: apiKey
+                chave_gemini_recebida: apiKey
             })
         });
 
