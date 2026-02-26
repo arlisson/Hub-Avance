@@ -38,11 +38,9 @@ export default async function handler(req, res) {
     // Mapeia app -> URL final (configure via env vars)
     const targets = {
      
-      desktop: process.env.TARGET_DESKTOP_URL,
+      desktop: process.env.TARGET_DESKTOP_URL,     
+      agent: process.env.TARGET_AGENT_URL,
 
-      // NOVO: agente
-      // Use uma ENV dedicada, ou reaproveite AGENT_CHAT_URL
-      agent: process.env.TARGET_AGENT_URL || process.env.AGENT_CHAT_URL,
     };
 
     const target = targets[app];
