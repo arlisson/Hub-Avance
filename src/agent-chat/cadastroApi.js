@@ -1,25 +1,10 @@
 const modal = document.getElementById('modalApi');
-const btnAbrir = document.getElementById('btnAbrirModalApi');
+const btnAbrir = document.querySelector('.btn-cadastrar-chave'); // Ajuste para a classe do seu botão azul da sidebar
 const btnFechar = document.getElementById('btnFecharModal');
-const inputIdentificador = document.getElementById('identificador');
-const inputApiKey = document.getElementById('apiKey');
-const btnMostrarSenha = document.getElementById('btnMostrarSenha');
 
-// Abrir e fechar o Modal
-btnAbrir.addEventListener('click', () => {
-    modal.classList.remove('modal-oculto');
-    modal.classList.add('modal-visivel');
-});
-
-btnFechar.addEventListener('click', fecharModal);
-window.addEventListener('click', (event) => {
-    if (event.target === modal) fecharModal();
-});
-
-function fecharModal() {
-    modal.classList.remove('modal-visivel');
-    setTimeout(() => { modal.classList.add('modal-oculto'); }, 300); // Espera a animação terminar
-}
+btnAbrir.addEventListener('click', () => modal.classList.add('visivel'));
+btnFechar.addEventListener('click', () => modal.classList.remove('visivel'));
+window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('visivel'); });
 
 // Lógica de Mostrar/Ocultar Senha (Minimalista e Profissional)
 btnMostrarSenha.addEventListener('click', () => {

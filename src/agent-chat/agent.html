@@ -34,35 +34,44 @@
     <button id="btnAbrirModalApi" class="btn-abrir-modal">Cadastrar Chave API</button>
 
     <!-- popup para cadastro de api do usuário -->
-    <div id="modalApi" class="modal-oculto">
-    <div class="modal-conteudo">
-        <span id="btnFecharModal" class="fechar-modal">&times;</span>
-        
-        <div class="modal-cabecalho">
-            <h2>Ativar Agente</h2>
-            <p>Conecte sua inteligência artificial para começar a usar.</p>
+    <div id="modalApi" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>Conectar Chave API</h3>
+          <button id="btnFecharModal" class="btn-fechar">&times;</button>
         </div>
-        
-        <form id="formApi">
-            <div class="grupo-input">
-                <label for="identificador">WhatsApp ou E-mail</label>
-                <input type="text" id="identificador" placeholder="Ex: (21) 99999-9999 ou seu@email.com" required>
+
+        <div class="modal-body">
+          <form id="formApi">
+            <div class="input-group">
+              <label for="identificador">WhatsApp ou E-mail <span class="obrigatorio">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-regular fa-user input-icon icon-left"></i>
+                <input type="text" id="identificador" class="input-dark" placeholder="(21) 99999-9999" required>
+              </div>
             </div>
-            
-            <div class="grupo-input">
-                <label for="apiKey">Sua Chave API (Gemini)</label>
-                <div class="input-com-icone">
-                    <input type="password" id="apiKey" placeholder="Cole sua chave aqui..." required>
-                    <button type="button" id="btnMostrarSenha" class="btn-icone">Mostrar</button>
-                </div>
+
+            <div class="input-group">
+              <label for="apiKey">Google Gemini API Key <span class="obrigatorio">*</span></label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-key input-icon icon-left"></i>
+                <input type="password" id="apiKey" class="input-dark password-input" placeholder="Colar API Key..."
+                  required>
+                <i class="fa-regular fa-eye input-icon toggle-password" id="btnMostrarSenha"
+                  title="Mostrar/Ocultar"></i>
+              </div>
             </div>
-            
-            <button type="submit" id="btnSubmit" class="btn-principal">Conectar Agora</button>
-        </form>
-        
-        <div id="mensagem"></div>
+
+            <div class="modal-footer">
+              <button type="submit" id="btnSubmit" class="btn-salvar">Salvar Credencial</button>
+            </div>
+          </form>
+          <div id="mensagem"></div>
+        </div>
+      </div>
     </div>
-</div>
+    </div>
+    </div>
 
     <button class="new-chat-btn" id="new-chat-btn" type="button">
       <i class="ph ph-plus"></i>

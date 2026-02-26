@@ -523,161 +523,190 @@ body.dark-mode {
   }
 }
 
-/* O Card Branco Principal */
-.modal-conteudo {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 16px;
-  /* Bordas mais arredondadas e modernas */
+/* O Fundo Escuro que bloqueia a tela */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.65);
+  /* Escurece o chat no fundo */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Quando estiver visível */
+.modal-overlay.visivel {
+  display: flex;
+}
+
+/* A Caixa Principal do Modal */
+.modal-box {
+  background-color: #1a1b1e;
+  /* Cinza bem escuro (estilo n8n) */
   width: 90%;
-  max-width: 400px;
-  position: relative;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 550px;
+  border-radius: 8px;
+  border: 1px solid #2c2e33;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  /* Texto claro */
 }
 
-.modal-cabecalho {
-  text-align: center;
-  margin-bottom: 25px;
+/* Cabeçalho */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #2c2e33;
+  /* Linha divisória fina */
 }
 
-.modal-cabecalho h2 {
+.modal-header h3 {
   margin: 0;
-  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn-fechar {
+  background: none;
+  border: none;
+  color: #9ca3af;
   font-size: 24px;
-  font-weight: 700;
-}
-
-.modal-cabecalho p {
-  margin: 8px 0 0 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-/* O Botão de Fechar (X) */
-.fechar-modal {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  color: #94a3b8;
-  font-size: 28px;
-  font-weight: 500;
   cursor: pointer;
+  line-height: 1;
   transition: color 0.2s;
 }
 
-.fechar-modal:hover {
-  color: #0f172a;
+.btn-fechar:hover {
+  color: #ffffff;
 }
 
-/* Inputs refinados */
-.grupo-input {
+/* Corpo do Modal */
+.modal-body {
+  padding: 24px;
+}
+
+.input-group {
   margin-bottom: 20px;
-  text-align: left;
 }
 
-.grupo-input label {
+.input-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d1d5db;
 }
 
-.grupo-input input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #0f172a;
-  box-sizing: border-box;
-  transition: all 0.2s;
-  background-color: #f8fafc;
+.obrigatorio {
+  color: #ef4444;
+  /* Asterisco vermelho para campos obrigatórios */
 }
 
-.grupo-input input:focus {
-  border-color: #3b82f6;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  outline: none;
-}
-
-/* Área do ícone da senha */
-.input-com-icone {
+/* Inputs Escuros */
+.input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
-.input-com-icone input {
-  padding-right: 45px;
-}
-
-/* Dá espaço para o botão não ficar em cima do texto */
-.btn-icone {
-  position: absolute;
-  right: 8px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #64748b;
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.btn-icone:hover {
-  background-color: #e2e8f0;
-}
-
-/* Botão de Enviar Super Destaque */
-.btn-principal {
+.input-dark {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  padding: 10px 10px 10px 40px;
+  /* Espaço para o ícone */
+  background-color: #141517;
+  /* Fundo do input mais escuro que o modal */
+  border: 1px solid #373a40;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-dark::placeholder {
+  color: #6b7280;
+}
+
+.input-dark:focus {
+  border-color: #3b82f6;
+}
+
+/* Foco em azul */
+.password-input {
+  padding-right: 40px;
+}
+
+/* Ícones */
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.icon-left {
+  left: 14px;
+}
+
+.toggle-password {
+  right: 14px;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  color: #d1d5db;
+}
+
+/* Rodapé e Botão Salvar */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  /* Joga o botão para a direita */
+  margin-top: 24px;
+}
+
+.btn-salvar {
+  padding: 10px 20px;
+  background-color: #0066cc;
+  /* Azul da sua sidebar */
   color: white;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  transition: transform 0.1s, box-shadow 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-}
-
-.btn-principal:hover {
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-  transform: translateY(-1px);
-}
-
-.btn-principal:active {
-  transform: translateY(1px);
-}
-
-.btn-principal:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-#mensagem {
-  margin-top: 20px;
-  text-align: center;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
-  padding: 10px;
-  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-salvar:hover {
+  background-color: #0052a3;
+}
+
+.btn-salvar:disabled {
+  background-color: #374151;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Mensagens de feedback */
+#mensagem {
+  margin-top: 15px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .sucesso {
-  background-color: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  color: #10b981;
 }
 
 .erro {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  color: #ef4444;
 }
