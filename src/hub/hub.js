@@ -41,7 +41,7 @@ const APPS = [
     shortDesc:
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
     longDesc:
-      "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. Funciona sem internet, então as informações ficam apenas no seu computador. Após baixar e instalar, o software fica disponível para uso local.",
+      "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
     youtubeId: "jd8ULYrZ4dw", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
@@ -53,6 +53,18 @@ const APPS = [
         targetBlank: true,
       },
     ],
+  },
+  {
+    id: "novo-produto",
+    badge: "Em breve",
+    icon: "ph-rocket-launch",
+    title: "Novo Produto",
+    shortDesc: "Espaço reservado para próximos aplicativos do hub.",
+    longDesc:
+      "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
+    youtubeId: "", // sem vídeo
+    enabled: false,
+    actions: [],
   },
   {
     id: "novo-produto",
