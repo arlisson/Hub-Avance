@@ -21,7 +21,7 @@ const APPS = [
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
       "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
-    youtubeId: "jd8ULYrZ4dw", // TROQUE pelo seu vídeo (ID)
+    youtubeId: "", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
       {
@@ -42,7 +42,7 @@ const APPS = [
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
     longDesc:
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
-    youtubeId: "jd8ULYrZ4dw", // TROQUE pelo seu vídeo (ID)
+    youtubeId: "", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
       {
@@ -66,18 +66,7 @@ const APPS = [
     enabled: false,
     actions: [],
   },
-  {
-    id: "novo-produto",
-    badge: "Em breve",
-    icon: "ph-rocket-launch",
-    title: "Novo Produto",
-    shortDesc: "Espaço reservado para próximos aplicativos do hub.",
-    longDesc:
-      "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
-    youtubeId: "", // sem vídeo
-    enabled: false,
-    actions: [],
-  },
+  
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
