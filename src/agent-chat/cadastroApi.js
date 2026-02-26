@@ -1,7 +1,6 @@
-// Captura dos elementos HTML
+// Captura dos elementos HTML com os IDs atualizados
 const modal = document.getElementById('modalApi');
-// Lembre-se de checar se a classe do botão azul do seu menu é essa mesma
-const btnAbrir = document.querySelector('btn-abrir-modal'); 
+const btnAbrir = document.getElementById('btnAbrirModalSidebar'); // ID novo do botão na sidebar
 const btnFechar = document.getElementById('btnFecharModal');
 const inputApiKey = document.getElementById('apiKey');
 const inputIdentificador = document.getElementById('identificador');
@@ -10,15 +9,16 @@ const btnMostrarSenha = document.getElementById('btnMostrarSenha');
 // Lógica de Abrir e Fechar o Modal
 btnAbrir.addEventListener('click', () => modal.classList.add('visivel'));
 btnFechar.addEventListener('click', () => modal.classList.remove('visivel'));
-window.addEventListener('click', (e) => { 
-    if (e.target === modal) modal.classList.remove('visivel'); 
+window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('visivel');
 });
 
-// Lógica de Mostrar/Ocultar Senha (Minimalista e Profissional)
+// Lógica de Mostrar/Ocultar Senha (com FontAwesome)
 btnMostrarSenha.addEventListener('click', () => {
     const isPassword = inputApiKey.type === 'password';
     inputApiKey.type = isPassword ? 'text' : 'password';
-    // Como voltamos para os ícones do FontAwesome no design novo, usamos as classes
+
+    // Alterna os ícones do olho aberto/fechado
     btnMostrarSenha.classList.toggle('fa-eye');
     btnMostrarSenha.classList.toggle('fa-eye-slash');
 });
@@ -47,12 +47,11 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
     event.preventDefault();
 
     const btnSubmit = document.getElementById('btnSubmit');
-    const divMensagem = document.getElementById('mensagem');
+    const divMensagem = document.getElementById('mensagemApi'); // ID novo da div de mensagens do modal
     let identificadorOriginal = inputIdentificador.value;
     const apiKey = inputApiKey.value;
 
     // LIMPEZA DO DADO: Se for número de telefone, tira a máscara antes de enviar pro n8n
-    // para o Supabase conseguir achar o cliente facilmente (ex: manda "21999999999" em vez de "(21) 99999-9999")
     let identificadorLimpo = identificadorOriginal;
     if (!/[a-zA-Z@]/.test(identificadorOriginal)) {
         identificadorLimpo = identificadorOriginal.replace(/\D/g, '');
@@ -81,8 +80,9 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
             divMensagem.className = 'sucesso';
             inputApiKey.value = '';
 
+            // Fecha o modal automaticamente após o sucesso
             setTimeout(() => {
-                modal.classList.remove('visivel'); // Fechamento corrigido aqui
+                modal.classList.remove('visivel');
                 divMensagem.innerText = '';
                 divMensagem.className = '';
             }, 2500);
@@ -96,6 +96,6 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
         divMensagem.className = 'erro';
     } finally {
         btnSubmit.disabled = false;
-        btnSubmit.innerText = 'Salvar Credencial'; // Voltei pro texto padrão do botão novo
+        btnSubmit.innerText = 'Salvar Credencial';
     }
 });

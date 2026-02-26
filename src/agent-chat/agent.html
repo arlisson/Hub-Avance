@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agente IA</title>
+  <title>Agente IA - Avance</title>
 
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <link rel="stylesheet" href="./agent.css" />
 </head>
@@ -17,7 +19,6 @@
       <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
     </div>
 
-    <!-- Header da sidebar: email + logout + reset -->
     <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
       <div style="width: 100%;">
         <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
@@ -28,63 +29,22 @@
         <i class="ph ph-sign-out"></i>
         <span>Sair</span>
       </button>
-      <div id="mensagem"></div>
+      <div id="mensagem-logout"></div>
     </div>
 
-    <button id="btnAbrirModalApi" class="btn-abrir-modal">Cadastrar Chave API</button>
+    <button id="btnAbrirModalSidebar" class="btn-abrir-modal">Cadastrar Chave API</button>
 
-    <!-- popup para cadastro de api do usuário -->
-    <div id="modalApi" class="modal-overlay">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3>Conectar Chave API</h3>
-          <button id="btnFecharModal" class="btn-fechar">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <form id="formApi">
-            <div class="input-group">
-              <label for="identificador">WhatsApp ou E-mail <span class="obrigatorio">*</span></label>
-              <div class="input-wrapper">
-                <i class="fa-regular fa-user input-icon icon-left"></i>
-                <input type="text" id="identificador" class="input-dark" placeholder="(21) 99999-9999" required>
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="apiKey">Google Gemini API Key <span class="obrigatorio">*</span></label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-key input-icon icon-left"></i>
-                <input type="password" id="apiKey" class="input-dark password-input" placeholder="Colar API Key..."
-                  required>
-                <i class="fa-regular fa-eye input-icon toggle-password" id="btnMostrarSenha"
-                  title="Mostrar/Ocultar"></i>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button type="submit" id="btnSubmit" class="btn-salvar">Salvar Credencial</button>
-            </div>
-          </form>
-          <div id="mensagem"></div>
-        </div>
-      </div>
-    </div>
-    </div>
-    </div>
-
-    <button class="new-chat-btn" id="new-chat-btn" type="button">
+    <button class="new-chat-btn" id="new-chat-btn" type="button" style="margin-top: 15px;">
       <i class="ph ph-plus"></i>
       <span>Resetar conversa</span>
     </button>
-    </div>
 
-    <div class="chat-list">
+    <div class="chat-list" style="margin-top: 20px;">
       <div class="chat-item active">
         <i class="ph ph-chat-circle"></i>
         <div class="chat-info">
           <div class="chat-title">Consultora de Vendas</div>
-          <div class="chat-date">Ludmilla</div>
+          <div class="chat-date">Sofia</div>
         </div>
       </div>
     </div>
@@ -108,7 +68,7 @@
           <i class="ph ph-robot"></i>
         </div>
         <div class="assistant-details">
-          <span class="name">Consultora Estratégico de Vendas</span>
+          <span class="name">Consultora Estratégica de Vendas</span>
           <span class="status">Online</span>
         </div>
       </div>
@@ -130,12 +90,46 @@
     </div>
   </main>
 
-  <!-- Dependências -->
+  <div id="modalApi" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Conectar Chave API</h3>
+        <button id="btnFecharModal" class="btn-fechar">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="formApi">
+          <div class="input-group">
+            <label for="identificador">WhatsApp ou E-mail <span class="obrigatorio">*</span></label>
+            <div class="input-wrapper">
+              <i class="fa-regular fa-user input-icon icon-left"></i>
+              <input type="text" id="identificador" class="input-dark" placeholder="(21) 99999-9999" required>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="apiKey">Google Gemini API Key <span class="obrigatorio">*</span></label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-key input-icon icon-left"></i>
+              <input type="password" id="apiKey" class="input-dark password-input" placeholder="Colar API Key..."
+                required>
+              <i class="fa-regular fa-eye input-icon toggle-password" id="btnMostrarSenha" title="Mostrar/Ocultar"></i>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" id="btnSubmit" class="btn-salvar">Salvar Credencial</button>
+          </div>
+        </form>
+        <div id="mensagemApi"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabaseClient.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <!-- JS do agente -->
   <script src="./agent.js"></script>
   <script src="./cadastroApi.js"></script>
 </body>
