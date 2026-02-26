@@ -183,3 +183,25 @@ body {
 .input-group.is-invalid .input-error {
   display: block;
 }
+
+.password-rules {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-gray);
+  display: grid;
+  gap: 4px;
+}
+
+.password-rules .rule {
+  opacity: 0.9;
+}
+
+.password-rules .rule.ok {
+  color: #16a34a; /* verde */
+  opacity: 1;
+}
+
+.password-rules .rule.bad {
+  color: #ef4444; /* vermelho */
+  opacity: 1;
+}
