@@ -20,7 +20,7 @@ const APPS = [
     title: "Agente Web | EM PRODUÇÃO",
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
-      "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
