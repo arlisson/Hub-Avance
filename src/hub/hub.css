@@ -5,8 +5,6 @@
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
-
-  /* importante: ocupa espaço e empurra o footer */
   flex: 1;
 }
 
@@ -48,18 +46,33 @@
   border-radius: 14px;
   padding: 16px;
 
-  /* melhora compatibilidade com tema claro/escuro */
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(0, 0, 0, 0.02);
 
   display: flex;
   flex-direction: column;
   min-height: 220px;
+
+  /* novo: animação hover */
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  will-change: transform;
 }
 
 body.dark-mode .hub-card {
   border-color: rgba(255, 255, 255, 0.10);
   background: rgba(255, 255, 255, 0.04);
+}
+
+/* hover: “chega pra frente” */
+.hub-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+body.dark-mode .hub-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.50);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .hub-card-top {
@@ -157,16 +170,14 @@ body.dark-mode .hub-btn-primary {
   opacity: 0.8;
 }
 
-/* Footer sempre no final do main */
 .hub-footer {
   padding: 14px 20px 18px;
   opacity: 0.7;
   font-size: 12px;
   text-align: center;
-  margin-top: auto; /* sticky footer */
+  margin-top: auto;
 }
 
-/* Avatar do header do hub (você usa no hub.html) */
 .assistant-avatar {
   width: 40px;
   height: 40px;
@@ -189,7 +200,6 @@ body.dark-mode .assistant-avatar {
   display: block;
 }
 
-/* Ajustes finos em telas pequenas */
 @media (max-width: 900px) {
   .hub-container {
     padding: 16px;
@@ -215,9 +225,181 @@ body.dark-mode .assistant-avatar {
 }
 
 /* =========================
-   TOAST (mensagem flutuante)
-   80% largura + 80% altura
-   Fundo (background-image) definido via JavaScript
+   MODAL (pop-up de detalhes)
+   ========================= */
+
+.app-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.app-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+
+  width: min(1100px, 92vw);
+  height: min(760px, 88vh);
+
+  border-radius: 16px;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+}
+
+body.dark-mode .app-modal {
+  background: rgba(18, 18, 18, 0.92);
+  color: #fff;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+.app-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .app-modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.app-modal-titlewrap {
+  min-width: 0;
+}
+
+.app-modal-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.10);
+  margin-bottom: 8px;
+}
+
+body.dark-mode .app-modal-badge {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.app-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.app-modal-close {
+  border: 0;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+
+  padding: 10px;
+  border-radius: 12px;
+
+  opacity: 0.9;
+  flex: 0 0 auto;
+  color: inherit;
+}
+
+body.dark-mode .app-modal-close {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.app-modal-close:hover {
+  opacity: 1;
+}
+
+.app-modal-close i {
+  font-size: 20px;
+}
+
+.app-modal-body {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr;
+  gap: 16px;
+  padding: 16px 18px;
+  height: calc(100% - 68px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 980px) {
+  .app-modal-body {
+    grid-template-columns: 1fr;
+    height: calc(100% - 68px);
+    overflow: auto;
+  }
+}
+
+.app-modal-left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.app-modal-desc {
+  margin: 0;
+  opacity: 0.92;
+  font-size: 14px;
+  line-height: 1.55rem;
+  text-align: justify;
+
+  overflow: auto;
+  padding-right: 6px;
+  flex: 1 1 auto;
+}
+
+.app-modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-modal-right {
+  min-width: 0;
+  height: 100%;
+}
+
+.app-modal-video {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .app-modal-video {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.app-modal-video iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Bloqueia rolagem quando modal estiver ativo */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* =========================
+   TOAST (boas-vindas) - seu CSS original
    ========================= */
 
 .toast {
@@ -227,19 +409,16 @@ body.dark-mode .assistant-avatar {
   transform: translate(-50%, calc(-50% - 10px));
   z-index: 9999;
 
-  width: 80vw;     /* 80% da largura da tela */
-  height: 80vh;    /* 80% da altura da tela */
+  width: 80vw;
+  height: 80vh;
   max-width: 1100px;
   max-height: 800px;
 
   border-radius: 14px;
-  overflow: hidden; /* recorta o fundo no border-radius */
+  overflow: hidden;
 
   padding: 0;
 
-  /* A imagem de fundo vem do JS:
-     toast.style.backgroundImage = `url("...")`;
-  */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -251,16 +430,14 @@ body.dark-mode .assistant-avatar {
   pointer-events: none;
 }
 
-/* Camada para contraste do texto por cima da imagem */
 .toast::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45); /* ajuste a opacidade */
-  backdrop-filter: blur(6px);      /* pode remover se não quiser blur */
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
 }
 
-/* Conteúdo acima da camada */
 .toast-content {
   position: relative;
   z-index: 1;
@@ -274,7 +451,6 @@ body.dark-mode .assistant-avatar {
   box-sizing: border-box;
 }
 
-/* Estado visível */
 .toast.show {
   opacity: 1;
   transform: translate(-50%, -50%);
@@ -282,7 +458,6 @@ body.dark-mode .assistant-avatar {
   transition: opacity 220ms ease, transform 220ms ease;
 }
 
-/* Estado escondendo */
 .toast.hide {
   opacity: 0;
   transform: translate(-50%, calc(-50% - 10px));
@@ -290,7 +465,6 @@ body.dark-mode .assistant-avatar {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-/* Ícone/imagem pequena (opcional) */
 .toast-icon {
   display: inline-flex;
   align-items: center;
@@ -309,11 +483,10 @@ body.dark-mode .assistant-avatar {
 .toast-icon img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* ou 'contain' se não quiser cortar */
+  object-fit: cover;
   display: block;
 }
 
-/* Área de texto */
 .toast-text {
   flex: 1;
   min-width: 0;
@@ -322,7 +495,6 @@ body.dark-mode .assistant-avatar {
   flex-direction: column;
 }
 
-/* Título */
 .toast-title {
   font-weight: 700;
   font-size: 18px;
@@ -330,7 +502,6 @@ body.dark-mode .assistant-avatar {
   color: #fff;
 }
 
-/* Mensagem (rolagem se exceder a altura) */
 .toast-message {
   font-size: 14px;
   opacity: 0.92;
@@ -344,7 +515,6 @@ body.dark-mode .assistant-avatar {
   flex: 1 1 auto;
 }
 
-/* Botão fechar */
 .toast-close {
   border: 0;
   background: rgba(255, 255, 255, 0.10);
@@ -368,21 +538,14 @@ body.dark-mode .assistant-avatar {
   font-size: 20px;
 }
 
-/* Backdrop para bloquear cliques fora do toast */
 .toast-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 9998;              /* abaixo do toast (9999) */
+  z-index: 9998;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
 }
 
-/* Bloqueia rolagem quando modal estiver ativo */
-body.modal-open {
-  overflow: hidden;
-}
-
-/* Dark mode: mantém a mesma lógica (overlay já garante contraste) */
 body.dark-mode .toast {
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);

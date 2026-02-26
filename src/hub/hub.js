@@ -1,18 +1,74 @@
 /**
- * hub.js — Hub AVANCE (corrigido)
- *
- * Correções:
- * - Não sobrescreve o href do card do agente (mantém /api/contador?app=agent)
- * - Remove referência a variável inexistente TARGET_WEB_APP_URL em abrirAgente()
+ * hub.js — Hub AVANCE (cards dinâmicos + modal com YouTube)
  */
 
 let LOGIN_URL = "/login/login.html";
-
-// Endpoint do contador (use absoluto para evitar problemas de path)
 const COUNTER_AGENT_URL = "/api/contador?app=agent";
+const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
+
+/**
+ * Defina seus cards aqui.
+ * - youtubeId: apenas o ID do vídeo (não a URL inteira).
+ * - actions: botões exibidos no modal.
+ * - enabled: se false, o card fica “indisponível”.
+ */
+const APPS = [
+  {
+    id: "agent",
+    badge: "Agente de suporte | EM PRODUÇÃO",
+    icon: "ph-globe",
+    title: "Agente Web | EM PRODUÇÃO",
+    shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
+    longDesc:
+      "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+    youtubeId: "jd8ULYrZ4dw", // TROQUE pelo seu vídeo (ID)
+    enabled: true,
+    actions: [
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href: COUNTER_AGENT_URL,
+        primary: true,
+        targetBlank: false,
+      },
+    ],
+  },
+  {
+    id: "desktop",
+    badge: "Preenche Fácil",
+    icon: "ph-desktop",
+    title: "Aplicação Desktop",
+    shortDesc:
+      "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
+    longDesc:
+      "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. Funciona sem internet, então as informações ficam apenas no seu computador. Após baixar e instalar, o software fica disponível para uso local.",
+    youtubeId: "jd8ULYrZ4dw", // TROQUE pelo seu vídeo (ID)
+    enabled: true,
+    actions: [
+      {
+        label: "Baixar",
+        icon: "ph-download-simple",
+        href: COUNTER_DESKTOP_URL,
+        primary: false,
+        targetBlank: true,
+      },
+    ],
+  },
+  {
+    id: "novo-produto",
+    badge: "Em breve",
+    icon: "ph-rocket-launch",
+    title: "Novo Produto",
+    shortDesc: "Espaço reservado para próximos aplicativos do hub.",
+    longDesc:
+      "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
+    youtubeId: "", // sem vídeo
+    enabled: false,
+    actions: [],
+  },
+];
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // (Opcional) se você usa /api/public-agent-config para centralizar LOGIN_URL
   await loadPublicAgentConfig();
 
   // Supabase session guard
@@ -33,21 +89,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const email = sessionData.session.user?.email || "";
 
-    // Toast de boas-vindas (mensagem editável)
+  // Toast de boas-vindas (opcional)
   const WELCOME_TOAST = {
     title: "Bem-vindo!",
-    message: "Seja bem-vindo ao Hub AVANCE. Explore os recursos disponíveis e acesse seu agente personalizado.",
-    durationMs: 0, // 0 = não fecha automaticamente
-    //backgroundImage: "../img/icone.jpg", // opcional, use uma imagem de boas-vindas
+    message:
+      "Seja bem-vindo ao Hub AVANCE. Selecione um produto para ver os detalhes e acessar.",
+    durationMs: 0,
   };
   showToast(WELCOME_TOAST);
 
-  // Mostra email no sidebar e card
+  // Mostra email no sidebar
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = email;
-
-  const userEmailCardEl = document.getElementById("user-email-card");
-  if (userEmailCardEl) userEmailCardEl.textContent = email;
 
   // Logout
   const logoutBtn = document.getElementById("logout-btn");
@@ -66,46 +119,224 @@ document.addEventListener("DOMContentLoaded", async () => {
   const themeToggle = document.getElementById("theme-toggle");
   initTheme(themeToggle);
 
-  // Tracking (opcional)
-  document.querySelectorAll("[data-track]").forEach((el) => {
-    el.addEventListener("click", () => {
-      const evt = el.getAttribute("data-track");
-      console.log("track:", evt);
+  // Sidebar mobile
+  initMobileSidebar();
+
+  // Render cards dinâmicos
+  renderHubCards();
+
+  // Modal
+  initAppModal();
+});
+
+// -------------------------
+// Renderização dos cards
+// -------------------------
+function renderHubCards() {
+  const grid = document.getElementById("hub-grid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  APPS.forEach((app) => {
+    const card = document.createElement("article");
+    card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
+    card.setAttribute("data-app-id", app.id);
+
+    // Torna card clicável (mas não se estiver desabilitado)
+    if (app.enabled) {
+      card.style.cursor = "pointer";
+      card.addEventListener("click", (e) => {
+        // se clicar em um link/botão, deixa o elemento cuidar (evita abrir modal “em cima”)
+        const isInteractive = e.target.closest("a,button");
+        if (isInteractive) return;
+        openAppModal(app.id);
+      });
+    } else {
+      card.style.cursor = "not-allowed";
+    }
+
+    card.innerHTML = `
+      <div class="hub-card-top">
+        <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
+        <div class="hub-icon">
+          <i class="ph ${escapeHtml(app.icon || "ph-cube")}"></i>
+        </div>
+      </div>
+
+      <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
+      <p class="hub-card-desc">${escapeHtml(app.shortDesc || "")}</p>
+
+      <div class="hub-card-actions">
+        ${
+          app.enabled
+            ? `
+              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
+                app.id
+              )}">
+                <i class="ph ph-info"></i>
+                <span>Detalhes</span>
+              </button>
+              ${renderPrimaryActionInline(app)}
+            `
+            : `
+              <button class="hub-btn" type="button" disabled>
+                <i class="ph ph-lock"></i>
+                <span>Indisponível</span>
+              </button>
+            `
+        }
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  // Botão “Detalhes” abre modal
+  grid.querySelectorAll("[data-details]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute("data-details");
+      openAppModal(id);
     });
   });
+}
 
-  // GARANTIA: o card do agente continua indo para o contador
-  const agentLink = document.getElementById("open-agent-link");
-  if (agentLink) {
-    agentLink.href = COUNTER_AGENT_URL;
-    // Se quiser abrir em nova aba, habilite:
-    // agentLink.target = "_blank";
-    // agentLink.rel = "noopener noreferrer";
+function renderPrimaryActionInline(app) {
+  // (opcional) mostra também uma ação rápida no card (ex: Acessar / Baixar)
+  if (!app.actions || app.actions.length === 0) return "";
+
+  // Pega a primeira action como “atalho”
+  const a = app.actions[0];
+  if (!a?.href) return "";
+
+  // Para manter sem duplicidade visual: se for "Acessar" ou "Baixar", mostra como link ao lado
+  const cls = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
+  const target = a.targetBlank ? ` target="_blank" rel="noopener noreferrer"` : "";
+
+  return `
+    <a class="${cls}" href="${escapeAttr(a.href)}"${target}>
+      <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
+      <span>${escapeHtml(a.label || "Abrir")}</span>
+    </a>
+  `;
+}
+
+// -------------------------
+// Modal
+// -------------------------
+function initAppModal() {
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const closeBtn = document.getElementById("app-modal-close");
+
+  if (!backdrop || !modal || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeAppModal);
+
+  // Fecha no ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAppModal();
+  });
+
+  // Opcional: fechar clicando fora
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) closeAppModal();
+  });
+}
+
+function openAppModal(appId) {
+  const app = APPS.find((a) => a.id === appId);
+  if (!app || !app.enabled) return;
+
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const badgeEl = document.getElementById("app-modal-badge");
+  const titleEl = document.getElementById("app-modal-title");
+  const descEl = document.getElementById("app-modal-desc");
+  const actionsEl = document.getElementById("app-modal-actions");
+  const videoEl = document.getElementById("app-modal-video");
+
+  if (!backdrop || !modal) return;
+
+  if (badgeEl) badgeEl.textContent = app.badge || "";
+  if (titleEl) titleEl.textContent = app.title || "";
+  if (descEl) descEl.textContent = app.longDesc || "";
+
+  // Actions
+  if (actionsEl) {
+    actionsEl.innerHTML = "";
+    (app.actions || []).forEach((a) => {
+      const el = document.createElement(a.href ? "a" : "button");
+      el.className = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
+      el.innerHTML = `
+        <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
+        <span>${escapeHtml(a.label || "Abrir")}</span>
+      `;
+
+      if (a.href) {
+        el.href = a.href;
+        if (a.targetBlank) {
+          el.target = "_blank";
+          el.rel = "noopener noreferrer";
+        }
+      } else {
+        el.type = "button";
+      }
+
+      actionsEl.appendChild(el);
+    });
   }
 
-  // Se você estiver usando clique via JS em algum lugar:
-  const agentBtn = document.getElementById("open-agent-btn");
-  if (agentBtn) agentBtn.addEventListener("click", abrirAgente);
+  // Vídeo
+  if (videoEl) {
+    videoEl.innerHTML = "";
+    if (app.youtubeId) {
+      const iframe = document.createElement("iframe");
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(app.youtubeId)}`;
+      videoEl.appendChild(iframe);
+    } else {
+      // fallback simples sem vídeo
+      const div = document.createElement("div");
+      div.style.padding = "14px";
+      div.style.opacity = "0.85";
+      div.textContent = "Vídeo de apresentação não disponível.";
+      videoEl.appendChild(div);
+    }
+  }
 
-  document.querySelectorAll('[data-open-agent="true"]').forEach((el) => {
-    el.addEventListener("click", abrirAgente);
-  });
-});
+  backdrop.hidden = false;
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+
+  // foco (acessibilidade)
+  modal.setAttribute("tabindex", "-1");
+  modal.focus();
+}
+
+function closeAppModal() {
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const videoEl = document.getElementById("app-modal-video");
+
+  if (videoEl) {
+    // remove iframe para parar áudio
+    videoEl.innerHTML = "";
+  }
+
+  if (modal) modal.hidden = true;
+  if (backdrop) backdrop.hidden = true;
+  document.body.classList.remove("modal-open");
+}
 
 // -------------------------
 // Config pública (opcional)
 // -------------------------
-/**
- * Loads the public agent configuration from the server.
- * 
- * Fetches the public agent configuration endpoint and updates the global LOGIN_URL
- * if the response is successful and contains a loginUrl property.
- * 
- * @async
- * @function loadPublicAgentConfig
- * @returns {Promise<void>}
- * @throws Will log a warning to console if the fetch fails or if JSON parsing fails
- */
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
@@ -124,27 +355,9 @@ function normalizeLoginUrl(url) {
   return "/" + url.replace(/^\.?\//, "");
 }
 
-function abrirAgente() {
-  window.location.href = COUNTER_AGENT_URL;
-}
-
 // -------------------------
 // Tema
 // -------------------------
-/**
- * Initializes the theme system for the application.
- * Restores the user's previously saved theme preference from localStorage,
- * applies it to the document, and sets up a click listener for theme toggling.
- * 
- * @param {HTMLElement|null} themeToggle - The DOM element that triggers theme switching.
- *                                         If null or falsy, theme initialization occurs
- *                                         but no event listener is attached.
- * @returns {void}
- * 
- * @example
- * const toggleButton = document.getElementById('theme-toggle');
- * initTheme(toggleButton);
- */
 function initTheme(themeToggle) {
   const isDark = localStorage.getItem("theme") === "dark";
   document.body.classList.toggle("dark-mode", isDark);
@@ -159,12 +372,6 @@ function initTheme(themeToggle) {
   });
 }
 
-/**
- * Updates the theme toggle button's icon and text based on the current theme.
- * @param {HTMLElement} themeToggle - The theme toggle button element
- * @param {boolean} isDark - Whether dark mode is currently enabled
- * @returns {void}
- */
 function updateThemeIcon(themeToggle, isDark) {
   if (!themeToggle) return;
   const icon = themeToggle.querySelector("i");
@@ -183,36 +390,29 @@ function updateThemeIcon(themeToggle, isDark) {
 // -------------------------
 // Sidebar mobile
 // -------------------------
-const menuBtn = document.getElementById("mobile-menu-btn");
+function initMobileSidebar() {
+  const menuBtn = document.getElementById("mobile-menu-btn");
 
-menuBtn?.addEventListener("click", () => {
-  document.body.classList.toggle("sidebar-open");
-});
+  menuBtn?.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
+  });
 
-document.addEventListener("click", (e) => {
-  if (!document.body.classList.contains("sidebar-open")) return;
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
 
-  const sidebar = document.querySelector(".sidebar");
-  const clickedInsideSidebar = sidebar?.contains(e.target);
-  const clickedMenuBtn = menuBtn?.contains(e.target);
+    const sidebar = document.querySelector(".sidebar");
+    const clickedInsideSidebar = sidebar?.contains(e.target);
+    const clickedMenuBtn = menuBtn?.contains(e.target);
 
-  if (!clickedInsideSidebar && !clickedMenuBtn) {
-    document.body.classList.remove("sidebar-open");
-  }
-});
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") document.body.classList.remove("sidebar-open");
-});
+    if (!clickedInsideSidebar && !clickedMenuBtn) {
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+}
 
 // -------------------------
 // Limpeza opcional
 // -------------------------
-/**
- * Clears all agent chat session storage entries.
- * Removes all sessionStorage items that start with the "agente_chat_state:" prefix.
- * Silently catches and ignores any errors that occur during the clearing process.
- */
 function clearAgentChatSessionStorage() {
   try {
     Object.keys(sessionStorage)
@@ -223,16 +423,9 @@ function clearAgentChatSessionStorage() {
   }
 }
 
-/**
- * Exibe um toast (mensagem flutuante) com título e texto, com opção de auto-fechar.
- *
- * @param {Object} opts
- * @param {string} opts.title - Título do toast.
- * @param {string} opts.message - Mensagem do toast.
- * @param {number} [opts.durationMs=4500] - Tempo para auto-fechar. Use 0 para não fechar automaticamente.
- * @param {string} [opts.backgroundImage] - URL de imagem para usar como fundo do toast.
- * @returns {void}
- */
+// -------------------------
+// Toast de boas-vindas (seu código mantido)
+// -------------------------
 function showToast({ title, message, durationMs = 4500, backgroundImage }) {
   const toast = document.getElementById("welcome-toast");
   if (!toast) return;
@@ -249,20 +442,14 @@ function showToast({ title, message, durationMs = 4500, backgroundImage }) {
     toast.style.backgroundImage = `url("${backgroundImage}")`;
   }
 
-  // Mostra backdrop + trava scroll (bloqueia interação fora do toast)
   if (backdrop) backdrop.hidden = false;
   document.body.classList.add("modal-open");
 
-  // Garante que o foco fique no toast (acessibilidade e evita interação fora)
   toast.setAttribute("tabindex", "-1");
   toast.focus();
 
-  // Garantir estado inicial
   toast.hidden = false;
   toast.classList.remove("hide");
-
-  // Força reflow para animação funcionar consistentemente
-  // eslint-disable-next-line no-unused-expressions
   toast.offsetHeight;
   toast.classList.add("show");
 
@@ -277,11 +464,26 @@ function showToast({ title, message, durationMs = 4500, backgroundImage }) {
     }, 200);
   };
 
-  // Fecha apenas no X (não fecha ao clicar fora)
   if (closeBtn) closeBtn.onclick = hide;
 
-  // Auto-fechar (opcional)
   if (durationMs && durationMs > 0) {
     window.setTimeout(hide, durationMs);
   }
+}
+
+// -------------------------
+// Helpers anti-injeção
+// -------------------------
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(s) {
+  // atributos como href
+  return escapeHtml(s).replaceAll("`", "&#096;");
 }

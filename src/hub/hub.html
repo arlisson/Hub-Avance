@@ -7,16 +7,13 @@
 
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Seu CSS atual -->
     <link rel="stylesheet" href="../../style.css" />
-    <!-- CSS do Hub -->
     <link rel="stylesheet" href="./hub.css" />
   </head>
 
   <body>
     <aside class="sidebar">
       <div class="logo-container">
-        <!-- Ajuste o caminho conforme sua estrutura -->
         <img src="../../img/avanceVip.png" alt="Logo AVANCE" class="company-logo" />
       </div>
 
@@ -59,7 +56,7 @@
         <div class="assistant-info">
           <div class="assistant-avatar">
             <img src="../../img/icone.jpg" alt="Avatar" />
-            </div>
+          </div>
           <div class="assistant-details">
             <span class="name">Hub AVANCE</span>
             <span class="status">Acesso controlado por login</span>
@@ -73,88 +70,8 @@
           <p class="hub-subtitle">Selecione um produto para acessar.</p>
         </div>
 
-        <div class="hub-grid">
-          <!-- CARD 1: Aplicação Web -->
-          <article class="hub-card">
-            <div class="hub-card-top">
-              <div class="hub-badge">Agente de suporte | EM PRODUÇÃO</div>
-              <div class="hub-icon">
-                <i class="ph ph-globe"></i>
-              </div>
-            </div>
-
-            <h2 class="hub-card-title">Agente Web | EM PRODUÇÃO</h2>
-            <p class="hub-card-desc">
-              Acesse o sistema online. Ideal para uso em qualquer dispositivo.
-            </p>
-
-            <div class="hub-card-actions">
-              <a
-                  id="open-agent-link"
-                  class="hub-btn hub-btn-primary"
-                  href="../api/contador?app=agent"
-                  data-track="open_agent_app"
-                >
-                <i class="ph ph-arrow-square-out"></i>
-                <span>Acessar</span>
-                <!-- <button class="hub-btn" type="button" disabled>
-                <i class="ph ph-lock"></i>
-                <span>Indisponível</span> -->
-              </a>
-            </div>
-          </article>
-
-          <!-- CARD 2: Desktop -->
-          <article class="hub-card">
-            <div class="hub-card-top">
-              <div class="hub-badge">Preenche Fácil</div>
-              <div class="hub-icon">
-                <i class="ph ph-desktop"></i>
-              </div>
-            </div>
-
-            <h2 class="hub-card-title">Aplicação Desktop</h2>
-            <p class="hub-card-desc" style="text-align: justify;">
-              O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre. 
-              <!-- <div id="user-email-card"></div> -->
-            </p>
-
-            <div class="hub-card-actions">
-              <a
-                class="hub-btn"
-                href="../api/contador?app=desktop"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track="download_desktop"
-              >
-                <i class="ph ph-download-simple"></i>
-                <span>Baixar</span>
-              </a>
-            </div>
-          </article>
-
-          <!-- CARD 3: Placeholder -->
-          <article class="hub-card hub-card-disabled">
-            <div class="hub-card-top">
-              <div class="hub-badge">Em breve</div>
-              <div class="hub-icon">
-                <i class="ph ph-rocket-launch"></i>
-              </div>
-            </div>
-
-            <h2 class="hub-card-title">Novo Produto</h2>
-            <p class="hub-card-desc">
-              Espaço reservado para próximos aplicativos do hub.
-            </p>
-
-            <div class="hub-card-actions">
-              <button class="hub-btn" type="button" disabled>
-                <i class="ph ph-lock"></i>
-                <span>Indisponível</span>
-              </button>
-            </div>
-          </article>
-        </div>
+        <!-- Grid agora é dinâmico: o JS preenche -->
+        <div class="hub-grid" id="hub-grid"></div>
       </section>
 
       <footer class="hub-footer">
@@ -162,24 +79,49 @@
       </footer>
     </main>
 
-    <!-- Toast (mensagem flutuante de boas-vindas) -->
+    <!-- Modal (pop-up) de detalhes -->
+    <div id="app-modal-backdrop" class="app-modal-backdrop" hidden>
+      <div id="app-modal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="app-modal-title" hidden>
+        <div class="app-modal-header">
+          <div class="app-modal-titlewrap">
+            <div class="app-modal-badge" id="app-modal-badge"></div>
+            <h2 class="app-modal-title" id="app-modal-title"></h2>
+          </div>
+
+          <button type="button" class="app-modal-close" id="app-modal-close" aria-label="Fechar">
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
+
+        <div class="app-modal-body">
+          <div class="app-modal-left">
+            <p class="app-modal-desc" id="app-modal-desc"></p>
+
+            <div class="app-modal-actions" id="app-modal-actions">
+              <!-- botões inseridos via JS -->
+            </div>
+          </div>
+
+          <div class="app-modal-right">
+            <div class="app-modal-video" id="app-modal-video">
+              <!-- iframe inserido via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast (mantido: boas-vindas) -->
     <div id="toast-backdrop" class="toast-backdrop" hidden>
       <div id="welcome-toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
         <div class="toast-content">
           <div class="toast-icon">
-            <img
-              id="welcome-toast-image"
-              src="../img/icone.jpg"
-              alt="Boas-vindas"
-            />
+            <img id="welcome-toast-image" src="../img/icone.jpg" alt="Boas-vindas" />
           </div>
 
           <div class="toast-text">
             <div class="toast-title" id="welcome-toast-title">Bem-vindo!</div>
-            <div class="toast-message" id="welcome-toast-message">
-             
-             
-            </div>
+            <div class="toast-message" id="welcome-toast-message"></div>
           </div>
 
           <button type="button" class="toast-close" id="welcome-toast-close" aria-label="Fechar mensagem">
@@ -189,11 +131,8 @@
       </div>
     </div>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../supabaseClient.js"></script>
-
-    <!-- Hub JS -->
+    <script src="../supabaseClient.js"></script>
     <script src="./hub.js" defer></script>
   </body>
 </html>
