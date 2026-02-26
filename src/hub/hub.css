@@ -160,6 +160,7 @@ body.dark-mode .hub-btn {
 .hub-btn-primary {
   border-color: rgba(0, 0, 0, 0.14);
   background: rgba(0, 0, 0, 0.10);
+  padding-bottom: 18px;
 }
 
 body.dark-mode .hub-btn-primary {
