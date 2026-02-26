@@ -1,7 +1,7 @@
 // Captura dos elementos HTML
 const modal = document.getElementById('modalApi');
 // Lembre-se de checar se a classe do botão azul do seu menu é essa mesma
-const btnAbrir = document.querySelector('.btn-cadastrar-chave'); 
+const btnAbrir = document.querySelector('btnAbrirModalApi'); 
 const btnFechar = document.getElementById('btnFecharModal');
 const inputApiKey = document.getElementById('apiKey');
 const inputIdentificador = document.getElementById('identificador');
