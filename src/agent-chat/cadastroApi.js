@@ -1,16 +1,26 @@
+// Captura dos elementos HTML
 const modal = document.getElementById('modalApi');
-const btnAbrir = document.querySelector('.btn-cadastrar-chave'); // Ajuste para a classe do seu botão azul da sidebar
+// Lembre-se de checar se a classe do botão azul do seu menu é essa mesma
+const btnAbrir = document.querySelector('.btn-cadastrar-chave'); 
 const btnFechar = document.getElementById('btnFecharModal');
+const inputApiKey = document.getElementById('apiKey');
+const inputIdentificador = document.getElementById('identificador');
+const btnMostrarSenha = document.getElementById('btnMostrarSenha');
 
+// Lógica de Abrir e Fechar o Modal
 btnAbrir.addEventListener('click', () => modal.classList.add('visivel'));
 btnFechar.addEventListener('click', () => modal.classList.remove('visivel'));
-window.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('visivel'); });
+window.addEventListener('click', (e) => { 
+    if (e.target === modal) modal.classList.remove('visivel'); 
+});
 
 // Lógica de Mostrar/Ocultar Senha (Minimalista e Profissional)
 btnMostrarSenha.addEventListener('click', () => {
     const isPassword = inputApiKey.type === 'password';
     inputApiKey.type = isPassword ? 'text' : 'password';
-    btnMostrarSenha.innerText = isPassword ? 'Ocultar' : 'Mostrar';
+    // Como voltamos para os ícones do FontAwesome no design novo, usamos as classes
+    btnMostrarSenha.classList.toggle('fa-eye');
+    btnMostrarSenha.classList.toggle('fa-eye-slash');
 });
 
 // A MÁSCARA INTELIGENTE (Detecta Telefone ou E-mail)
@@ -72,7 +82,7 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
             inputApiKey.value = '';
 
             setTimeout(() => {
-                fecharModal();
+                modal.classList.remove('visivel'); // Fechamento corrigido aqui
                 divMensagem.innerText = '';
                 divMensagem.className = '';
             }, 2500);
@@ -86,6 +96,6 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
         divMensagem.className = 'erro';
     } finally {
         btnSubmit.disabled = false;
-        btnSubmit.innerText = 'Conectar Agora';
+        btnSubmit.innerText = 'Salvar Credencial'; // Voltei pro texto padrão do botão novo
     }
 });
