@@ -35,25 +35,34 @@
 
     <!-- popup para cadastro de api do usuário -->
     <div id="modalApi" class="modal-oculto">
-      <div class="modal-conteudo">
+    <div class="modal-conteudo">
         <span id="btnFecharModal" class="fechar-modal">&times;</span>
-
-        <h2 style="margin-top: 0; text-align: center;">Ativar Agente</h2>
-
+        
+        <div class="modal-cabecalho">
+            <h2>✨ Ativar Agente</h2>
+            <p>Conecte sua inteligência artificial para começar a usar.</p>
+        </div>
+        
         <form id="formApi">
-          <div class="grupo-input">
-            <label for="telefone">WhatsApp (com DDD):</label>
-            <input type="text" id="telefone" placeholder="Ex: 5521999999999" required>
-          </div>
-          <div class="grupo-input">
-            <label for="apiKey">Sua Gemini API Key:</label>
-            <input type="password" id="apiKey" placeholder="sk-..." required>
-          </div>
-          <button type="submit" id="btnSubmit">Conectar Chave</button>
+            <div class="grupo-input">
+                <label for="identificador">WhatsApp ou E-mail</label>
+                <input type="text" id="identificador" placeholder="Ex: (21) 99999-9999 ou seu@email.com" required>
+            </div>
+            
+            <div class="grupo-input">
+                <label for="apiKey">Sua Chave API (Gemini)</label>
+                <div class="input-com-icone">
+                    <input type="password" id="apiKey" placeholder="Cole sua chave aqui..." required>
+                    <button type="button" id="btnMostrarSenha" class="btn-icone" title="Mostrar/Ocultar chave">👁️</button>
+                </div>
+            </div>
+            
+            <button type="submit" id="btnSubmit" class="btn-principal">Conectar Agora</button>
         </form>
+        
         <div id="mensagem"></div>
-      </div>
     </div>
+</div>
 
     <button class="new-chat-btn" id="new-chat-btn" type="button">
       <i class="ph ph-plus"></i>

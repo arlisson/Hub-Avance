@@ -105,6 +105,7 @@ body {
 .chat-item:hover {
   background-color: var(--hover-color);
 }
+
 .chat-item.active {
   background-color: var(--hover-color);
 }
@@ -113,6 +114,7 @@ body {
   flex: 1;
   overflow: hidden;
 }
+
 .chat-title {
   font-size: 0.9rem;
   font-weight: 500;
@@ -120,6 +122,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .chat-date {
   font-size: 0.75rem;
   color: var(--text-secondary);
@@ -139,6 +142,7 @@ body {
   border-radius: 0.5rem;
   margin-top: auto;
 }
+
 .theme-toggle:hover {
   background-color: var(--hover-color);
 }
@@ -174,6 +178,7 @@ body {
   align-items: center;
   gap: 0.75rem;
 }
+
 .assistant-avatar {
   width: 32px;
   height: 32px;
@@ -184,14 +189,17 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .assistant-details {
   display: flex;
   flex-direction: column;
 }
+
 .assistant-details .name {
   font-weight: 600;
   font-size: 0.95rem;
 }
+
 .assistant-details .status {
   font-size: 0.75rem;
   color: var(--text-secondary);
@@ -215,6 +223,7 @@ body {
   margin: 0 auto;
   width: 100%;
 }
+
 .message.user {
   flex-direction: row-reverse;
 }
@@ -235,6 +244,7 @@ body {
   background-color: var(--text-secondary);
   color: white;
 }
+
 .message.user .message-avatar {
   display: none;
 }
@@ -310,6 +320,7 @@ body {
 .send-btn:hover {
   background-color: #1d4ed8;
 }
+
 .send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -326,15 +337,18 @@ body {
 .message-bubble p {
   margin-bottom: 0.5rem;
 }
+
 .message-bubble p:last-child {
   margin-bottom: 0;
 }
+
 .message-bubble code {
   background: rgba(0, 0, 0, 0.1);
   padding: 2px 4px;
   border-radius: 4px;
   font-family: monospace;
 }
+
 .message.user .message-bubble code {
   background: rgba(255, 255, 255, 0.2);
 }
@@ -415,63 +429,255 @@ body.dark-mode {
 
 /* Estilo do botão que fica na sua tela principal */
 .btn-abrir-modal {
-    padding: 10px 15px;
-    background-color: #0056b3; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+  padding: 10px 15px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 /* O fundo escuro do Pop-up */
 .modal-oculto {
-    display: none; /* Escondido por padrão */
-    position: fixed;
-    z-index: 1000; /* Garante que fique por cima do chat */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Efeito vidro fumê */
-    align-items: center;
-    justify-content: center;
+  display: none;
+  /* Escondido por padrão */
+  position: fixed;
+  z-index: 1000;
+  /* Garante que fique por cima do chat */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Efeito vidro fumê */
+  align-items: center;
+  justify-content: center;
 }
 
 /* Classe que o JavaScript vai usar para mostrar o Pop-up */
 .modal-visivel {
-    display: flex;
+  display: flex;
 }
 
 /* A caixinha branca do formulário */
 .modal-conteudo {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 350px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 350px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* O "X" para fechar */
 .fechar-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    color: #aaa;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
 }
-.fechar-modal:hover { color: #333; }
 
-/* Estilos internos do form */
-.grupo-input { margin-bottom: 15px; }
-.grupo-input label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;}
-.grupo-input input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
-#btnSubmit { width: 100%; padding: 10px; background-color: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;}
-#btnSubmit:hover { background-color: #004494; }
-#mensagem { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; }
-.sucesso { color: green; }
-.erro { color: red; }
+.fechar-modal:hover {
+  color: #333;
+}
+
+/* Fundo escuro com efeito de desfoque (Glassmorphism) */
+.modal-oculto {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.6);
+  /* Azul muito escuro e translúcido */
+  backdrop-filter: blur(5px);
+  /* Efeito embaçado no fundo do site */
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-visivel {
+  display: flex;
+  opacity: 1;
+  animation: surgir 0.4s ease-out forwards;
+}
+
+@keyframes surgir {
+  from {
+    transform: scale(0.95) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* O Card Branco Principal */
+.modal-conteudo {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  /* Bordas mais arredondadas e modernas */
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-cabecalho {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.modal-cabecalho h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.modal-cabecalho p {
+  margin: 8px 0 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* O Botão de Fechar (X) */
+.fechar-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #94a3b8;
+  font-size: 28px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.fechar-modal:hover {
+  color: #0f172a;
+}
+
+/* Inputs refinados */
+.grupo-input {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.grupo-input label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #334155;
+}
+
+.grupo-input input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #0f172a;
+  box-sizing: border-box;
+  transition: all 0.2s;
+  background-color: #f8fafc;
+}
+
+.grupo-input input:focus {
+  border-color: #3b82f6;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+/* Área do ícone da senha */
+.input-com-icone {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-com-icone input {
+  padding-right: 45px;
+}
+
+/* Dá espaço para o botão não ficar em cima do texto */
+.btn-icone {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748b;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.btn-icone:hover {
+  background-color: #e2e8f0;
+}
+
+/* Botão de Enviar Super Destaque */
+.btn-principal {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.btn-principal:hover {
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-principal:active {
+  transform: translateY(1px);
+}
+
+.btn-principal:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+#mensagem {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.sucesso {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.erro {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
