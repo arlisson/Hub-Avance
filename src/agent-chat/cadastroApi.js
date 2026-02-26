@@ -21,39 +21,34 @@ function fecharModal() {
     setTimeout(() => { modal.classList.add('modal-oculto'); }, 300); // Espera a animação terminar
 }
 
-// Lógica de Mostrar/Ocultar Senha
+// Lógica de Mostrar/Ocultar Senha (Minimalista e Profissional)
 btnMostrarSenha.addEventListener('click', () => {
-    const tipoAtual = inputApiKey.getAttribute('type');
-    if (tipoAtual === 'password') {
-        inputApiKey.setAttribute('type', 'text');
-        btnMostrarSenha.innerText = '🙈'; // Muda o ícone
-    } else {
-        inputApiKey.setAttribute('type', 'password');
-        btnMostrarSenha.innerText = '👁️';
-    }
+    const isPassword = inputApiKey.type === 'password';
+    inputApiKey.type = isPassword ? 'text' : 'password';
+    btnMostrarSenha.innerText = isPassword ? 'Ocultar' : 'Mostrar';
 });
 
 // A MÁSCARA INTELIGENTE (Detecta Telefone ou E-mail)
-inputIdentificador.addEventListener('input', function(e) {
+inputIdentificador.addEventListener('input', function (e) {
     let valor = e.target.value;
-    
+
     // Se conter letras ou '@', assumimos que é e-mail e não aplicamos máscara de números
     if (/[a-zA-Z@]/.test(valor)) {
         return; // Deixa o usuário digitar o e-mail livremente
     }
-    
+
     // Se forem apenas números, aplicamos a máscara do WhatsApp (XX) XXXXX-XXXX
     let v = valor.replace(/\D/g, ""); // Remove tudo que não for número
     if (v.length > 11) v = v.slice(0, 11); // Limita a 11 dígitos
-    
+
     if (v.length > 2) v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
     if (v.length > 7) v = v.replace(/(\d{5})(\d)/, "$1-$2");
-    
+
     e.target.value = v; // Devolve o valor formatado para o campo
 });
 
 // Lógica de envio para o n8n
-document.getElementById('formApi').addEventListener('submit', async function(event) {
+document.getElementById('formApi').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const btnSubmit = document.getElementById('btnSubmit');
@@ -65,7 +60,7 @@ document.getElementById('formApi').addEventListener('submit', async function(eve
     // para o Supabase conseguir achar o cliente facilmente (ex: manda "21999999999" em vez de "(21) 99999-9999")
     let identificadorLimpo = identificadorOriginal;
     if (!/[a-zA-Z@]/.test(identificadorOriginal)) {
-        identificadorLimpo = identificadorOriginal.replace(/\D/g, ''); 
+        identificadorLimpo = identificadorOriginal.replace(/\D/g, '');
     }
 
     btnSubmit.disabled = true;
@@ -74,7 +69,7 @@ document.getElementById('formApi').addEventListener('submit', async function(eve
     divMensagem.className = '';
 
     // URL DO SEU N8N
-    const webhookUrl = 'https://SEU-DOMINIO-RAILWAY.up.railway.app/webhook-test/cadastrar-chave';
+    const webhookUrl = 'https://primary-production-335ec.up.railway.app/webhook-test/registro_api';
 
     try {
         const resposta = await fetch(webhookUrl, {
@@ -87,13 +82,13 @@ document.getElementById('formApi').addEventListener('submit', async function(eve
         });
 
         if (resposta.ok) {
-            divMensagem.innerText = '✨ Chave validada e conectada!';
+            divMensagem.innerText = 'Chave validada e conectada!';
             divMensagem.className = 'sucesso';
-            inputApiKey.value = ''; 
-            
+            inputApiKey.value = '';
+
             setTimeout(() => {
                 fecharModal();
-                divMensagem.innerText = ''; 
+                divMensagem.innerText = '';
                 divMensagem.className = '';
             }, 2500);
 
