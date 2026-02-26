@@ -172,13 +172,10 @@ function renderHubCards() {
         ${
           app.enabled
             ? `
-              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
-                app.id
-              )}">
+              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(app.id)}">
                 <i class="ph ph-info"></i>
                 <span>Detalhes</span>
               </button>
-              ${renderPrimaryActionInline(app)}
             `
             : `
               <button class="hub-btn" type="button" disabled>
@@ -203,25 +200,7 @@ function renderHubCards() {
   });
 }
 
-function renderPrimaryActionInline(app) {
-  // (opcional) mostra também uma ação rápida no card (ex: Acessar / Baixar)
-  if (!app.actions || app.actions.length === 0) return "";
 
-  // Pega a primeira action como “atalho”
-  const a = app.actions[0];
-  if (!a?.href) return "";
-
-  // Para manter sem duplicidade visual: se for "Acessar" ou "Baixar", mostra como link ao lado
-  const cls = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
-  const target = a.targetBlank ? ` target="_blank" rel="noopener noreferrer"` : "";
-
-  return `
-    <a class="${cls}" href="${escapeAttr(a.href)}"${target}>
-      <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
-      <span>${escapeHtml(a.label || "Abrir")}</span>
-    </a>
-  `;
-}
 
 // -------------------------
 // Modal
