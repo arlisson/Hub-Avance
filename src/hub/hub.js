@@ -380,16 +380,20 @@ function normalizeLoginUrl(url) {
 // Tema
 // -------------------------
 function initTheme(themeToggle) {
-  const isDark = localStorage.getItem("theme") === "dark";
-  document.body.classList.toggle("dark-mode", isDark);
-  updateThemeIcon(themeToggle, isDark);
-
   if (!themeToggle) return;
+
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    updateThemeIcon(themeToggle, true);
+  } else {
+    updateThemeIcon(themeToggle, false);
+  }
+
   themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
-    const nowDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", nowDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, nowDark);
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    updateThemeIcon(themeToggle, isDark);
   });
 }
 
