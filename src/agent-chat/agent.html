@@ -19,19 +19,7 @@
       <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
     </div>
 
-    <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
-      <div style="width: 100%;">
-        <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
-        <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
-      </div>
-
-      <button class="new-chat-btn" id="logout-btn" type="button">
-        <i class="ph ph-sign-out"></i>
-        <span>Sair</span>
-      </button>
-      <div id="mensagem-logout"></div>
-    </div>
-
+    
     <button id="btnAbrirModalSidebar" class="btn-abrir-modal">Cadastrar Chave API</button>
 
     <button class="new-chat-btn" id="new-chat-btn" type="button" style="margin-top: 15px;">
@@ -49,12 +37,27 @@
       </div>
     </div>
 
-    <div class="sidebar-footer">
-      <button class="theme-toggle" id="theme-toggle" type="button">
-        <i class="ph ph-moon"></i>
-        <span>Modo escuro</span>
-      </button>
-    </div>
+   <div class="sidebar-footer">
+        <div class="sidebar-userbar" id="sidebar-userbar">
+          <span class="sidebar-user-email" id="user-email"></span>
+
+          <button class="sidebar-settings-btn" id="settings-btn" type="button" aria-label="Configurações">
+            <i class="ph ph-dots-three-vertical"></i>
+          </button>
+
+          <div class="sidebar-settings-menu" id="settings-menu" hidden>
+            <button type="button" class="settings-item" id="menu-toggle-theme">
+              <i class="ph ph-moon"></i>
+              <span>Modo escuro</span>
+            </button>
+
+            <button type="button" class="settings-item danger" id="menu-logout">
+              <i class="ph ph-sign-out"></i>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
+      </div>
   </aside>
 
   <main class="main-content">

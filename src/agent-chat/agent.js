@@ -3,12 +3,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const chatMessages = document.getElementById("chat-messages");
   const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
-  const themeToggle = document.getElementById("theme-toggle");
-  const newChatBtn = document.getElementById("new-chat-btn");
-  const logoutBtn = document.getElementById("logout-btn");
+  const sendBtn = document.getElementById("send-btn");  
+  const newChatBtn = document.getElementById("new-chat-btn");  
   const userEmailEl = document.getElementById("user-email");
   const menuBtn = document.getElementById("mobile-menu-btn");
+  const settingsBtn = document.getElementById("settings-btn");
+  const settingsMenu = document.getElementById("settings-menu");
+  const menuToggleTheme = document.getElementById("menu-toggle-theme");
+  const menuLogout = document.getElementById("menu-logout");
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
 
@@ -45,16 +47,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (userEmailEl) userEmailEl.textContent = emailUser;
 
   // Logout (igual hub)
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await sb.auth.signOut();
-      } finally {
-        clearAgentChatSessionStorage();
-        window.location.href = LOGIN_URL;
-      }
-    });
-  }
+  if (menuLogout) {
+  menuLogout.addEventListener("click", async () => {
+    try {
+      await sb.auth.signOut();
+    } finally {
+      clearAgentChatSessionStorage();
+      window.location.href = normalizeLoginUrl(LOGIN_URL);
+    }
+  });
+}
 
   // Estado por sessão (aba)
   const storageKey = `agente_chat_state:${emailUser}`;
@@ -66,7 +68,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderHistory(chatMessages, chatState.messages);
 
   // Tema
-  initTheme(themeToggle);
+  initTheme(menuToggleTheme);
+
+  initSettingsMenu(settingsBtn, settingsMenu);
 
   // Menu mobile (padrão hub: sidebar-open no body)
   if (menuBtn) {
@@ -361,5 +365,28 @@ function escapeHtml(str) {
       case "'": return "&#039;";
       default: return m;
     }
+  });
+}
+
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar) return close();
+    if (!userbar.contains(e.target)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
   });
 }
