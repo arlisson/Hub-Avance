@@ -22,15 +22,15 @@ const APPS = [
     longDesc:
       "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
     youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
-    enabled: false,
+    enabled: true,
     actions: [
-      // {
-      //   label: "Acessar",
-      //   icon: "ph-arrow-square-out",
-      //   href: COUNTER_AGENT_URL,
-      //   primary: true,
-      //   targetBlank: false,
-      // },
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href: COUNTER_AGENT_URL,
+        primary: true,
+        targetBlank: false,
+      },
     ],
   },
   {
