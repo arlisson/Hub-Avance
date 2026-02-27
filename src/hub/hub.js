@@ -43,15 +43,15 @@ const APPS = [
     longDesc:
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
     youtubeId: "", // TROQUE pelo seu vídeo (ID)
-    enabled: true,
+    enabled: false, // desabilitado por enquanto (em breve)
     actions: [
-      {
-        label: "Baixar",
-        icon: "ph-download-simple",
-        href: COUNTER_DESKTOP_URL,
-        primary: false,
-        targetBlank: true,
-      },
+      // {
+      //   label: "Baixar",
+      //   icon: "ph-download-simple",
+      //   href: COUNTER_DESKTOP_URL,
+      //   primary: false,
+      //   targetBlank: true,
+      // },
     ],
   },
   {
