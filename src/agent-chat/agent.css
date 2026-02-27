@@ -717,15 +717,16 @@ body.dark-mode {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: auto;
   padding: 0.5rem 0.25rem;
+  margin-bottom: 10px; /* separa do botão de tema */
 }
 
 .sidebar-user-email {
   flex: 1;
   min-width: 0;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;   /* sem “destaque” */
+  opacity: 0.85;      /* sem “destaque” */
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -749,7 +750,7 @@ body.dark-mode {
   position: absolute;
   right: 0;
   bottom: calc(100% + 10px);
-  width: 220px;
+  width: 200px;
   border-radius: 0.75rem;
   border: 1px solid var(--border-color);
   background: var(--bg-sidebar);

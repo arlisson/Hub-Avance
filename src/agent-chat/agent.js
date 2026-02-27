@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const menuBtn = document.getElementById("mobile-menu-btn");
   const settingsBtn = document.getElementById("settings-btn");
   const settingsMenu = document.getElementById("settings-menu");
-  const menuToggleTheme = document.getElementById("menu-toggle-theme");
+  const themeToggle = document.getElementById("theme-toggle");
   const menuLogout = document.getElementById("menu-logout");
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderHistory(chatMessages, chatState.messages);
 
   // Tema
-  initTheme(menuToggleTheme);
+  initTheme(themeToggle);
 
   initSettingsMenu(settingsBtn, settingsMenu);
 

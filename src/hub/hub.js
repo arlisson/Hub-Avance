@@ -111,13 +111,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Menu (3 pontinhos)
   const settingsBtn = document.getElementById("settings-btn");
   const settingsMenu = document.getElementById("settings-menu");
-  const menuToggleTheme = document.getElementById("menu-toggle-theme");
+  const themeToggle = document.getElementById("theme-toggle");
   const menuLogout = document.getElementById("menu-logout");
 
   initSettingsMenu(settingsBtn, settingsMenu);
 
   // Tema (agora via item do menu)
-  initTheme(menuToggleTheme);
+  initTheme(themeToggle);
 
   // Logout (agora via item do menu)
   if (menuLogout) {
