@@ -1,5 +1,11 @@
 /**
- * hub.js — Hub AVANCE (cards dinâmicos + modal com YouTube)
+ * hub.js — Hub AVANCE (cards dinâmicos + modal + menu de configurações no rodapé)
+ *
+ * Atualizações:
+ * - Remove referências a "logout-btn" e "theme-toggle" (agora ficam no menu dropdown)
+ * - Suporta menu: botão (3 pontinhos) -> opções: Tema + Sair
+ * - Cards: mantém apenas botão "Detalhes"
+ * - Modal: continua preenchendo texto, vídeo e botões (Acessar/Baixar) no pop-up
  */
 
 let LOGIN_URL = "/login/login.html";
@@ -62,11 +68,10 @@ const APPS = [
     shortDesc: "Espaço reservado para próximos aplicativos do hub.",
     longDesc:
       "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
-    youtubeId: "", // sem vídeo
+    youtubeId: "",
     enabled: false,
     actions: [],
   },
-  
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -99,31 +104,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   showToast(WELCOME_TOAST);
 
-  // Mostra email no sidebar
+  // Mostra email no footer (userbar)
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) userEmailEl.textContent = email;
 
-  // Logout
+  // Menu (3 pontinhos)
   const settingsBtn = document.getElementById("settings-btn");
   const settingsMenu = document.getElementById("settings-menu");
   const menuToggleTheme = document.getElementById("menu-toggle-theme");
   const menuLogout = document.getElementById("menu-logout");
 
-  if (menuLogout) {
-  menuLogout.addEventListener("click", async () => {
-    try {
-      await sb.auth.signOut();
-    } finally {
-      clearAgentChatSessionStorage();
-      window.location.href = normalizeLoginUrl(LOGIN_URL);
-    }
-  });
-}
-
-  // Tema
- 
-  initTheme(menuToggleTheme);
   initSettingsMenu(settingsBtn, settingsMenu);
+
+  // Tema (agora via item do menu)
+  initTheme(menuToggleTheme);
+
+  // Logout (agora via item do menu)
+  if (menuLogout) {
+    menuLogout.addEventListener("click", async () => {
+      try {
+        await sb.auth.signOut();
+      } finally {
+        clearAgentChatSessionStorage();
+        window.location.href = normalizeLoginUrl(LOGIN_URL);
+      }
+    });
+  }
+
   // Sidebar mobile
   initMobileSidebar();
 
@@ -148,12 +155,12 @@ function renderHubCards() {
     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
     card.setAttribute("data-app-id", app.id);
 
-    // Torna card clicável (mas não se estiver desabilitado)
+    // Card clicável abre modal (mas não se estiver desabilitado)
     if (app.enabled) {
       card.style.cursor = "pointer";
       card.addEventListener("click", (e) => {
-        // se clicar em um link/botão, deixa o elemento cuidar (evita abrir modal “em cima”)
-        const isInteractive = e.target.closest("a,button");
+        // Evita abrir modal ao clicar no botão
+        const isInteractive = e.target.closest("button,a");
         if (isInteractive) return;
         openAppModal(app.id);
       });
@@ -161,6 +168,7 @@ function renderHubCards() {
       card.style.cursor = "not-allowed";
     }
 
+    // Apenas botão "Detalhes"
     card.innerHTML = `
       <div class="hub-card-top">
         <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
@@ -176,7 +184,9 @@ function renderHubCards() {
         ${
           app.enabled
             ? `
-              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(app.id)}">
+              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
+                app.id
+              )}">
                 <i class="ph ph-info"></i>
                 <span>Detalhes</span>
               </button>
@@ -204,8 +214,6 @@ function renderHubCards() {
   });
 }
 
-
-
 // -------------------------
 // Modal
 // -------------------------
@@ -223,7 +231,7 @@ function initAppModal() {
     if (e.key === "Escape") closeAppModal();
   });
 
-  // Opcional: fechar clicando fora
+  // Fecha clicando fora
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) closeAppModal();
   });
@@ -247,7 +255,7 @@ function openAppModal(appId) {
   if (titleEl) titleEl.textContent = app.title || "";
   if (descEl) descEl.textContent = app.longDesc || "";
 
-  // Actions
+  // Botões (Acessar/Baixar) somente no modal
   if (actionsEl) {
     actionsEl.innerHTML = "";
     (app.actions || []).forEach((a) => {
@@ -278,14 +286,18 @@ function openAppModal(appId) {
     if (app.youtubeId) {
       const iframe = document.createElement("iframe");
       iframe.allow =
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
       iframe.loading = "lazy";
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
-      iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(app.youtubeId)}`;
+
+      // Versão com menos rastreamento (pode reduzir ruído de logs em alguns cenários)
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+        app.youtubeId
+      )}`;
+
       videoEl.appendChild(iframe);
     } else {
-      // fallback simples sem vídeo
       const div = document.createElement("div");
       div.style.padding = "14px";
       div.style.opacity = "0.85";
@@ -308,14 +320,38 @@ function closeAppModal() {
   const modal = document.getElementById("app-modal");
   const videoEl = document.getElementById("app-modal-video");
 
-  if (videoEl) {
-    // remove iframe para parar áudio
-    videoEl.innerHTML = "";
-  }
+  // remove iframe para parar áudio
+  if (videoEl) videoEl.innerHTML = "";
 
   if (modal) modal.hidden = true;
   if (backdrop) backdrop.hidden = true;
   document.body.classList.remove("modal-open");
+}
+
+// -------------------------
+// Menu de configurações (rodapé)
+// -------------------------
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar) return close();
+    if (!userbar.contains(e.target)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
 }
 
 // -------------------------
@@ -335,7 +371,8 @@ async function loadPublicAgentConfig() {
 
 function normalizeLoginUrl(url) {
   if (!url) return "/login/login.html";
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
+    return url;
   return "/" + url.replace(/^\.?\//, "");
 }
 
@@ -408,7 +445,7 @@ function clearAgentChatSessionStorage() {
 }
 
 // -------------------------
-// Toast de boas-vindas (seu código mantido)
+// Toast (boas-vindas)
 // -------------------------
 function showToast({ title, message, durationMs = 4500, backgroundImage }) {
   const toast = document.getElementById("welcome-toast");
@@ -465,32 +502,4 @@ function escapeHtml(s) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-}
-
-function escapeAttr(s) {
-  // atributos como href
-  return escapeHtml(s).replaceAll("`", "&#096;");
-}
-
-function initSettingsMenu(btn, menu) {
-  if (!btn || !menu) return;
-
-  const close = () => (menu.hidden = true);
-  const open = () => (menu.hidden = false);
-  const toggle = () => (menu.hidden ? open() : close());
-
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggle();
-  });
-
-  document.addEventListener("click", (e) => {
-    const userbar = document.getElementById("sidebar-userbar");
-    if (!userbar) return close();
-    if (!userbar.contains(e.target)) close();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
-  });
 }
