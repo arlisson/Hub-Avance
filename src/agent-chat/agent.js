@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await sb.auth.signOut();
     } finally {
       clearAgentChatSessionStorage();
-      window.location.href = normalizeLoginUrl(LOGIN_URL);
+      window.location.href = LOGIN_URL;
     }
   });
 }
