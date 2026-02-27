@@ -22,15 +22,15 @@ const APPS = [
     longDesc:
       "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
     youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
-    enabled: true,
+    enabled: false,
     actions: [
-      {
-        label: "Acessar",
-        icon: "ph-arrow-square-out",
-        href: COUNTER_AGENT_URL,
-        primary: true,
-        targetBlank: false,
-      },
+      // {
+      //   label: "Acessar",
+      //   icon: "ph-arrow-square-out",
+      //   href: COUNTER_AGENT_URL,
+      //   primary: true,
+      //   targetBlank: false,
+      // },
     ],
   },
   {
@@ -43,15 +43,15 @@ const APPS = [
     longDesc:
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
     youtubeId: "", // TROQUE pelo seu vídeo (ID)
-    enabled: false, // desabilitado por enquanto (em breve)
+    enabled: true,
     actions: [
-      // {
-      //   label: "Baixar",
-      //   icon: "ph-download-simple",
-      //   href: COUNTER_DESKTOP_URL,
-      //   primary: false,
-      //   targetBlank: true,
-      // },
+      {
+        label: "Baixar",
+        icon: "ph-download-simple",
+        href: COUNTER_DESKTOP_URL,
+        primary: false,
+        targetBlank: true,
+      },
     ],
   },
   {
