@@ -104,22 +104,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (userEmailEl) userEmailEl.textContent = email;
 
   // Logout
-  const logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await sb.auth.signOut();
-      } finally {
-        clearAgentChatSessionStorage();
-        window.location.href = normalizeLoginUrl(LOGIN_URL);
-      }
-    });
-  }
+  const settingsBtn = document.getElementById("settings-btn");
+  const settingsMenu = document.getElementById("settings-menu");
+  const menuToggleTheme = document.getElementById("menu-toggle-theme");
+  const menuLogout = document.getElementById("menu-logout");
+
+  if (menuLogout) {
+  menuLogout.addEventListener("click", async () => {
+    try {
+      await sb.auth.signOut();
+    } finally {
+      clearAgentChatSessionStorage();
+      window.location.href = normalizeLoginUrl(LOGIN_URL);
+    }
+  });
+}
 
   // Tema
-  const themeToggle = document.getElementById("theme-toggle");
-  initTheme(themeToggle);
-
+ 
+  initTheme(menuToggleTheme);
+  initSettingsMenu(settingsBtn, settingsMenu);
   // Sidebar mobile
   initMobileSidebar();
 
@@ -466,4 +470,27 @@ function escapeHtml(s) {
 function escapeAttr(s) {
   // atributos como href
   return escapeHtml(s).replaceAll("`", "&#096;");
+}
+
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar) return close();
+    if (!userbar.contains(e.target)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
 }

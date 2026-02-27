@@ -572,3 +572,73 @@ body.dark-mode .toast-icon {
 body.dark-mode .toast-close:hover {
   background: rgba(255, 255, 255, 0.18);
 }
+
+/* Footer: email + menu de configurações */
+.sidebar-userbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 0.5rem 0.25rem;
+}
+
+.sidebar-user-email {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-settings-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.sidebar-settings-btn:hover {
+  background-color: var(--hover-color);
+}
+
+.sidebar-settings-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 220px;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-sidebar);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  padding: 0.4rem;
+  z-index: 80;
+}
+
+.settings-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.settings-item:hover {
+  background-color: var(--hover-color);
+}
+
+.settings-item.danger {
+  color: #ef4444;
+}
