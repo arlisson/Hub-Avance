@@ -33,10 +33,10 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
     const apiKey = inputApiKey.value;
 
     // LIMPEZA DO DADO: Se for número de telefone, tira a máscara antes de enviar pro n8n
-    let identificadorLimpo = identificadorOriginal;
-    if (!/[a-zA-Z@]/.test(identificadorOriginal)) {
-        identificadorLimpo = identificadorOriginal.replace(/\D/g, '');
-    }
+    // let identificadorLimpo = identificadorOriginal;
+    // if (!/[a-zA-Z@]/.test(identificadorOriginal)) {
+    //     identificadorLimpo = identificadorOriginal.replace(/\D/g, '');
+    // }
 
     btnSubmit.disabled = true;
     btnSubmit.innerText = 'Autenticando...';
@@ -51,7 +51,7 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                whatsapp: identificadorLimpo, // Enviamos o número limpo ou o e-mail cru
+                //whatsapp: identificadorLimpo, // Enviamos o número limpo ou o e-mail cru
                 chave_gemini_recebida: apiKey
             })
         });
