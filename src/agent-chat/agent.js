@@ -4,13 +4,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chatMessages = document.getElementById("chat-messages");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
+  const themeToggle = document.getElementById("theme-toggle");
   const newChatBtn = document.getElementById("new-chat-btn");
+  const logoutBtn = document.getElementById("logout-btn");
   const userEmailEl = document.getElementById("user-email");
   const menuBtn = document.getElementById("mobile-menu-btn");
-  const settingsBtn = document.getElementById("settings-btn");
-  const settingsMenu = document.getElementById("settings-menu");
-  const themeToggle = document.getElementById("theme-toggle");
-  const menuLogout = document.getElementById("menu-logout");
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
 
@@ -47,8 +45,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (userEmailEl) userEmailEl.textContent = emailUser;
 
   // Logout (igual hub)
-  if (menuLogout) {
-    menuLogout.addEventListener("click", async () => {
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
       try {
         await sb.auth.signOut();
       } finally {
@@ -69,8 +67,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Tema
   initTheme(themeToggle);
-
-  initSettingsMenu(settingsBtn, settingsMenu);
 
   // Menu mobile (padrão hub: sidebar-open no body)
   if (menuBtn) {
@@ -134,9 +130,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // Aumentei o timeout preventivamente para 60s, pois textos longos demoram
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const timeoutId = setTimeout(() => controller.abort(), 80000);
 
       let resp;
       try {
@@ -156,58 +151,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearTimeout(timeoutId);
       }
 
-      removeLoading(); // Tira o "Digitando..." para começar a cuspir o texto real
+      const raw = await resp.text();
+      removeLoading();
 
       if (!resp.ok) {
-        const raw = await resp.text();
         appendMessage(chatMessages, chatState, storageKey, "bot", formatBackendError(resp.status, raw));
         return;
       }
 
-      // ==========================================================
-      // NOVA LÓGICA DE STREAMING (O EFEITO MÁQUINA DE ESCREVER)
-      // ==========================================================
+      if (!raw) throw new Error("Resposta vazia");
 
-      // 1. Cria o balão de mensagem da IA "vazio" na tela
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message bot`;
-      messageDiv.innerHTML = `
-        <div class="message-avatar"><span>AI</span></div>
-        <div class="message-bubble"></div>
-      `;
-      chatMessages.appendChild(messageDiv);
-      const bubbleContent = messageDiv.querySelector(".message-bubble");
-
-      // 2. Prepara o leitor para ler os pedaços que chegam do n8n
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let textoCompleto = "";
-
-      // 3. Fica lendo o fluxo até o n8n dizer "Acabei" (done = true)
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        // Decodifica o pedacinho que chegou e soma ao texto completo
-        const pedaco = decoder.decode(value, { stream: true });
-        textoCompleto += pedaco;
-
-        // Atualiza o balão em tempo real formatando com o seu Marked (Markdown)
-        bubbleContent.innerHTML = typeof marked !== "undefined" && marked?.parse
-          ? marked.parse(textoCompleto)
-          : `<pre>${escapeHtml(textoCompleto)}</pre>`;
-
-        // Rola o chat para baixo acompanhando a digitação
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = { output: raw };
       }
 
-      // 4. Salva a resposta final completinha na memória da sessão
-      if (chatState && storageKey) {
-        chatState.messages.push({ role: "bot", text: textoCompleto });
-        saveState(storageKey, chatState);
+      if (data && data.ok === false) {
+        appendMessage(chatMessages, chatState, storageKey, "bot", formatAgentApiJsonError(data));
+        return;
       }
-      // ==========================================================
 
+      appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
     } catch (err) {
       console.error(err);
       removeLoading();
@@ -220,21 +186,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       appendMessage(chatMessages, chatState, storageKey, "bot", "Erro de conexão com o servidor. Tente novamente.");
     }
   }
-
-  // -------- config --------
-  async function loadAgentConfig() {
-    // Mantém compatível se você já tiver /api/public-agent-config
-    const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-    const j = await r.json().catch(() => null);
-    if (!r.ok || !j?.ok) return null;
-    return j;
-  }
-
-  // -------- state --------
-  function newSessionId() {
-    return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
-  }
 });
+
+// -------- config --------
+async function loadAgentConfig() {
+  // Mantém compatível se você já tiver /api/public-agent-config
+  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !j?.ok) return null;
+  return j;
+}
+
+// -------- state --------
+function newSessionId() {
+  return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
+}
 
 function loadState(key) {
   try {
@@ -281,8 +247,8 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
   const contentHTML =
     role === "bot"
       ? (typeof marked !== "undefined" && marked?.parse
-        ? marked.parse(text)
-        : `<pre>${escapeHtml(text)}</pre>`)
+          ? marked.parse(text)
+          : `<pre>${escapeHtml(text)}</pre>`)
       : escapeHtml(text);
 
   messageDiv.innerHTML = `
@@ -395,28 +361,5 @@ function escapeHtml(str) {
       case "'": return "&#039;";
       default: return m;
     }
-  });
-}
-
-function initSettingsMenu(btn, menu) {
-  if (!btn || !menu) return;
-
-  const close = () => (menu.hidden = true);
-  const open = () => (menu.hidden = false);
-  const toggle = () => (menu.hidden ? open() : close());
-
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggle();
-  });
-
-  document.addEventListener("click", (e) => {
-    const userbar = document.getElementById("sidebar-userbar");
-    if (!userbar) return close();
-    if (!userbar.contains(e.target)) close();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
   });
 }
