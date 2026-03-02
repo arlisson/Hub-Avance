@@ -29,7 +29,7 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
 
     const btnSubmit = document.getElementById('btnSubmit');
     const divMensagem = document.getElementById('mensagemApi'); // ID novo da div de mensagens do modal
-    let identificadorOriginal = inputIdentificador.value;
+    //let identificadorOriginal = inputIdentificador.value;
     const apiKey = inputApiKey.value;
 
     // LIMPEZA DO DADO: Se for número de telefone, tira a máscara antes de enviar pro n8n
