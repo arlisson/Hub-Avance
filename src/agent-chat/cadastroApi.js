@@ -3,7 +3,7 @@ const modal = document.getElementById('modalApi');
 const btnAbrir = document.getElementById('btnAbrirModalSidebar'); // ID novo do botão na sidebar
 const btnFechar = document.getElementById('btnFecharModal');
 const inputApiKey = document.getElementById('apiKey');
-const inputIdentificador = document.getElementById('identificador');
+//const inputIdentificador = document.getElementById('identificador');
 const btnMostrarSenha = document.getElementById('btnMostrarSenha');
 
 // Lógica de Abrir e Fechar o Modal
