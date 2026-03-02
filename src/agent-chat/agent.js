@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 80000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
 
       let resp;
       try {
