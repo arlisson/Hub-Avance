@@ -56,7 +56,7 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                //whatsapp: identificadorLimpo, // Enviamos o número limpo ou o e-mail cru
+                email: emailUsuario,
                 chave_gemini_recebida: apiKey
             })
         });
