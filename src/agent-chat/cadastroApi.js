@@ -38,6 +38,11 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
     //     identificadorLimpo = identificadorOriginal.replace(/\D/g, '');
     // }
 
+    // Procura o elemento onde o agent.js injetou o email
+    const elementoEmail = document.getElementById("user-email");
+    // Se o elemento existir, pega o texto. Se não, manda "nao_informado" por segurança
+    const emailUsuario = elementoEmail ? elementoEmail.textContent.trim() : "nao_informado";
+
     btnSubmit.disabled = true;
     btnSubmit.innerText = 'Autenticando...';
     divMensagem.innerText = '';
