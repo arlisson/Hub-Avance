@@ -3,8 +3,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const chatMessages = document.getElementById("chat-messages");
   const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");  
-  const newChatBtn = document.getElementById("new-chat-btn");  
+  const sendBtn = document.getElementById("send-btn");
+  const newChatBtn = document.getElementById("new-chat-btn");
   const userEmailEl = document.getElementById("user-email");
   const menuBtn = document.getElementById("mobile-menu-btn");
   const settingsBtn = document.getElementById("settings-btn");
@@ -48,15 +48,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Logout (igual hub)
   if (menuLogout) {
-  menuLogout.addEventListener("click", async () => {
-    try {
-      await sb.auth.signOut();
-    } finally {
-      clearAgentChatSessionStorage();
-      window.location.href = LOGIN_URL;
-    }
-  });
-}
+    menuLogout.addEventListener("click", async () => {
+      try {
+        await sb.auth.signOut();
+      } finally {
+        clearAgentChatSessionStorage();
+        window.location.href = LOGIN_URL;
+      }
+    });
+  }
 
   // Estado por sessão (aba)
   const storageKey = `agente_chat_state:${emailUser}`;
@@ -134,8 +134,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
+      // Aumentei o timeout preventivamente para 60s, pois textos longos demoram
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
 
       let resp;
       try {
@@ -155,29 +156,58 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearTimeout(timeoutId);
       }
 
-      const raw = await resp.text();
-      removeLoading();
+      removeLoading(); // Tira o "Digitando..." para começar a cuspir o texto real
 
       if (!resp.ok) {
+        const raw = await resp.text();
         appendMessage(chatMessages, chatState, storageKey, "bot", formatBackendError(resp.status, raw));
         return;
       }
 
-      if (!raw) throw new Error("Resposta vazia");
+      // ==========================================================
+      // NOVA LÓGICA DE STREAMING (O EFEITO MÁQUINA DE ESCREVER)
+      // ==========================================================
 
-      let data;
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        data = { output: raw };
+      // 1. Cria o balão de mensagem da IA "vazio" na tela
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message bot`;
+      messageDiv.innerHTML = `
+        <div class="message-avatar"><span>AI</span></div>
+        <div class="message-bubble"></div>
+      `;
+      chatMessages.appendChild(messageDiv);
+      const bubbleContent = messageDiv.querySelector(".message-bubble");
+
+      // 2. Prepara o leitor para ler os pedaços que chegam do n8n
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let textoCompleto = "";
+
+      // 3. Fica lendo o fluxo até o n8n dizer "Acabei" (done = true)
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Decodifica o pedacinho que chegou e soma ao texto completo
+        const pedaco = decoder.decode(value, { stream: true });
+        textoCompleto += pedaco;
+
+        // Atualiza o balão em tempo real formatando com o seu Marked (Markdown)
+        bubbleContent.innerHTML = typeof marked !== "undefined" && marked?.parse
+          ? marked.parse(textoCompleto)
+          : `<pre>${escapeHtml(textoCompleto)}</pre>`;
+
+        // Rola o chat para baixo acompanhando a digitação
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
-      if (data && data.ok === false) {
-        appendMessage(chatMessages, chatState, storageKey, "bot", formatAgentApiJsonError(data));
-        return;
+      // 4. Salva a resposta final completinha na memória da sessão
+      if (chatState && storageKey) {
+        chatState.messages.push({ role: "bot", text: textoCompleto });
+        saveState(storageKey, chatState);
       }
+      // ==========================================================
 
-      appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
     } catch (err) {
       console.error(err);
       removeLoading();
@@ -190,21 +220,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       appendMessage(chatMessages, chatState, storageKey, "bot", "Erro de conexão com o servidor. Tente novamente.");
     }
   }
+
+  // -------- config --------
+  async function loadAgentConfig() {
+    // Mantém compatível se você já tiver /api/public-agent-config
+    const r = await fetch("/api/public-agent-config", { cache: "no-store" });
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j?.ok) return null;
+    return j;
+  }
+
+  // -------- state --------
+  function newSessionId() {
+    return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
+  }
 });
-
-// -------- config --------
-async function loadAgentConfig() {
-  // Mantém compatível se você já tiver /api/public-agent-config
-  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-  const j = await r.json().catch(() => null);
-  if (!r.ok || !j?.ok) return null;
-  return j;
-}
-
-// -------- state --------
-function newSessionId() {
-  return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
-}
 
 function loadState(key) {
   try {
@@ -251,8 +281,8 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
   const contentHTML =
     role === "bot"
       ? (typeof marked !== "undefined" && marked?.parse
-          ? marked.parse(text)
-          : `<pre>${escapeHtml(text)}</pre>`)
+        ? marked.parse(text)
+        : `<pre>${escapeHtml(text)}</pre>`)
       : escapeHtml(text);
 
   messageDiv.innerHTML = `
