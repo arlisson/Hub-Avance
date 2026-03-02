@@ -44,7 +44,7 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
     divMensagem.className = '';
 
     // URL DO SEU N8N
-    const webhookUrl = 'https://primary-production-335ec.up.railway.app/webhook-test/registro_api';
+    const webhookUrl = 'https://primary-production-335ec.up.railway.app/webhook/registro_api';
 
     try {
         const resposta = await fetch(webhookUrl, {
