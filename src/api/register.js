@@ -1,14 +1,14 @@
 // api/register.js
 /**
  * Handles user registration with email, password, and profile information.
- * 
+ *
  * This handler performs the following operations in sequence:
  * 1. Validates the request method (POST only)
  * 2. Checks for duplicate CPF in the database
  * 3. Creates a new user account via Supabase Auth
- * 4. Updates the user profile with additional information
+ * 4. Updates the user profile with additional information (including new mobile questions)
  * 5. Registers a license in Google Sheets
- * 
+ *
  * @async
  * @param {Object} req - Express request object
  * @param {string} req.method - HTTP method (must be POST or OPTIONS)
@@ -18,15 +18,21 @@
  * @param {string} req.body.cpf - User CPF/ID number (required)
  * @param {string} [req.body.name] - User full name (optional)
  * @param {string} [req.body.whatsapp] - User WhatsApp number (optional)
+ *
+ * @param {boolean} [req.body.has_mobile_service] - Whether company has active mobile service (optional)
+ * @param {string} [req.body.contract_type] - "CPF" | "CNPJ" (optional)
+ * @param {string} [req.body.operator] - Current operator (optional)
+ * @param {number} [req.body.active_lines] - Active mobile lines (optional)
+ *
  * @param {Object} res - Express response object
- * 
+ *
  * @returns {Promise<void>} JSON response with status
  * @returns {Object} res.json - Response object
  * @returns {boolean} res.json.ok - Success flag
  * @returns {boolean} [res.json.needs_email_confirmation] - Indicates email confirmation required (on success)
  * @returns {string} [res.json.error] - Error code if failed
  * @returns {string} [res.json.detail] - Error detail message if failed
- * 
+ *
  * @throws {Error} Returns 400 if required fields are missing
  * @throws {Error} Returns 405 if request method is not POST
  * @throws {Error} Returns 409 if CPF already exists
@@ -42,10 +48,54 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { email, password, name, cpf, whatsapp } = req.body || {};
+    const {
+      email,
+      password,
+      name,
+      cpf,
+      whatsapp,
+
+      // novos campos
+      has_mobile_service,
+      contract_type,
+      operator,
+      active_lines,
+    } = req.body || {};
+
     if (!email || !password || !cpf) {
       return res.status(400).json({ ok: false, error: "missing_fields" });
     }
+
+    // Normalizações simples (evita gravar lixo)
+    const cpfClean = String(cpf || "").replace(/\D/g, "");
+    const whatsappClean = whatsapp ? String(whatsapp).replace(/\D/g, "") : null;
+
+    const hasMobile =
+      typeof has_mobile_service === "boolean"
+        ? has_mobile_service
+        : has_mobile_service === "true"
+          ? true
+          : has_mobile_service === "false"
+            ? false
+            : null;
+
+    const contractType =
+      contract_type === "CPF" || contract_type === "CNPJ" ? contract_type : null;
+
+    const operatorClean = operator ? String(operator).trim().slice(0, 120) : null;
+
+    let activeLines = null;
+    if (active_lines !== undefined && active_lines !== null && active_lines !== "") {
+      const n = Number(active_lines);
+      activeLines = Number.isFinite(n) ? Math.trunc(n) : null;
+    }
+    if (activeLines !== null && activeLines < 0) activeLines = null;
+
+    // Regras coerentes:
+    // - Se não tem telefonia móvel (false), ignora operator/active_lines.
+    // - Se tem telefonia móvel (true), permite operator/active_lines (frontend valida "hard").
+    const finalOperator = hasMobile === true ? operatorClean : null;
+    const finalActiveLines = hasMobile === true ? activeLines : null;
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -75,7 +125,7 @@ export default async function handler(req, res) {
 
     // 1) checa CPF duplicado (service role)
     const cpfCheck = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpf)}&limit=1`,
+      `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpfClean)}&limit=1`,
       {
         headers: {
           apikey: SERVICE_ROLE,
@@ -103,8 +153,13 @@ export default async function handler(req, res) {
         password,
         data: {
           name: name || null,
-          cpf,
-          whatsapp: whatsapp || null,
+          cpf: cpfClean,
+          whatsapp: whatsappClean,
+          // você pode opcionalmente espelhar os novos campos também no user_metadata
+          has_mobile_service: hasMobile,
+          contract_type: contractType,
+          operator: finalOperator,
+          active_lines: finalActiveLines,
         },
         redirect_to: redirectTo,
       }),
@@ -126,6 +181,7 @@ export default async function handler(req, res) {
     }
 
     // 3) atualiza profile (linha criada por trigger)
+    //    IMPORTANTE: aqui é onde seus campos novos serão persistidos nas colunas da tabela.
     const upd = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`,
       {
@@ -138,8 +194,14 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           name: name || null,
-          cpf,
-          whatsapp: whatsapp || null,
+          cpf: cpfClean,
+          whatsapp: whatsappClean,
+
+          // NOVOS CAMPOS
+          has_mobile_service: hasMobile,
+          contract_type: contractType,
+          operator: finalOperator,
+          active_lines: finalActiveLines,
         }),
       }
     );
