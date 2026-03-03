@@ -54,12 +54,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       .single();
 
     if (data && data.chave_gemini_recebida) {
-      atualizarStatusAgente(true); // Tem chave! Acende a luz verde
+      window.atualizarStatusAgente(true); // Tem chave! Acende a luz verde
     } else {
-      atualizarStatusAgente(false); // Sem chave. Luz vermelha.
+      window.atualizarStatusAgente(false); // Sem chave. Luz vermelha.
     }
   } catch (err) {
-    atualizarStatusAgente(false); // Erro de conexão, assume offline
+    window.atualizarStatusAgente(false); // Erro de conexão, assume offline
   }
 
   // Logout (igual hub)
@@ -370,7 +370,7 @@ function formatAgentApiJsonError(j, statusOverride) {
 }
 
 // -------- status visual do agente --------
-function atualizarStatusAgente(isOnline) {
+window.atualizarStatusAgente = function(isOnline) {
   const dot = document.getElementById("status-dot");
   const text = document.getElementById("status-text");
   const inputBtn = document.getElementById("send-btn");

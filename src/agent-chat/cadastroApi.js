@@ -66,6 +66,11 @@ document.getElementById('formApi').addEventListener('submit', async function (ev
             divMensagem.className = 'sucesso';
             inputApiKey.value = '';
 
+            // Alterar cor da bolinha de "online/offline" 
+            if (typeof window.atualizarStatusAgente === 'function') {
+                window.atualizarStatusAgente(true);
+            }
+
             // Fecha o modal automaticamente após o sucesso
             setTimeout(() => {
                 modal.classList.remove('visivel');
