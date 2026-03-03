@@ -781,3 +781,43 @@ body.dark-mode {
 .settings-item.danger {
   color: #ef4444;
 }
+
+/* =========================================
+   STATUS DO AGENTE (ONLINE / OFFLINE)
+   ========================================= */
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+/* Estado Online (Verde) */
+.status-dot.online {
+  background-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); /* Efeito neon sutil */
+}
+.status-text.online {
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Estado Offline (Vermelho) */
+.status-dot.offline {
+  background-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+.status-text.offline {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+}

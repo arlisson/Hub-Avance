@@ -19,7 +19,7 @@
       <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
     </div>
 
-    
+
     <button id="btnAbrirModalSidebar" class="btn-abrir-modal">Cadastrar Chave API</button>
 
     <button class="new-chat-btn" id="new-chat-btn" type="button" style="margin-top: 15px;">
@@ -32,35 +32,35 @@
         <i class="ph ph-chat-circle"></i>
         <div class="chat-info">
           <div class="chat-title">Consultora de Vendas</div>
-          <div class="chat-date">Sofia</div>
+          <div class="chat-date">Ludmilla</div>
         </div>
       </div>
     </div>
 
-      <div class="sidebar-footer">
-        <div class="sidebar-userbar" id="sidebar-userbar">
-          <span class="sidebar-user-email" id="user-email"></span>
+    <div class="sidebar-footer">
+      <div class="sidebar-userbar" id="sidebar-userbar">
+        <span class="sidebar-user-email" id="user-email"></span>
 
-          <button class="sidebar-settings-btn" id="settings-btn" type="button" aria-label="Configurações">
-            <i class="ph ph-dots-three-vertical"></i>
+        <button class="sidebar-settings-btn" id="settings-btn" type="button" aria-label="Configurações">
+          <i class="ph ph-dots-three-vertical"></i>
+        </button>
+
+        <div class="sidebar-settings-menu" id="settings-menu" hidden>
+
+
+          <button type="button" class="settings-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
           </button>
-
-          <div class="sidebar-settings-menu" id="settings-menu" hidden>
-          
-
-            <button type="button" class="settings-item danger" id="menu-logout">
-              <i class="ph ph-sign-out"></i>
-              <span>Sair</span>
-            </button>
-          </div>
         </div>
       </div>
-      <div class="sidebar-footer">
-        <button class="theme-toggle" id="theme-toggle" type="button">
-          <i class="ph ph-moon"></i>
-          <span>Modo escuro</span>
-        </button>
-      </div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" type="button">
+        <i class="ph ph-moon"></i>
+        <span>Modo escuro</span>
+      </button>
+    </div>
   </aside>
 
   <main class="main-content">
@@ -75,7 +75,10 @@
         </div>
         <div class="assistant-details">
           <span class="name">Consultora Estratégica de Vendas</span>
-          <span class="status">Online</span>
+          <div class="status-container" id="agent-status-container">
+            <span class="status-dot offline" id="status-dot"></span>
+            <span class="status-text offline" id="status-text">Offline</span>
+          </div>
         </div>
       </div>
     </header>

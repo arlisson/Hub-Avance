@@ -44,6 +44,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (userEmailEl) userEmailEl.textContent = emailUser;
 
+  // Verifica se o usuário tem a API conectada no Supabase
+  try {
+    // Ajuste 'sua_tabela_de_clientes' para o nome real da sua tabela no Supabase
+    const { data, error } = await sb
+      .from('profiles')
+      .select('chave_api')
+      .eq('email', emailUser) // ou whatsapp, dependendo de como você salva
+      .single();
+
+    if (data && data.chave_gemini_recebida) {
+      atualizarStatusAgente(true); // Tem chave! Acende a luz verde
+    } else {
+      atualizarStatusAgente(false); // Sem chave. Luz vermelha.
+    }
+  } catch (err) {
+    atualizarStatusAgente(false); // Erro de conexão, assume offline
+  }
+
   // Logout (igual hub)
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
@@ -176,6 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
     } catch (err) {
       console.error(err);
+      atualizarStatusAgente(false);
       removeLoading();
 
       if (err?.name === "AbortError") {
@@ -247,8 +266,8 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
   const contentHTML =
     role === "bot"
       ? (typeof marked !== "undefined" && marked?.parse
-          ? marked.parse(text)
-          : `<pre>${escapeHtml(text)}</pre>`)
+        ? marked.parse(text)
+        : `<pre>${escapeHtml(text)}</pre>`)
       : escapeHtml(text);
 
   messageDiv.innerHTML = `
@@ -348,6 +367,34 @@ function formatAgentApiJsonError(j, statusOverride) {
   }
 
   return `${code}${status}${msg}${details}`;
+}
+
+// -------- status visual do agente --------
+function atualizarStatusAgente(isOnline) {
+  const dot = document.getElementById("status-dot");
+  const text = document.getElementById("status-text");
+  const inputBtn = document.getElementById("send-btn");
+  const inputBox = document.getElementById("user-input");
+
+  if (!dot || !text) return;
+
+  if (isOnline) {
+    dot.className = "status-dot online";
+    text.className = "status-text online";
+    text.textContent = "Online";
+
+    // Libera o chat
+    if (inputBtn) inputBtn.disabled = false;
+    if (inputBox) inputBox.placeholder = "Digite sua mensagem...";
+  } else {
+    dot.className = "status-dot offline";
+    text.className = "status-text offline";
+    text.textContent = "Offline (Cadastre sua API)";
+
+    // Bloqueia o chat para evitar que o usuário tente falar com a IA offline
+    if (inputBtn) inputBtn.disabled = true;
+    if (inputBox) inputBox.placeholder = "IA offline. Verifique a credencial.";
+  }
 }
 
 // -------- misc --------
