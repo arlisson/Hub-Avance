@@ -205,3 +205,37 @@ body {
   color: #ef4444; /* vermelho */
   opacity: 1;
 }
+
+/* Radios */
+.radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.radio-item input {
+  accent-color: var(--primary-color);
+}
+
+.radio-item span {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+}
+
+/* Ocultar campos condicionais */
+.is-hidden {
+  display: none !important;
+}

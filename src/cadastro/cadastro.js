@@ -6,16 +6,16 @@
 
 /**
  * Validates a Brazilian CPF (Cadastro de Pessoas Físicas) number.
- * 
+ *
  * @param {string|number} cpf - The CPF number to validate. Can be a string or number,
  *                               with or without formatting characters.
  * @returns {boolean} Returns true if the CPF is valid, false otherwise.
- * 
+ *
  * @example
  * validarCPF("123.456.789-09"); // returns true or false
  * validarCPF("12345678909");    // returns true or false
  * validarCPF(12345678909);      // returns true or false
- * 
+ *
  * @description
  * The function validates a CPF by:
  * 1. Removing all non-digit characters
@@ -46,17 +46,17 @@ function validarCPF(cpf) {
 
 /**
  * Validates a Brazilian CNPJ (Cadastro Nacional da Pessoa Jurídica) number.
- * 
+ *
  * @param {string|number} cnpj - The CNPJ number to validate. Can be provided as a string or number.
  * @returns {boolean} True if the CNPJ is valid, false otherwise.
- * 
+ *
  * @description
  * This function validates a CNPJ by:
  * 1. Removing all non-digit characters
  * 2. Checking if the length is exactly 14 digits
  * 3. Rejecting CNPJs where all digits are the same
  * 4. Validating the two check digits using modulo 11 algorithm
- * 
+ *
  * @example
  * validarCNPJ("11.222.333/0001-81"); // returns true or false
  * validarCNPJ(11222333000181); // returns true or false
@@ -178,6 +178,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const toggleBtn = document.getElementById("toggle-password");
   const form = document.getElementById("register-form");
 
+  // --- NOVOS CAMPOS ---
+  const hasMobileYes = document.getElementById("has_mobile_yes");
+  const hasMobileNo = document.getElementById("has_mobile_no");
+  const contractTypeCnpj = document.getElementById("contract_type_cnpj");
+  const contractTypeCpf = document.getElementById("contract_type_cpf");
+  const operatorInput = document.getElementById("operator");
+  const activeLinesInput = document.getElementById("active_lines");
+
+  const operatorGroup = document.getElementById("operator-group");
+  const linesGroup = document.getElementById("lines-group");
+
   // --- REDIRECIONA SE JÁ ESTIVER LOGADO ---
   try {
     const sb = await getSupabaseClient();
@@ -288,87 +299,85 @@ document.addEventListener("DOMContentLoaded", async () => {
   emailInput.addEventListener("blur", validateEmailHard);
 
   // --- 2.1) VALIDAÇÃO DE SENHA (tempo real) ---
-const rulesBox = document.getElementById("password-rules");
+  const rulesBox = document.getElementById("password-rules");
 
-function passwordChecks(pw) {
-  const v = String(pw || "");
+  function passwordChecks(pw) {
+    const v = String(pw || "");
 
-  return {
-    len: v.length >= 8,
-    upper: /[A-Z]/.test(v),
-    lower: /[a-z]/.test(v),
-    digit: /\d/.test(v),
-    special: /[^A-Za-z0-9]/.test(v),
-  };
-}
+    return {
+      len: v.length >= 8,
+      upper: /[A-Z]/.test(v),
+      lower: /[a-z]/.test(v),
+      digit: /\d/.test(v),
+      special: /[^A-Za-z0-9]/.test(v),
+    };
+  }
 
-function updatePasswordRulesUI(checks) {
-  if (!rulesBox) return;
+  function updatePasswordRulesUI(checks) {
+    if (!rulesBox) return;
 
-  Object.entries(checks).forEach(([key, ok]) => {
-    const el = rulesBox.querySelector(`[data-rule="${key}"]`);
-    if (!el) return;
-    el.classList.toggle("ok", !!ok);
-    el.classList.toggle("bad", !ok);
-  });
-}
+    Object.entries(checks).forEach(([key, ok]) => {
+      const el = rulesBox.querySelector(`[data-rule="${key}"]`);
+      if (!el) return;
+      el.classList.toggle("ok", !!ok);
+      el.classList.toggle("bad", !ok);
+    });
+  }
 
-function passwordErrorMessage(checks) {
-  const missing = [];
-  if (!checks.len) missing.push("mínimo 8 caracteres");
-  // if (!checks.upper) missing.push("1 maiúscula");
-  // if (!checks.lower) missing.push("1 minúscula");
-  if (!checks.digit) missing.push("1 número");
-  // if (!checks.special) missing.push("1 caractere especial");
+  function passwordErrorMessage(checks) {
+    const missing = [];
+    if (!checks.len) missing.push("mínimo 8 caracteres");
+    // if (!checks.upper) missing.push("1 maiúscula");
+    // if (!checks.lower) missing.push("1 minúscula");
+    if (!checks.digit) missing.push("1 número");
+    // if (!checks.special) missing.push("1 caractere especial");
 
-  if (missing.length === 0) return "";
-  return `A senha precisa ter: ${missing.join(", ")}.`;
-}
+    if (missing.length === 0) return "";
+    return `A senha precisa ter: ${missing.join(", ")}.`;
+  }
 
-const validatePasswordSoft = () => {
-  const v = passInput.value || "";
+  const validatePasswordSoft = () => {
+    const v = passInput.value || "";
 
-  if (!v) {
-    setValid(passInput);
-    if (rulesBox) {
-      // limpa indicadores ao apagar
-      rulesBox.querySelectorAll(".rule").forEach((r) => r.classList.remove("ok", "bad"));
+    if (!v) {
+      setValid(passInput);
+      if (rulesBox) {
+        // limpa indicadores ao apagar
+        rulesBox.querySelectorAll(".rule").forEach((r) => r.classList.remove("ok", "bad"));
+      }
+      return true;
     }
+
+    const checks = passwordChecks(v);
+    updatePasswordRulesUI(checks);
+
+    const msg = passwordErrorMessage(checks);
+    if (msg) {
+      setInvalid(passInput, msg);
+      return false;
+    }
+
+    setValid(passInput);
     return true;
-  }
+  };
 
-  const checks = passwordChecks(v);
-  updatePasswordRulesUI(checks);
+  const validatePasswordHard = () => {
+    const v = passInput.value || "";
+    const checks = passwordChecks(v);
+    updatePasswordRulesUI(checks);
 
-  // "soft": não obriga enquanto digita; só marca inválido quando já passou do mínimo esperado
-  // (opcional) aqui eu deixo marcar inválido assim que o usuário começa a digitar:
-  const msg = passwordErrorMessage(checks);
-  if (msg) {
-    setInvalid(passInput, msg);
-    return false;
-  }
+    const msg = passwordErrorMessage(checks);
+    if (msg) {
+      setInvalid(passInput, msg);
+      return false;
+    }
 
-  setValid(passInput);
-  return true;
-};
+    setValid(passInput);
+    return true;
+  };
 
-const validatePasswordHard = () => {
-  const v = passInput.value || "";
-  const checks = passwordChecks(v);
-  updatePasswordRulesUI(checks);
-
-  const msg = passwordErrorMessage(checks);
-  if (msg) {
-    setInvalid(passInput, msg);
-    return false;
-  }
-
-  setValid(passInput);
-  return true;
-};
-
-passInput.addEventListener("input", validatePasswordSoft);
-passInput.addEventListener("blur", validatePasswordHard);
+  passInput.addEventListener("input", validatePasswordSoft);
+  passInput.addEventListener("blur", validatePasswordHard);
 
   // --- 3) MOSTRAR SENHA ---
   if (toggleBtn) {
@@ -384,6 +393,67 @@ passInput.addEventListener("blur", validatePasswordHard);
     });
   }
 
+  // --- NOVAS FUNÇÕES (campos de telefonia) ---
+  function getHasMobileValue() {
+    const v = document.querySelector('input[name="has_mobile"]:checked')?.value;
+    if (v === "sim") return true;
+    if (v === "nao") return false;
+    return null; // não selecionado
+  }
+
+  function toggleMobileFields() {
+    const hasMobile = getHasMobileValue();
+
+    const shouldShow = hasMobile === true;
+    if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !shouldShow);
+    if (linesGroup) linesGroup.classList.toggle("is-hidden", !shouldShow);
+
+    // Se não tem telefonia móvel, limpa campos
+    if (!shouldShow) {
+      if (operatorInput) operatorInput.value = "";
+      if (activeLinesInput) activeLinesInput.value = "";
+      setValid(operatorInput);
+      setValid(activeLinesInput);
+    }
+  }
+
+  const validateMobileExtrasHard = () => {
+    const hasMobile = getHasMobileValue();
+    if (hasMobile !== true) return true; // só valida quando "Sim"
+
+    let ok = true;
+
+    const op = (operatorInput?.value || "").trim();
+    if (!op) {
+      setInvalid(operatorInput, "Informe a operadora");
+      ok = false;
+    } else {
+      setValid(operatorInput);
+    }
+
+    const nRaw = activeLinesInput?.value;
+    const n = nRaw === "" || nRaw == null ? NaN : Number(nRaw);
+
+    if (!Number.isInteger(n) || n < 0) {
+      setInvalid(activeLinesInput, "Informe um número válido (0 ou maior)");
+      ok = false;
+    } else {
+      setValid(activeLinesInput);
+    }
+
+    return ok;
+  };
+
+  // inicializa ocultando até escolher
+  toggleMobileFields();
+
+  document.querySelectorAll('input[name="has_mobile"]').forEach((el) => {
+    el.addEventListener("change", toggleMobileFields);
+  });
+
+  if (operatorInput) operatorInput.addEventListener("blur", validateMobileExtrasHard);
+  if (activeLinesInput) activeLinesInput.addEventListener("blur", validateMobileExtrasHard);
+
   // --- 4) SUBMIT (via /api/register) ---
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -398,8 +468,23 @@ passInput.addEventListener("blur", validatePasswordHard);
     const okDoc = validateDocHard();
     const okEmail = validateEmailHard();
     const okPass = validatePasswordHard();
+    const okMobileExtras = validateMobileExtrasHard();
 
-    if (!okDoc || !okEmail || !okPass) return;
+    // radios obrigatórios (HTML required cobre, mas aqui garante feedback)
+    const hasMobile = getHasMobileValue();
+    const contractType =
+      document.querySelector('input[name="contract_type"]:checked')?.value || "";
+
+    if (hasMobile === null) {
+      alert("Responda se sua empresa possui telefonia móvel ativa.");
+      return;
+    }
+    if (!contractType) {
+      alert("Selecione se o contrato está vinculado a CPF ou CNPJ.");
+      return;
+    }
+
+    if (!okDoc || !okEmail || !okPass || !okMobileExtras) return;
 
     const btn = form.querySelector(".register-btn");
     const originalText = btn?.innerText || "Cadastrar";
@@ -416,6 +501,12 @@ passInput.addEventListener("blur", validatePasswordHard);
         password: passwordValue,
         cpf: docRaw,
         whatsapp: whatsapp,
+
+        // NOVOS CAMPOS
+        has_mobile_service: hasMobile, // boolean (true/false)
+        contract_type: contractType, // "CNPJ" ou "CPF"
+        operator: (operatorInput?.value || "").trim(),
+        active_lines: activeLinesInput?.value === "" ? null : Number(activeLinesInput?.value),
       };
 
       const r = await fetch("/api/register", {
@@ -436,7 +527,6 @@ passInput.addEventListener("blur", validatePasswordHard);
         }
 
         if (err === "auth_error") {
-          // tenta mostrar uma mensagem mais precisa se o backend devolver "detail"
           const msg = friendlyAuthMessage(out?.detail || out?.message);
           setInvalid(emailInput, msg);
           alert(msg);
