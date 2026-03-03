@@ -317,7 +317,7 @@ function passwordErrorMessage(checks) {
   const missing = [];
   if (!checks.len) missing.push("mínimo 8 caracteres");
   // if (!checks.upper) missing.push("1 maiúscula");
-  if (!checks.lower) missing.push("1 minúscula");
+  // if (!checks.lower) missing.push("1 minúscula");
   if (!checks.digit) missing.push("1 número");
   // if (!checks.special) missing.push("1 caractere especial");
 
