@@ -46,31 +46,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Verifica se o usuário tem a API conectada no Supabase
   try {
-    console.log("🔍 Buscando chave no Supabase para o usuário:", emailUser);
-    // Ajuste 'sua_tabela_de_clientes' para o nome real da sua tabela no Supabase
     const { data, error } = await sb
       .from('profiles')
       .select('chave_api')
-      .eq('email', emailUser) // ou whatsapp, dependendo de como você salva
+      .eq('email', emailUser)
       .single();
 
     if (error) {
-        console.error("❌ O Supabase retornou um erro na busca:", error.message);
         throw error; // Força o código a cair no catch
     }
 
-    // O RAIO-X: Vamos ver o que tem dentro da gaveta!
-    console.log("📦 DADOS PUXADOS DO BANCO:", data);
-
     if (data && data.chave_api) {
-      console.log("✅ Chave encontrada no banco!");
       window.atualizarStatusAgente(true); // Tem chave! Acende a luz verde
     } else {
-      console.log("⚠️ Nenhuma chave encontrada para este usuário.");
       window.atualizarStatusAgente(false); // Sem chave. Luz vermelha.
     }
   } catch (err) {
-    console.error("❌ Falha na verificação de status:", err);
     window.atualizarStatusAgente(false); // Erro de conexão, assume offline
   }
 
