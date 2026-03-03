@@ -392,7 +392,7 @@ window.atualizarStatusAgente = function(isOnline) {
   } else {
     dot.className = "status-dot offline";
     text.className = "status-text offline";
-    text.textContent = "Offline (Cadastre sua API)";
+    text.textContent = "Offline";
 
     // Bloqueia o chat para evitar que o usuário tente falar com a IA offline
     if (inputBtn) inputBtn.disabled = true;
