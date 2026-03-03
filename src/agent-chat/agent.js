@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // O RAIO-X: Vamos ver o que tem dentro da gaveta!
     console.log("📦 DADOS PUXADOS DO BANCO:", data);
 
-    if (data && data.chave_gemini_recebida) {
+    if (data && data.chave_api) {
       console.log("✅ Chave encontrada no banco!");
       window.atualizarStatusAgente(true); // Tem chave! Acende a luz verde
     } else {
