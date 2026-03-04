@@ -29,31 +29,30 @@
         </div>
       </div>
 
-      <div class="sidebar-footer">
-        <div class="sidebar-userbar" id="sidebar-userbar">
-          <i class="ph ph-envelope-simple"></i>
-          <span class="sidebar-user-email" id="user-email"></span>
+      <div class="sidebar-footer">      
 
-          <button class="sidebar-settings-btn" id="settings-btn" type="button" aria-label="Configurações">
-            <i class="ph ph-dots-three-vertical"></i>
+      <div class="sidebar-footer-item user-info-item" id="sidebar-userbar">
+        <i class="ph ph-envelope-simple"></i>
+        <span class="user-email-text" id="user-email"></span>
+
+        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
+          <i class="ph ph-dots-three-vertical"></i>
+        </button>
+
+        <div class="settings-dropdown" id="settings-menu" hidden>
+          <button type="button" class="dropdown-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
           </button>
-
-          <div class="sidebar-settings-menu" id="settings-menu" hidden>
-          
-
-            <button type="button" class="settings-item danger" id="menu-logout">
-              <i class="ph ph-sign-out"></i>
-              <span>Sair</span>
-            </button>
-          </div>
         </div>
       </div>
-      <div class="sidebar-footer">
-        <button class="theme-toggle" id="theme-toggle" type="button">
-          <i class="ph ph-moon"></i>
-          <span>Modo escuro</span>
-        </button>
-      </div>
+
+      <button class="sidebar-footer-item" id="theme-toggle" type="button">
+        <i class="ph ph-moon"></i>
+        <span>Modo escuro</span>
+      </button>
+
+    </div>
     </aside>
 
     <main class="main-content">
