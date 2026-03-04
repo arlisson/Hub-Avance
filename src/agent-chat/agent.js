@@ -48,7 +48,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const emailUser = s1.session.user?.email || "";
-  if (userEmailEl) userEmailEl.textContent = emailUser;
+  if (userEmailEl) {
+    userEmailEl.textContent = emailUser;
+    userEmailEl.title = emailUser; // tooltip (balão) no hover
+  }
 
   // --- Verificação de Status (Luz Online/Offline) ---
   checkAgentApiStatus(sb, emailUser);
