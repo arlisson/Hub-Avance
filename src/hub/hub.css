@@ -595,6 +595,13 @@ body.dark-mode .toast-close:hover {
   text-overflow: ellipsis;
 }
 
+.user-email-text {
+  flex: 1; /* Ocupa o espaço livre e empurra os 3 pontinhos para a direita */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Coloca "..." se o e-mail for muito grande */
+}
+
 .sidebar-settings-btn {
   border: none;
   background: transparent;
