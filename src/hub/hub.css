@@ -688,18 +688,12 @@ button.sidebar-footer-item:hover {
   cursor: default;
 }
 
-/* .user-email-text {
+.user-email-text {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
-} */
-
-.user-email-text.is-expanded {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  min-width: none;
 }
 
 /* Botão de 3 pontinhos */
