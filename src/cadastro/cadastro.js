@@ -406,19 +406,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   function toggleMobileFields() {
     const hasMobile = getHasMobileValue();
 
-    const shouldShow = hasMobile === true;
-    if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !shouldShow);
-    if (linesGroup) linesGroup.classList.toggle("is-hidden", !shouldShow);
+    const showExtras = hasMobile === true;
+    if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !showExtras);
+    if (linesGroup) linesGroup.classList.toggle("is-hidden", !showExtras);
     if (contractGroup) contractGroup.classList.toggle("is-hidden", !shouldShow);
+    // contrato: obrigatório só quando tem telefonia móvel (ajuste se sua regra for outra)
+    setContractTypeRequired(hasMobile === true);
 
-    
-
-    // Se não tem telefonia móvel, limpa campos
-    if (!shouldShow) {
+    if (!showExtras) {
       if (operatorInput) operatorInput.value = "";
       if (activeLinesInput) activeLinesInput.value = "";
       setValid(operatorInput);
       setValid(activeLinesInput);
+    }
+  }
+
+  function setContractTypeRequired(isRequired) {
+  const radios = document.querySelectorAll('input[name="contract_type"]');
+    radios.forEach((r) => {
+      if (isRequired) r.setAttribute("required", "required");
+      else r.removeAttribute("required");
+    });
+
+    // se não for obrigatório, limpa seleção para evitar envio “fantasma”
+    if (!isRequired) {
+      radios.forEach((r) => (r.checked = false));
     }
   }
 
@@ -484,7 +496,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Responda se sua empresa possui telefonia móvel ativa.");
       return;
     }
-    if (!contractType) {
+    if (hasMobile === true && !contractType) {
       alert("Selecione se o contrato está vinculado a CPF ou CNPJ.");
       return;
     }
