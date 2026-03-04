@@ -821,3 +821,132 @@ body.dark-mode {
   font-size: 12px;
   font-weight: 500;
 }
+
+/* Ajuste para o modo escuro */
+body.dark-mode .sidebar-footer-item {
+  color: #d1d5db;
+}
+body.dark-mode .sidebar-footer-item:hover {
+  background-color: #374151;
+}
+
+.user-info-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* --- Container Principal do Rodapé --- */
+.sidebar-footer {
+  padding: 5px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Espaço entre os itens */
+}
+
+/* --- Estilo Base dos Itens (Botões e Linha do E-mail) --- */
+.sidebar-footer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #4b5563; /* Cor igual à da imagem */
+  font-size: 14px;
+  text-align: left;
+  position: relative; /* Necessário para posicionar o menu dropdown */
+}
+
+.sidebar-footer-item i {
+  font-size: 20px;
+}
+
+/* Efeito de hover apenas nos botões clicáveis */
+button.sidebar-footer-item {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button.sidebar-footer-item:hover {
+  background-color: #f3f4f6;
+}
+
+/* --- Ajustes específicos para a linha do e-mail --- */
+.user-info-item {
+  cursor: default; /* O fundo do e-mail não é clicável */
+}
+
+.user-email-text {
+  flex: 1; /* Ocupa o espaço livre e empurra os 3 pontinhos para a direita */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Coloca "..." se o e-mail for muito grande */
+}
+
+/* Botão de 3 pontinhos */
+.settings-dots {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.settings-dots:hover {
+  background-color: #e5e7eb;
+}
+
+/* --- Menu Dropdown (Sair) --- */
+.settings-dropdown {
+  position: absolute;
+  right: 12px;     /* Alinha perto dos 3 pontinhos */
+  bottom: 100%;    /* Abre para cima */
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+  min-width: 120px;
+  z-index: 10;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #ef4444; /* Vermelho padrão para "Sair" (opcional) */
+}
+
+.dropdown-item:hover {
+  background-color: #fef2f2;
+}
+
+/* --- Modo Escuro --- */
+body.dark-mode .sidebar-footer { border-color: rgba(255,255,255,0.05); }
+body.dark-mode .sidebar-footer-item { color: #d1d5db; }
+body.dark-mode button.sidebar-footer-item:hover { background-color: #374151; }
+body.dark-mode .settings-dots:hover { background-color: rgba(255,255,255,0.1); }
+body.dark-mode .settings-dropdown { background: #1f2937; border-color: #374151; }
+body.dark-mode .dropdown-item { color: #f87171; }
+body.dark-mode .dropdown-item:hover { background-color: rgba(239, 68, 68, 0.1); }

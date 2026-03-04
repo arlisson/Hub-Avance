@@ -1,31 +1,42 @@
-// agent.js — chat responsivo + guarda de sessão + logout (padrão hub)
+/**
+ * agent.js — Chat responsivo + Menus padrão Hub + Gestão de Sessão
+ */
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // --- Elementos da Interface ---
   const chatMessages = document.getElementById("chat-messages");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
   const themeToggle = document.getElementById("theme-toggle");
   const newChatBtn = document.getElementById("new-chat-btn");
-  const logoutBtn = document.getElementById("logout-btn");
   const userEmailEl = document.getElementById("user-email");
+
+  // Elementos de Navegação (Padrão Hub)
   const menuBtn = document.getElementById("mobile-menu-btn");
+  const settingsBtn = document.getElementById("settings-btn");
+  const settingsMenu = document.getElementById("settings-menu");
+  const menuLogout = document.getElementById("menu-logout");
+
+  // --- Inicialização de Menus ---
+  initSettingsMenu(settingsBtn, settingsMenu);
+  initMobileSidebar(menuBtn);
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
 
+  // --- Configurações Iniciais ---
   const cfg = await loadAgentConfig().catch(() => null);
   const LOGIN_URL = cfg?.loginUrl || "/login/login.html";
-  const HUB_URL = cfg?.hubUrl || "/hub/hub.html";
   const AGENT_PROXY_URL = cfg?.agentProxyUrl || "/api/agent";
 
-  // Supabase (sessão)
+  // --- Supabase (Segurança e Sessão) ---
   let sb;
   try {
     if (typeof window.getSupabaseClient !== "function") {
-      throw new Error("getSupabaseClient não existe. Verifique /supabaseClient.js e supabase-js.");
+      throw new Error("getSupabaseClient não encontrado.");
     }
     sb = await window.getSupabaseClient();
   } catch (e) {
-    console.error("Supabase client não carregado:", e);
+    console.error("Erro ao carregar Supabase:", e);
     window.location.href = LOGIN_URL;
     return;
   }
@@ -37,37 +48,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const emailUser = s1.session.user?.email || "";
-  if (!emailUser) {
-    window.location.href = LOGIN_URL;
-    return;
-  }
-
   if (userEmailEl) userEmailEl.textContent = emailUser;
 
-  // Verifica se o usuário tem a API conectada no Supabase
-  try {
-    const { data, error } = await sb
-      .from('profiles')
-      .select('chave_api')
-      .eq('email', emailUser)
-      .single();
+  // --- Verificação de Status (Luz Online/Offline) ---
+  checkAgentApiStatus(sb, emailUser);
 
-    if (error) {
-        throw error; // Força o código a cair no catch
-    }
-
-    if (data && data.chave_api) {
-      window.atualizarStatusAgente(true); // Tem chave! Acende a luz verde
-    } else {
-      window.atualizarStatusAgente(false); // Sem chave. Luz vermelha.
-    }
-  } catch (err) {
-    window.atualizarStatusAgente(false); // Erro de conexão, assume offline
-  }
-
-  // Logout (igual hub)
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
+  // --- Logout (Integrado ao menu Dropdown) ---
+  if (menuLogout) {
+    menuLogout.addEventListener("click", async () => {
       try {
         await sb.auth.signOut();
       } finally {
@@ -77,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Estado por sessão (aba)
+  // --- Estado do Chat (Persistência por aba) ---
   const storageKey = `agente_chat_state:${emailUser}`;
   const chatState = loadState(storageKey);
   if (!chatState.sessionId) chatState.sessionId = newSessionId();
@@ -86,36 +74,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   renderHistory(chatMessages, chatState.messages);
 
-  // Tema
+  // --- Inicialização do Tema ---
   initTheme(themeToggle);
 
-  // Menu mobile (padrão hub: sidebar-open no body)
-  if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-      document.body.classList.toggle("sidebar-open");
-    });
-  }
-
-  // Fecha ao clicar fora da sidebar
-  document.addEventListener("click", (e) => {
-    if (!document.body.classList.contains("sidebar-open")) return;
-
-    const sidebar = document.querySelector(".sidebar");
-    const clickedInsideSidebar = sidebar?.contains(e.target);
-    const clickedMenuBtn = menuBtn?.contains(e.target);
-
-    if (!clickedInsideSidebar && !clickedMenuBtn) {
-      document.body.classList.remove("sidebar-open");
-    }
-  });
-
-  // Fecha com ESC
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") document.body.classList.remove("sidebar-open");
-  });
-
-  // Enviar mensagem
+  // --- Eventos do Chat ---
   sendBtn.addEventListener("click", () => sendMessage());
+
   userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -123,7 +87,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Reset conversa
   newChatBtn.addEventListener("click", () => {
     chatState.sessionId = newSessionId();
     chatState.messages = [];
@@ -131,6 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     chatMessages.innerHTML = "";
   });
 
+  // --- Lógica de Envio ---
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
@@ -154,24 +118,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000);
 
-      let resp;
-      try {
-        resp = await fetch(AGENT_PROXY_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            chatInput: text,
-            sessionId: chatState.sessionId,
-          }),
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timeoutId);
-      }
+      const resp = await fetch(AGENT_PROXY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          chatInput: text,
+          sessionId: chatState.sessionId,
+        }),
+        signal: controller.signal,
+      });
 
+      clearTimeout(timeoutId);
       const raw = await resp.text();
       removeLoading();
 
@@ -180,46 +140,84 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      if (!raw) throw new Error("Resposta vazia");
-
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        data = { output: raw };
-      }
-
-      if (data && data.ok === false) {
-        appendMessage(chatMessages, chatState, storageKey, "bot", formatAgentApiJsonError(data));
-        return;
-      }
+      try { data = JSON.parse(raw); } catch { data = { output: raw }; }
 
       appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
     } catch (err) {
-      console.error(err);
-      atualizarStatusAgente(false);
       removeLoading();
-
-      if (err?.name === "AbortError") {
-        appendMessage(chatMessages, chatState, storageKey, "bot", "Tempo limite ao contatar o servidor. Tente novamente.");
-        return;
-      }
-
-      appendMessage(chatMessages, chatState, storageKey, "bot", "Erro de conexão com o servidor. Tente novamente.");
+      console.error(err);
+      const errorMsg = err.name === "AbortError" ? "Tempo limite excedido." : "Erro de conexão.";
+      appendMessage(chatMessages, chatState, storageKey, "bot", errorMsg);
     }
   }
 });
 
-// -------- config --------
-async function loadAgentConfig() {
-  // Mantém compatível se você já tiver /api/public-agent-config
-  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-  const j = await r.json().catch(() => null);
-  if (!r.ok || !j?.ok) return null;
-  return j;
+// ---------------------------------------------------------
+// FUNÇÕES DE NAVEGAÇÃO E VISUAL (PADRÃO HUB)
+// ---------------------------------------------------------
+
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar?.contains(e.target)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
 }
 
-// -------- state --------
+function initMobileSidebar(menuBtn) {
+  if (!menuBtn) return;
+  menuBtn.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+}
+
+function initTheme(themeToggle) {
+  if (!themeToggle) return;
+  const isDark = localStorage.getItem("theme") === "dark";
+  document.body.classList.toggle("dark-mode", isDark);
+  updateThemeIcon(themeToggle, isDark);
+
+  themeToggle.addEventListener("click", () => {
+    const nowDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", nowDark ? "dark" : "light");
+    updateThemeIcon(themeToggle, nowDark);
+  });
+}
+
+function updateThemeIcon(btn, isDark) {
+  const icon = btn.querySelector("i");
+  const text = btn.querySelector("span");
+  if (!icon || !text) return;
+  icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
+  text.textContent = isDark ? "Modo claro" : "Modo escuro";
+}
+
+// ---------------------------------------------------------
+// GESTÃO DE ESTADO E CHAT
+// ---------------------------------------------------------
+
 function newSessionId() {
   return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
 }
@@ -228,56 +226,30 @@ function loadState(key) {
   try {
     const raw = sessionStorage.getItem(key);
     return raw ? JSON.parse(raw) : { sessionId: null, messages: [] };
-  } catch {
-    return { sessionId: null, messages: [] };
-  }
+  } catch { return { sessionId: null, messages: [] }; }
 }
 
 function saveState(key, state) {
   sessionStorage.setItem(key, JSON.stringify(state));
 }
 
-function clearAgentChatSessionStorage() {
-  try {
-    Object.keys(sessionStorage)
-      .filter((k) => k.startsWith("agente_chat_state:"))
-      .forEach((k) => sessionStorage.removeItem(k));
-  } catch {
-    // ignora
-  }
-}
-
-// -------- UI --------
 function renderHistory(chatMessages, messages) {
   chatMessages.innerHTML = "";
-  for (const msg of messages) {
-    appendMessage(chatMessages, { messages }, null, msg.role, msg.text, { persist: false });
-  }
+  messages.forEach(msg => appendMessage(chatMessages, null, null, msg.role, msg.text, { persist: false }));
 }
 
 function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {}) {
   const persist = opts.persist !== false;
-
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${role}`;
 
-  let avatarHTML = "";
-  if (role === "bot") {
-    avatarHTML = `<div class="message-avatar"><span>AI</span></div>`;
-  }
+  let avatarHTML = role === "bot" ? `<div class="message-avatar"><span>AI</span></div>` : "";
 
-  const contentHTML =
-    role === "bot"
-      ? (typeof marked !== "undefined" && marked?.parse
-        ? marked.parse(text)
-        : `<pre>${escapeHtml(text)}</pre>`)
-      : escapeHtml(text);
+  const contentHTML = role === "bot"
+    ? (window.marked ? marked.parse(text) : `<pre>${escapeHtml(text)}</pre>`)
+    : escapeHtml(text);
 
-  messageDiv.innerHTML = `
-    ${avatarHTML}
-    <div class="message-bubble">${contentHTML}</div>
-  `;
-
+  messageDiv.innerHTML = `${avatarHTML}<div class="message-bubble">${contentHTML}</div>`;
   chatMessages.appendChild(messageDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -289,14 +261,10 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
 
 function showLoading(chatMessages) {
   if (document.getElementById("loading-indicator")) return;
-
   const loadingDiv = document.createElement("div");
   loadingDiv.className = "message bot";
   loadingDiv.id = "loading-indicator";
-  loadingDiv.innerHTML = `
-    <div class="message-avatar"><span>AI</span></div>
-    <div class="message-bubble">Digitando...</div>
-  `;
+  loadingDiv.innerHTML = `<div class="message-avatar"><span>AI</span></div><div class="message-bubble">Digitando...</div>`;
   chatMessages.appendChild(loadingDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -306,74 +274,20 @@ function removeLoading() {
   if (loader) loader.remove();
 }
 
-// -------- theme --------
-function initTheme(themeToggle) {
-  if (!themeToggle) return;
+// ---------------------------------------------------------
+// HELPERS E STATUS
+// ---------------------------------------------------------
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    updateThemeIcon(themeToggle, true);
-  } else {
-    updateThemeIcon(themeToggle, false);
-  }
-
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, isDark);
-  });
-}
-
-function updateThemeIcon(themeToggle, isDark) {
-  const icon = themeToggle?.querySelector("i");
-  const text = themeToggle?.querySelector("span");
-  if (!icon || !text) return;
-
-  if (isDark) {
-    icon.classList.replace("ph-moon", "ph-sun");
-    text.textContent = "Modo claro";
-  } else {
-    icon.classList.replace("ph-sun", "ph-moon");
-    text.textContent = "Modo escuro";
-  }
-}
-
-// -------- error helpers --------
-function formatBackendError(status, raw) {
-  const base = `Erro no servidor (${status}).`;
-  if (!raw) return `${base} Resposta vazia.`;
-
+async function checkAgentApiStatus(sb, email) {
   try {
-    const j = JSON.parse(raw);
-    return formatAgentApiJsonError(j, status);
+    const { data } = await sb.from('profiles').select('chave_api').eq('email', email).single();
+    window.atualizarStatusAgente(!!(data && data.chave_api));
   } catch {
-    const t = raw.length > 600 ? raw.slice(0, 600) + "…" : raw;
-    return `${base}\n\nDetalhes:\n${t}`;
+    window.atualizarStatusAgente(false);
   }
 }
 
-function formatAgentApiJsonError(j, statusOverride) {
-  if (!j || typeof j !== "object") return "Erro no servidor.";
-
-  const status = statusOverride ? ` (${statusOverride})` : "";
-  const code = j.error ? `Código: ${j.error}` : "Erro no servidor.";
-  const msg = j.message ? `\nMensagem: ${j.message}` : "";
-  const details = j.details ? `\nDetalhes: ${String(j.details)}` : "";
-
-  if (j.error === "missing_env" && j.missing && typeof j.missing === "object") {
-    const missingKeys = Object.entries(j.missing)
-      .filter(([, v]) => !!v)
-      .map(([k]) => k);
-    const m = missingKeys.length ? `\nFaltando ENV: ${missingKeys.join(", ")}` : "";
-    return `${code}${status}${m}${msg}${details}`;
-  }
-
-  return `${code}${status}${msg}${details}`;
-}
-
-// -------- status visual do agente --------
-window.atualizarStatusAgente = function(isOnline) {
+window.atualizarStatusAgente = function (isOnline) {
   const dot = document.getElementById("status-dot");
   const text = document.getElementById("status-text");
   const inputBtn = document.getElementById("send-btn");
@@ -381,35 +295,30 @@ window.atualizarStatusAgente = function(isOnline) {
 
   if (!dot || !text) return;
 
-  if (isOnline) {
-    dot.className = "status-dot online";
-    text.className = "status-text online";
-    text.textContent = "Online";
+  dot.className = isOnline ? "status-dot online" : "status-dot offline";
+  text.className = isOnline ? "status-text online" : "status-text offline";
+  text.textContent = isOnline ? "Online" : "Offline";
 
-    // Libera o chat
-    if (inputBtn) inputBtn.disabled = false;
-    if (inputBox) inputBox.placeholder = "Digite sua mensagem...";
-  } else {
-    dot.className = "status-dot offline";
-    text.className = "status-text offline";
-    text.textContent = "Offline";
-
-    // Bloqueia o chat para evitar que o usuário tente falar com a IA offline
-    if (inputBtn) inputBtn.disabled = true;
-    if (inputBox) inputBox.placeholder = "IA offline. Verifique a credencial.";
-  }
+  if (inputBtn) inputBtn.disabled = !isOnline;
+  if (inputBox) inputBox.placeholder = isOnline ? "Digite sua mensagem..." : "IA offline. Adicione uma chave API.";
 }
 
-// -------- misc --------
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (m) => {
-    switch (m) {
-      case "&": return "&amp;";
-      case "<": return "&lt;";
-      case ">": return "&gt;";
-      case '"': return "&quot;";
-      case "'": return "&#039;";
-      default: return m;
-    }
-  });
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#039;" }[m]));
+}
+
+async function loadAgentConfig() {
+  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
+  return r.json().then(j => j.ok ? j : null);
+}
+
+function formatBackendError(status, raw) {
+  try {
+    const j = JSON.parse(raw);
+    return `Erro (${status}): ${j.message || j.error || "Erro desconhecido"}`;
+  } catch { return `Erro no servidor (${status}).`; }
+}
+
+function clearAgentChatSessionStorage() {
+  Object.keys(sessionStorage).filter(k => k.startsWith("agente_chat_state:")).forEach(k => sessionStorage.removeItem(k));
 }

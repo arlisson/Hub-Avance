@@ -16,11 +16,10 @@
 <body>
   <aside class="sidebar">
     <div class="logo-container">
-      <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
+      <a href="/hub/hub.html">
+        <img src="../img/avanceVip.png" alt="Logo da Empresa" class="company-logo" />
+      </a>
     </div>
-
-
-    <button id="btnAbrirModalSidebar" class="btn-abrir-modal">Cadastrar Chave API</button>
 
     <button class="new-chat-btn" id="new-chat-btn" type="button" style="margin-top: 15px;">
       <i class="ph ph-plus"></i>
@@ -38,28 +37,33 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="sidebar-userbar" id="sidebar-userbar">
-        <span class="sidebar-user-email" id="user-email"></span>
 
-        <button class="sidebar-settings-btn" id="settings-btn" type="button" aria-label="Configurações">
+      <button id="btnAbrirModalSidebar" class="sidebar-footer-item">
+        <i class="ph ph-key"></i>
+        <span>Chave de API</span>
+      </button>
+
+      <div class="sidebar-footer-item user-info-item" id="sidebar-userbar">
+        <i class="ph ph-envelope-simple"></i>
+        <span class="user-email-text" id="user-email"></span>
+
+        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
           <i class="ph ph-dots-three-vertical"></i>
         </button>
 
-        <div class="sidebar-settings-menu" id="settings-menu" hidden>
-
-
-          <button type="button" class="settings-item danger" id="menu-logout">
+        <div class="settings-dropdown" id="settings-menu" hidden>
+          <button type="button" class="dropdown-item danger" id="menu-logout">
             <i class="ph ph-sign-out"></i>
             <span>Sair</span>
           </button>
         </div>
       </div>
-    </div>
-    <div class="sidebar-footer">
-      <button class="theme-toggle" id="theme-toggle" type="button">
+
+      <button class="sidebar-footer-item" id="theme-toggle" type="button">
         <i class="ph ph-moon"></i>
         <span>Modo escuro</span>
       </button>
+
     </div>
   </aside>
 
