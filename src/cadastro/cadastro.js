@@ -500,7 +500,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Responda se sua empresa possui telefonia móvel ativa.");
       return;
     }
-    if (!hasMobile===true && !contractType) {
+    if (hasMobile===true && !contractType) {
       alert("Selecione se o contrato está vinculado a CPF ou CNPJ.");
       return;
     }
