@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const logoutBtn = document.getElementById("logout-btn");
   const userEmailEl = document.getElementById("user-email");
   const menuBtn = document.getElementById("mobile-menu-btn");
+  const settingsBtn = document.getElementById("settings-btn");
+const settingsMenu = document.getElementById("settings-menu");
+
+initSettingsMenu(settingsBtn, settingsMenu);
 
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
 
@@ -411,5 +415,26 @@ function escapeHtml(str) {
       case "'": return "&#039;";
       default: return m;
     }
+  });
+}
+
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  // Abre/fecha ao clicar no botão das bolinhas
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  // Fecha se clicar em qualquer outro lugar do site
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar) return close();
+    if (!userbar.contains(e.target)) close();
   });
 }
