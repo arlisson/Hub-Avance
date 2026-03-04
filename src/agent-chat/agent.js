@@ -48,7 +48,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const emailUser = s1.session.user?.email || "";
-  if (userEmailEl) userEmailEl.textContent = emailUser;
+  
+  if (userEmailEl) {
+    userEmailEl.textContent = email || "";
+    userEmailEl.title = email || ""; // balão nativo do navegador no hover
+    userEmailEl.style.cursor = "default";
+  }
 
   // --- Verificação de Status (Luz Online/Offline) ---
   checkAgentApiStatus(sb, emailUser);
