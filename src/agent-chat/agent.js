@@ -300,7 +300,7 @@ window.atualizarStatusAgente = function (isOnline) {
   text.textContent = isOnline ? "Online" : "Offline";
 
   if (inputBtn) inputBtn.disabled = !isOnline;
-  if (inputBox) inputBox.placeholder = isOnline ? "Digite sua mensagem..." : "IA offline. Verifique a credencial.";
+  if (inputBox) inputBox.placeholder = isOnline ? "Digite sua mensagem..." : "IA offline. Adicione uma chave API.";
 }
 
 function escapeHtml(str) {
