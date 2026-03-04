@@ -693,7 +693,13 @@ button.sidebar-footer-item:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: none;
+  min-width: 0;
+}
+
+.user-email-text.is-expanded {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 /* Botão de 3 pontinhos */
