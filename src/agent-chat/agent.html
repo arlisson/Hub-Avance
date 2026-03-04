@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <button id="btnAbrirModalSidebar" class="sidebar-footer-item">
+    <!-- <button id="btnAbrirModalSidebar" class="sidebar-footer-item">
       <i class="ph ph-key"></i>
       <span>Chave de API</span>
     </button>
@@ -58,7 +58,44 @@
       <i class="ph ph-moon"></i>
       <span>Modo escuro</span>
     </button>
+  </aside> -->
+
+
+
+  <div class="sidebar-footer">
+      
+      <button id="btnAbrirModalSidebar" class="sidebar-footer-item">
+        <i class="ph ph-key"></i>
+        <span>Chave de API</span>
+      </button>
+
+      <div class="sidebar-footer-item user-info-item" id="sidebar-userbar">
+        <i class="ph ph-envelope-simple"></i>
+        <span class="user-email-text" id="user-email"></span>
+
+        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
+          <i class="ph ph-dots-three-vertical"></i>
+        </button>
+
+        <div class="settings-dropdown" id="settings-menu" hidden>
+          <button type="button" class="dropdown-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="sidebar-footer-item" id="theme-toggle" type="button">
+        <i class="ph ph-moon"></i>
+        <span>Modo escuro</span>
+      </button>
+
+    </div>
   </aside>
+
+
+
+
 
   <main class="main-content">
     <header class="chat-header">
