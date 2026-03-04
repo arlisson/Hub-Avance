@@ -105,9 +105,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   showToast(WELCOME_TOAST);
 
   // Mostra email no footer (userbar)
-  const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) userEmailEl.textContent = email || "";
-
+  const emailEl = document.getElementById("user-email");
+  if (emailEl) {
+    emailEl.style.cursor = "pointer";
+    emailEl.addEventListener("click", () => {
+      emailEl.classList.toggle("is-expanded");
+    });
+  }
   // Menu (3 pontinhos)
   const settingsBtn = document.getElementById("settings-btn");
   const settingsMenu = document.getElementById("settings-menu");
