@@ -842,7 +842,7 @@ body.dark-mode .sidebar-footer-item:hover {
 
 /* --- Container Principal do Rodapé --- */
 .sidebar-footer {
-  padding: 8px;
+  padding: 5px;
   border-top: 1px solid rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
