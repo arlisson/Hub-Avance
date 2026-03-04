@@ -886,7 +886,6 @@ button.sidebar-footer-item:hover {
 
 .user-email-text {
   flex: 1; /* Ocupa o espaço livre e empurra os 3 pontinhos para a direita */
-  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* Coloca "..." se o e-mail for muito grande */
