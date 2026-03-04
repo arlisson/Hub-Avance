@@ -693,6 +693,7 @@ button.sidebar-footer-item:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* Botão de 3 pontinhos */

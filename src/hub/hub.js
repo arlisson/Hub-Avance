@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Mostra email no footer (userbar)
   const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) userEmailEl.textContent = email;
+  if (userEmailEl) userEmailEl.textContent = email || "";
 
   // Menu (3 pontinhos)
   const settingsBtn = document.getElementById("settings-btn");
