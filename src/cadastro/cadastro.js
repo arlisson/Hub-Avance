@@ -403,24 +403,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return null; // não selecionado
   }
 
-  function toggleMobileFields() {
-    const hasMobile = getHasMobileValue();
-
-    const showExtras = hasMobile === true;
-    if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !showExtras);
-    if (linesGroup) linesGroup.classList.toggle("is-hidden", !showExtras);
-    if (contractGroup) contractGroup.classList.toggle("is-hidden", !shouldShow);
-    // contrato: obrigatório só quando tem telefonia móvel (ajuste se sua regra for outra)
-    setContractTypeRequired(hasMobile === true);
-
-    if (!showExtras) {
-      if (operatorInput) operatorInput.value = "";
-      if (activeLinesInput) activeLinesInput.value = "";
-      setValid(operatorInput);
-      setValid(activeLinesInput);
-    }
-  }
-
   function setContractTypeRequired(isRequired) {
   const radios = document.querySelectorAll('input[name="contract_type"]');
     radios.forEach((r) => {
@@ -433,6 +415,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       radios.forEach((r) => (r.checked = false));
     }
   }
+
+  function toggleMobileFields() {
+    const hasMobile = getHasMobileValue();
+
+    const shouldShow = hasMobile === true;
+    if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !shouldShow);
+    if (linesGroup) linesGroup.classList.toggle("is-hidden", !shouldShow);
+    if (contractGroup) contractGroup.classList.toggle("is-hidden", !shouldShow);
+
+    // contrato: obrigatório só quando tem telefonia móvel (ajuste se sua regra for outra)
+    setContractTypeRequired(hasMobile === true);
+
+    // Se não tem telefonia móvel, limpa campos
+    if (!shouldShow) {
+      if (operatorInput) operatorInput.value = "";
+      if (activeLinesInput) activeLinesInput.value = "";
+      setValid(operatorInput);
+      setValid(activeLinesInput);
+    }
+  }
+
+  
 
   const validateMobileExtrasHard = () => {
     const hasMobile = getHasMobileValue();
@@ -496,7 +500,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Responda se sua empresa possui telefonia móvel ativa.");
       return;
     }
-    if (hasMobile === true && !contractType) {
+    if (!hasMobile===true && !contractType) {
       alert("Selecione se o contrato está vinculado a CPF ou CNPJ.");
       return;
     }
