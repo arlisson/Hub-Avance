@@ -104,15 +104,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   showToast(WELCOME_TOAST);
 
-  // Mostra email no footer (userbar)  
+  
+  // Mostra email no footer (com tooltip ao passar o mouse)
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) {
-    userEmailEl.textContent = email || "";      // <- FALTAVA ISTO
-    userEmailEl.title = email || "";            // tooltip com e-mail completo (opcional)
-    userEmailEl.style.cursor = "pointer";
-    userEmailEl.addEventListener("click", () => {
-      userEmailEl.classList.toggle("is-expanded");
-    });
+    userEmailEl.textContent = email || "";
+    userEmailEl.title = email || ""; // balão nativo do navegador no hover
+    userEmailEl.style.cursor = "default";
   }
 
   // Menu (3 pontinhos)

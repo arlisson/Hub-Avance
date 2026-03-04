@@ -697,11 +697,6 @@ button.sidebar-footer-item:hover {
   
 }
 
-.user-email-text.is-expanded {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-}
 
 /* Botão de 3 pontinhos */
 .settings-dots {
