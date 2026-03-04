@@ -188,6 +188,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const operatorGroup = document.getElementById("operator-group");
   const linesGroup = document.getElementById("lines-group");
+  const contractGroup = document.getElementById("contract-type-group");
+  
 
   // --- REDIRECIONA SE JÁ ESTIVER LOGADO ---
   try {
@@ -407,6 +409,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shouldShow = hasMobile === true;
     if (operatorGroup) operatorGroup.classList.toggle("is-hidden", !shouldShow);
     if (linesGroup) linesGroup.classList.toggle("is-hidden", !shouldShow);
+    if (contractGroup) contractGroup.classList.toggle("is-hidden", !shouldShow);
+
+    
 
     // Se não tem telefonia móvel, limpa campos
     if (!shouldShow) {
