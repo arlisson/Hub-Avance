@@ -82,6 +82,40 @@ function digitsOnly(v) {
   return String(v || "").replace(/\D/g, "");
 }
 
+// Varre o objeto inteiro e coleta strings/números que “parecem telefone”
+function extractPhoneCandidatesDeep(obj) {
+  const out = new Set();
+
+  const visit = (node) => {
+    if (node == null) return;
+
+    const t = typeof node;
+
+    if (t === "string" || t === "number") {
+      const digits = normalizePhone(node);
+      // Telefones comuns: 10-13 dígitos (sem +) / 12-13 com 55
+      if (digits.length >= 8 && digits.length <= 14) {
+        // evita capturar ids pequenos etc: exige que tenha pelo menos 8 dígitos
+        out.add(digits);
+      }
+      return;
+    }
+
+    if (Array.isArray(node)) {
+      for (const it of node) visit(it);
+      return;
+    }
+
+    if (t === "object") {
+      for (const k of Object.keys(node)) visit(node[k]);
+    }
+  };
+
+  visit(obj);
+
+  return [...out];
+}
+
 function generateProtocol(phoneDigits) {
   const now = new Date();
   const yyyy = now.getFullYear();
@@ -100,56 +134,87 @@ async function findOrganizationByPhoneExact(phoneDigits) {
   const base = "https://api.agendor.com.br/v3";
   if (!token) throw new Error("AGENDOR_API_TOKEN não configurado.");
 
-  // 1) Busca “fuzzy” para levantar candidatos
-  const candidatesResp = await fetch(
-    `${base}/organizations?term=${encodeURIComponent(phoneDigits)}&limit=10`,
-    { headers: { authorization: `Token ${token}` } }
-  );
+  const termsToTry = unique([
+    phoneDigits,
+    `55${phoneDigits}`,
+    `+55${phoneDigits}`,
+    // variações comuns (últimos 8/9 dígitos)
+    phoneDigits.slice(-9),
+    phoneDigits.slice(-8),
+  ]);
 
-  const candidatesJson = await candidatesResp.json().catch(() => ({}));
-  if (!candidatesResp.ok) {
-    const msg =
-      (Array.isArray(candidatesJson?.errors) && candidatesJson.errors[0]) ||
-      candidatesJson?.message ||
-      `HTTP ${candidatesResp.status}`;
-    throw new Error(`Falha ao buscar empresas no Agendor: ${msg}`);
+  // Coleta candidatos de todas as tentativas (evita perder por causa do formato)
+  const candidateMap = new Map();
+
+  for (const term of termsToTry) {
+    if (!term) continue;
+
+    const r = await fetch(
+      `${base}/organizations?term=${encodeURIComponent(term)}&limit=10`,
+      { headers: { authorization: `Token ${token}` } }
+    );
+
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const msg =
+        (Array.isArray(j?.errors) && j.errors[0]) ||
+        j?.message ||
+        `HTTP ${r.status}`;
+      throw new Error(`Falha ao buscar empresas no Agendor: ${msg}`);
+    }
+
+    const arr = Array.isArray(j?.data) ? j.data : [];
+    for (const o of arr) {
+      candidateMap.set(String(o.id), { id: String(o.id), name: o.name || "" });
+    }
+
+    // Se já achou candidatos suficientes, não precisa insistir muito
+    if (candidateMap.size >= 10) break;
   }
 
-  const candidates = Array.isArray(candidatesJson?.data) ? candidatesJson.data : [];
+  const candidates = [...candidateMap.values()];
   if (candidates.length === 0) return { status: "not_found" };
 
-  // 2) Match exato (normaliza com e sem 55)
-  const want = normalizePhone(phoneDigits);
-  const want55 = normalizePhone(`55${phoneDigits}`);
+  // Normalizações aceitas para match exato
+  const want = normalizePhone(phoneDigits);          // 22981200289
+  const want55 = normalizePhone(`55${phoneDigits}`); // 5522981200289
 
   const exact = [];
 
-  for (const c of candidates) {
-    const id = String(c.id);
+  // Para cada candidato, pega detalhes e varre telefones do payload completo
+  for (const c of candidates.slice(0, 10)) {
+    const id = c.id;
+
     const detailResp = await fetch(`${base}/organizations/${encodeURIComponent(id)}`, {
       headers: { authorization: `Token ${token}` },
     });
+
     const detailJson = await detailResp.json().catch(() => ({}));
     if (!detailResp.ok) continue;
 
     const data = detailJson?.data || detailJson;
-    const phones = collectPhonesFromOrganization(data).map(normalizePhone).filter(Boolean);
 
+    // Coleta todos os “telefones” possíveis via varredura recursiva
+    const phones = extractPhoneCandidatesDeep(data);
+
+    // Match exato por equivalência (com/sem 55)
     const isExact =
       phones.includes(want) ||
       phones.includes(want55) ||
       phones.includes(stripBrazilCountryCode(want55)) ||
       phones.includes(stripBrazilCountryCode(want));
 
-    if (isExact) {
-      exact.push({ id, name: data?.name || c?.name || "" });
-    }
+    if (isExact) exact.push({ id, name: data?.name || c.name || "" });
   }
 
   if (exact.length === 0) return { status: "not_found" };
   if (exact.length === 1) return { status: "single", organizationId: exact[0].id, matchedBy: "phone_exact" };
 
   return { status: "multiple", matches: exact };
+}
+
+function unique(arr) {
+  return [...new Set(arr.filter(Boolean))];
 }
 
 function collectPhonesFromOrganization(orgData) {
@@ -176,8 +241,8 @@ function collectPhonesFromOrganization(orgData) {
   return out;
 }
 
-function normalizePhone(s) {
-  return String(s || "").replace(/\D/g, "");
+function normalizePhone(v) {
+  return String(v || "").replace(/\D/g, "");
 }
 
 function stripBrazilCountryCode(d) {
@@ -185,6 +250,7 @@ function stripBrazilCountryCode(d) {
   if (s.startsWith("55") && s.length > 11) return s.slice(2);
   return s;
 }
+
 
 async function updateAgendorOrganizationProtocol({ organizationId, protocol }) {
   const token = process.env.AGENDOR_API_TOKEN;
