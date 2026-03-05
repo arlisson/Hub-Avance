@@ -232,80 +232,113 @@ body.dark-mode .hub-title {
 }
 
 /* ==========================================================
-   HERO SECTION PRINCIPAL (Estilo Apple / Dark Mode Nativo)
+   HERO SECTION PRINCIPAL (TELA CHEIA + EFEITO GLOW NO CHÃO)
    ========================================================== */
 .hero-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Centraliza verticalmente na tela */
   text-align: center;
-  padding: 60px 20px 80px; /* Muito espaço para dar impacto e respiro */
+  
+  /* Faz a seção ocupar 85% da altura da tela, empurrando os cards pra baixo */
+  min-height: 85vh; 
+  padding: 20px;
   position: relative;
-  border-bottom: 1px solid var(--border-subtle); /* Linha sutil separando os cards */
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
+/* --- A BARRA DE ILUMINAÇÃO (EFEITO CHÃO) --- */
+.hero-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%; /* A luz se concentra no meio e some nas pontas */
+  height: 2px;
+  
+  /* Cria uma linha que é ciano no meio e transparente nas bordas */
+  background: radial-gradient(circle, var(--brand-action) 0%, transparent 80%);
+  
+  /* A mágica do brilho subindo na tela */
+  box-shadow: 0 -20px 100px 20px rgba(87, 197, 234, 0.4);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Mantém o texto e o botão acima do brilho */
+  max-width: 900px;
+  margin-top: -5vh; /* Dá um leve ajuste visual pra cima */
+}
+
+/* ==========================
+   TIPOGRAFIA (Elegante e Clean)
+   ========================== */
 .hero-title {
-  /* Tamanho de fonte que encolhe no celular e cresce no PC */
-  font-size: clamp(38px, 5vw, 64px); 
-  font-weight: 800;
-  line-height: 1.15;
+  /* Fonte limpa e sofisticada */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(42px, 6vw, 76px); 
+  font-weight: 500; /* Reduzido de 800 para 500 para ficar igual à sua imagem */
+  line-height: 1.1;
   color: var(--brand-primary);
-  margin: 0 0 24px 0;
-  letter-spacing: -1.5px; /* Deixa as letras juntinhas, padrão tech */
+  margin: 0 0 30px 0;
+  letter-spacing: -1.5px;
 }
 
-/* No modo escuro, o título fica branco para dar aquele contraste igual na foto */
 body.dark-mode .hero-title {
-  color: #FAFEFF;
+  color: #FAFEFF; /* Branco puro no modo escuro */
 }
 
 .hero-subtitle {
+  font-family: 'Inter', sans-serif;
   font-size: clamp(16px, 2vw, 20px);
+  font-weight: 400;
   line-height: 1.6;
   color: var(--text-primary);
-  opacity: 0.8;
-  max-width: 680px;
+  opacity: 0.7;
+  max-width: 600px;
   margin: 0 auto 40px auto;
 }
 
 body.dark-mode .hero-subtitle {
-  color: var(--brand-light);
-  opacity: 0.85;
+  color: var(--brand-light); /* Azul pastel para não brigar com o título */
+  opacity: 0.8;
 }
 
 /* ==========================
    BOTÃO "GLOW" (Neon Cyan)
    ========================== */
 .hero-btn {
-  background-color: var(--brand-action); /* Aquele azul clarinho vibrante (57C5EA) */
-  color: #131739; /* Texto escuro para dar leitura perfeita com o cyan brilhante */
+  background-color: var(--brand-action);
+  color: #131739;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 16px 36px;
   border: none;
-  border-radius: 50px; /* Formato de pílula igual o da sua foto */
+  border-radius: 50px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* A Mágica do Brilho (Glow Effect) */
-  box-shadow: 0 10px 30px rgba(87, 197, 234, 0.4);
+  box-shadow: 0 10px 30px rgba(87, 197, 234, 0.3);
 }
 
 .hero-btn:hover {
   transform: translateY(-4px) scale(1.02);
-  /* Aumenta o brilho e muda levemente a cor no hover */
-  box-shadow: 0 15px 40px rgba(87, 197, 234, 0.7);
+  box-shadow: 0 15px 40px rgba(87, 197, 234, 0.6);
   background-color: var(--brand-accent); 
 }
 
 .hero-btn i {
   font-size: 20px;
-  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.hero-btn:hover i {
+  transform: translate(2px, -2px); /* Setinha aponta pra cima/direita no hover */
 }
 
 /* ==========================================================
