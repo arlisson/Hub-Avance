@@ -714,3 +714,67 @@ body.dark-mode .settings-dots:hover { background-color: rgba(255, 255, 255, 0.1)
 body.dark-mode .hub-footer {
   opacity: 0.4;
 }
+
+/* ==========================================================
+   SIDEBAR RECOLHÍVEL (DESKTOP)
+   ========================================================== */
+.sidebar {
+  /* Adicionamos o overflow e o nowrap para o texto não quebrar feio ao encolher */
+  overflow-x: hidden;
+  white-space: nowrap; 
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+}
+
+/* Quando a classe 'sidebar-collapsed' estiver no body, a largura cai para 80px */
+body.sidebar-collapsed .sidebar {
+  width: 80px;
+}
+
+/* Esconde logo, textos e os 3 pontinhos na versão recolhida */
+body.sidebar-collapsed .company-logo,
+body.sidebar-collapsed .chat-info,
+body.sidebar-collapsed .user-email-text,
+body.sidebar-collapsed .sidebar-footer-item span,
+body.sidebar-collapsed .settings-dots {
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+}
+
+/* Centraliza os ícones perfeitamente */
+body.sidebar-collapsed .chat-item,
+body.sidebar-collapsed .sidebar-footer-item {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* Mantém um espaço no topo para não ficar vazio sem a logo */
+body.sidebar-collapsed .logo-container {
+  height: 40px; 
+  margin-bottom: 30px;
+}
+
+/* ==========================================================
+   BOTÃO DE MENU (Agora visível no Desktop também)
+   ========================================================== */
+.mobile-menu-btn {
+  display: block !important; /* Força aparecer no desktop */
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  margin-right: 16px; /* Dá um espaço para o título se você colocar algo no header */
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(87, 197, 234, 0.15);
+  color: var(--brand-action);
+}
+
+body.dark-mode .mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

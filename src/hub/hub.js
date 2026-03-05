@@ -42,7 +42,7 @@ const APPS = [
   {
     id: "desktop",
     badge: "Preenche Fácil",
-    icon: "ph-desktop",
+    image: "",
     title: "Aplicação Desktop",
     shortDesc:
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
@@ -63,7 +63,7 @@ const APPS = [
   {
     id: "novo-produto",
     badge: "Em breve",
-    icon: "ph-rocket-launch",
+    image: "",
     title: "Novo Produto",
     shortDesc: "Espaço reservado para próximos aplicativos do hub.",
     longDesc:
@@ -145,79 +145,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Modal
   initAppModal();
 });
-
-// -------------------------
-// Renderização dos cards
-// -------------------------
-// function renderHubCards() {
-//   const grid = document.getElementById("hub-grid");
-//   if (!grid) return;
-
-//   grid.innerHTML = "";
-
-//   APPS.forEach((app) => {
-//     const card = document.createElement("article");
-//     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
-//     card.setAttribute("data-app-id", app.id);
-
-//     // Card clicável abre modal (mas não se estiver desabilitado)
-//     if (app.enabled) {
-//       card.style.cursor = "pointer";
-//       card.addEventListener("click", (e) => {
-//         // Evita abrir modal ao clicar no botão
-//         const isInteractive = e.target.closest("button,a");
-//         if (isInteractive) return;
-//         openAppModal(app.id);
-//       });
-//     } else {
-//       card.style.cursor = "not-allowed";
-//     }
-
-//     // Apenas botão "Detalhes"
-//     card.innerHTML = `
-//       <div class="hub-card-top">
-//         <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
-//         <div class="hub-icon">
-//           <i class="ph ${escapeHtml(app.icon || "ph-cube")}"></i>
-//         </div>
-//       </div>
-
-//       <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
-//       <p class="hub-card-desc">${escapeHtml(app.shortDesc || "")}</p>
-
-//       <div class="hub-card-actions">
-//         ${
-//           app.enabled
-//             ? `
-//               <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
-//                 app.id
-//               )}">
-//                 <i class="ph ph-info"></i>
-//                 <span>Detalhes</span>
-//               </button>
-//             `
-//             : `
-//               <button class="hub-btn" type="button" disabled>
-//                 <i class="ph ph-lock"></i>
-//                 <span>Indisponível</span>
-//               </button>
-//             `
-//         }
-//       </div>
-//     `;
-
-//     grid.appendChild(card);
-//   });
-
-//   // Botão “Detalhes” abre modal
-//   grid.querySelectorAll("[data-details]").forEach((btn) => {
-//     btn.addEventListener("click", (e) => {
-//       e.stopPropagation();
-//       const id = btn.getAttribute("data-details");
-//       openAppModal(id);
-//     });
-//   });
-// }
 
 // -------------------------
 // Renderização dos cards (Estilo Galeria)
@@ -455,24 +382,31 @@ function updateThemeIcon(themeToggle, isDark) {
 }
 
 // -------------------------
-// Sidebar mobile
+// Sidebar (Recolhível no Desktop / Gaveta no Mobile)
 // -------------------------
 function initMobileSidebar() {
   const menuBtn = document.getElementById("mobile-menu-btn");
 
   menuBtn?.addEventListener("click", () => {
-    document.body.classList.toggle("sidebar-open");
+    // Se a tela for menor que 900px (Mobile/Tablet)
+    if (window.innerWidth <= 900) {
+      document.body.classList.toggle("sidebar-open");
+    } else {
+      // Se for Desktop, ativa o modo recolhido
+      document.body.classList.toggle("sidebar-collapsed");
+    }
   });
 
+  // Fecha a sidebar no mobile se clicar fora dela
   document.addEventListener("click", (e) => {
-    if (!document.body.classList.contains("sidebar-open")) return;
+    if (window.innerWidth <= 900 && document.body.classList.contains("sidebar-open")) {
+      const sidebar = document.querySelector(".sidebar");
+      const clickedInsideSidebar = sidebar?.contains(e.target);
+      const clickedMenuBtn = menuBtn?.contains(e.target);
 
-    const sidebar = document.querySelector(".sidebar");
-    const clickedInsideSidebar = sidebar?.contains(e.target);
-    const clickedMenuBtn = menuBtn?.contains(e.target);
-
-    if (!clickedInsideSidebar && !clickedMenuBtn) {
-      document.body.classList.remove("sidebar-open");
+      if (!clickedInsideSidebar && !clickedMenuBtn) {
+        document.body.classList.remove("sidebar-open");
+      }
     }
   });
 }
