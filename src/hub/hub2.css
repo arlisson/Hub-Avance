@@ -232,89 +232,121 @@ body.dark-mode .hub-title {
 }
 
 /* ==========================================================
-   BANNER DE BOAS-VINDAS
+   HERO SECTION PRINCIPAL (TELA CHEIA + EFEITO GLOW NO CHÃO)
    ========================================================== */
-.welcome-banner {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--bg-sidebar) 100%);
-  border-radius: 20px;
-  padding: 36px 40px;
+.hero-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  color: #FAFEFF;
-  box-shadow: 0 15px 35px var(--shadow-color);
+  justify-content: center; /* Centraliza verticalmente na tela */
+  text-align: center;
+  
+  /* Faz a seção ocupar 85% da altura da tela, empurrando os cards pra baixo */
+  min-height: 85vh; 
+  padding: 20px;
   position: relative;
-  overflow: hidden;
+  margin-bottom: 60px;
 }
 
-/* Efeito de iluminação (Glow) abstrato no fundo do banner */
-.welcome-banner::after {
+/* --- A BARRA DE ILUMINAÇÃO (EFEITO CHÃO) --- */
+.hero-section::after {
   content: "";
   position: absolute;
-  top: -60px;
-  right: -40px;
-  width: 250px;
-  height: 250px;
-  background: var(--brand-action);
-  filter: blur(90px);
-  opacity: 0.4;
-  border-radius: 50%;
-  pointer-events: none;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%; /* A luz se concentra no meio e some nas pontas */
+  height: 2px;
+  
+  /* Cria uma linha que é ciano no meio e transparente nas bordas */
+  background: radial-gradient(circle, var(--brand-action) 0%, transparent 80%);
+  
+  /* A mágica do brilho subindo na tela */
+  box-shadow: 0 -20px 100px 20px rgba(87, 197, 234, 0.4);
+  z-index: 1;
 }
 
-.welcome-content {
+.hero-content {
   position: relative;
-  z-index: 2; /* Fica acima do glow */
-  max-width: 600px;
+  z-index: 2; /* Mantém o texto e o botão acima do brilho */
+  max-width: 900px;
+  margin-top: -5vh; /* Dá um leve ajuste visual pra cima */
 }
 
-.welcome-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
-  color: var(--brand-light);
+/* ==========================
+   TIPOGRAFIA (Elegante e Clean)
+   ========================== */
+.hero-title {
+  /* Fonte limpa e sofisticada */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(42px, 6vw, 76px); 
+  font-weight: 500; /* Reduzido de 800 para 500 para ficar igual à sua imagem */
+  line-height: 1.1;
+  color: var(--brand-primary);
+  margin: 0 0 30px 0;
+  letter-spacing: -1.5px;
 }
 
-.welcome-title {
-  font-size: 32px;
-  font-weight: 800;
-  margin: 0 0 12px 0;
-  letter-spacing: -0.5px;
+body.dark-mode .hero-title {
+  color: #FAFEFF; /* Branco puro no modo escuro */
 }
 
-.welcome-desc {
-  font-size: 15px;
-  opacity: 0.85;
+.hero-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 400;
   line-height: 1.6;
-  margin: 0;
+  color: var(--text-primary);
+  opacity: 0.7;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
 }
 
-/* Ícone grande decorativo na direita */
-.welcome-illustration {
-  position: relative;
-  z-index: 2;
-  font-size: 100px;
-  color: rgba(255, 255, 255, 0.1);
-  transform: rotate(15deg);
-  transition: transform 0.4s ease;
+body.dark-mode .hero-subtitle {
+  color: var(--brand-light); /* Azul pastel para não brigar com o título */
+  opacity: 0.8;
 }
 
-.welcome-banner:hover .welcome-illustration {
-  transform: rotate(0deg) scale(1.1);
-  color: rgba(255, 255, 255, 0.2);
+/* ==========================
+   BOTÃO "GLOW" (Neon Cyan)
+   ========================== */
+.hero-btn {
+  background-color: var(--brand-action);
+  color: #131739;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 36px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(87, 197, 234, 0.3);
 }
 
-/* Título da seção de cards */
+.hero-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(87, 197, 234, 0.6);
+  background-color: var(--brand-accent); 
+}
+
+.hero-btn i {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.hero-btn:hover i {
+  transform: translate(2px, -2px); /* Setinha aponta pra cima/direita no hover */
+}
+
+/* ==========================================================
+   TÍTULO DA SEÇÃO DE CARDS
+   ========================================================== */
 .hub-section-title {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  text-align: left;
 }
 
 .hub-section-title h2 {
@@ -322,24 +354,6 @@ body.dark-mode .hub-title {
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-}
-
-/* Ajustes para celular */
-@media (max-width: 680px) {
-  .welcome-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 28px 24px;
-  }
-  .welcome-illustration {
-    position: absolute;
-    bottom: -20px;
-    right: -10px;
-    font-size: 120px;
-  }
-  .welcome-title {
-    font-size: 26px;
-  }
 }
 
 /* ==========================================================
