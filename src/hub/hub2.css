@@ -716,21 +716,36 @@ body.dark-mode .hub-footer {
 }
 
 /* ==========================================================
-   SIDEBAR RECOLHÍVEL (DESKTOP)
+   SIDEBAR (ESTRUTURA BASE)
    ========================================================== */
 .sidebar {
-  /* Adicionamos o overflow e o nowrap para o texto não quebrar feio ao encolher */
+  width: 280px;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
   overflow-x: hidden;
   white-space: nowrap; 
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, left 0.3s ease;
+  z-index: 999;
 }
 
-/* Quando a classe 'sidebar-collapsed' estiver no body, a largura cai para 80px */
+body.dark-mode .sidebar {
+  background-color: var(--bg-sidebar);
+}
+
+/* ==========================================================
+   SIDEBAR RECOLHIDA (DESKTOP - 80px)
+   ========================================================== */
 body.sidebar-collapsed .sidebar {
   width: 80px;
 }
 
-/* Esconde logo, textos e os 3 pontinhos na versão recolhida */
 body.sidebar-collapsed .company-logo,
 body.sidebar-collapsed .chat-info,
 body.sidebar-collapsed .user-email-text,
@@ -741,51 +756,24 @@ body.sidebar-collapsed .settings-dots {
   display: none;
 }
 
-/* Centraliza os ícones perfeitamente */
 body.sidebar-collapsed .chat-item,
 body.sidebar-collapsed .sidebar-footer-item {
   justify-content: center;
   padding: 12px 0;
 }
 
-/* Mantém um espaço no topo para não ficar vazio sem a logo */
 body.sidebar-collapsed .logo-container {
   height: 40px; 
   margin-bottom: 30px;
 }
 
 /* ==========================================================
-   BOTÃO DE MENU (Agora visível no Desktop também)
-   ========================================================== */
-.mobile-menu-btn {
-  display: block !important; /* Força aparecer no desktop */
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  font-size: 24px;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
-  transition: all 0.2s;
-  margin-right: 16px; /* Dá um espaço para o título se você colocar algo no header */
-}
-
-.mobile-menu-btn:hover {
-  background: rgba(87, 197, 234, 0.15);
-  color: var(--brand-action);
-}
-
-body.dark-mode .mobile-menu-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* ==========================================================
-   BOTÃO DE RECOLHER (DESKTOP)
+   BOTÃO REDONDO (DESKTOP - ENTRA E SAI)
    ========================================================== */
 .sidebar-toggle-btn {
   position: absolute;
   top: 32px;
-  right: -16px; /* Empurrado para fora (metade dentro, metade fora) */
+  right: -16px; /* Empurrado para fora */
   width: 32px;
   height: 32px;
   background: var(--brand-primary);
@@ -801,39 +789,28 @@ body.dark-mode .mobile-menu-btn:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.sidebar-toggle-btn i {
-  font-size: 16px;
-  transition: transform 0.3s ease;
-}
-
 .sidebar-toggle-btn:hover {
   transform: scale(1.1);
   background: var(--brand-action);
 }
 
-/* Quando o menu está recolhido (80px) */
 body.sidebar-collapsed .sidebar-toggle-btn {
-  right: 24px; /* Fica perfeitamente centralizado dentro do menu */
+  right: 24px; /* Desliza para dentro do menu */
   background: transparent;
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   box-shadow: none;
 }
 
-body.sidebar-collapsed .sidebar-toggle-btn:hover {
-  background: rgba(87, 197, 234, 0.1);
-}
-
-/* Vira a setinha para a direita quando está recolhido */
 body.sidebar-collapsed .sidebar-toggle-btn i {
-  transform: rotate(180deg);
+  transform: rotate(180deg); /* Vira a setinha */
 }
 
 /* ==========================================================
-   BOTÃO DE MENU HAMBÚRGUER (MOBILE)
+   BOTÃO QUADRADO HAMBÚRGUER (APENAS MOBILE)
    ========================================================== */
 .mobile-menu-btn {
-  display: none; /* Esconde no desktop */
+  display: none; /* Mantém escondido no computador! */
   background: transparent;
   border: 1px solid var(--border-subtle);
   font-size: 24px;
@@ -843,11 +820,23 @@ body.sidebar-collapsed .sidebar-toggle-btn i {
   border-radius: 8px;
 }
 
+/* ==========================================================
+   RESPONSIVIDADE (MOBILE / TELAS MENORES)
+   ========================================================== */
 @media (max-width: 900px) {
   .mobile-menu-btn {
-    display: block; /* Volta a aparecer só no celular */
+    display: block; /* Aparece o hambúrguer no mobile */
   }
   .sidebar-toggle-btn {
     display: none; /* Esconde o botão redondo no celular */
+  }
+  .sidebar {
+    position: fixed;
+    left: -300px; /* Menu começa fora da tela */
+    width: 280px !important; /* Garante que não encolha no celular */
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  }
+  body.sidebar-open .sidebar {
+    left: 0; /* Menu desliza pra dentro quando clica no hambúrguer */
   }
 }
