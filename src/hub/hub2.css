@@ -700,3 +700,21 @@ body.dark-mode .settings-dots:hover { background-color: rgba(255, 255, 255, 0.1)
 .dropdown-item:hover {
   background-color: rgba(239, 68, 68, 0.1);
 }
+
+/* ==========================================================
+   RODAPÉ DO CONTEÚDO (FOOTER)
+   ========================================================== */
+.hub-footer {
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.6; /* Deixa o texto levemente apagado/discreto */
+  margin-top: auto; /* Força o rodapé a ficar sempre no fundo da página */
+  width: 100%;
+}
+
+/* Opcional: Se quiser que ele fique ainda mais suave no dark mode */
+body.dark-mode .hub-footer {
+  opacity: 0.4;
+}
