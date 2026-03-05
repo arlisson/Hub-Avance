@@ -1,0 +1,127 @@
+.protocol-wrap {
+  padding: 24px;
+  overflow: auto;
+}
+
+.protocol-card {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.protocol-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.protocol-subtitle {
+  margin: 6px 0 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.protocol-form .field {
+  margin-bottom: 14px;
+}
+
+.protocol-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.input-dark-lite {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.input-dark-lite:focus {
+  border-color: var(--accent-color);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.btn-primary {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.result {
+  margin-top: 14px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.result-row .k {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.result-row .v {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .protocol-wrap { padding: 14px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
