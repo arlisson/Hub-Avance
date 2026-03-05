@@ -4,125 +4,77 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Método não permitido." });
     }
 
-    async function findAnyByPhoneExact(phoneDigits) {
-    // tenta organizations, depois people, depois deals
-    const org = await findOrganizationsByPhoneExact(phoneDigits);
-    if (org.status === "single") return { status: "single", pick: `org:${org.id}` };
-    if (org.status === "multiple") return { status: "multiple", matches: org.matches.map(m => ({ key: `org:${m.id}`, label: `Empresa — ${m.name} (ID ${m.id})` })) };
-
-    const people = await findPeopleByPhoneExact(phoneDigits);
-    if (people.status === "single") return { status: "single", pick: `person:${people.id}` };
-    if (people.status === "multiple") return { status: "multiple", matches: people.matches.map(m => ({ key: `person:${m.id}`, label: `Pessoa — ${m.name} (ID ${m.id})` })) };
-
-    const deals = await findDealsByPhoneExact(phoneDigits);
-    if (deals.status === "single") return { status: "single", pick: `deal:${deals.id}` };
-    if (deals.status === "multiple") return { status: "multiple", matches: deals.matches.map(m => ({ key: `deal:${m.id}`, label: `Negócio — ${m.name} (ID ${m.id})` })) };
-
-    return { status: "not_found" };
-  }
-
-  async function updateByPick({ agendorPick, protocol }) {
-    const [kind, id] = String(agendorPick || "").split(":");
-    if (!kind || !id) return { sent: false, detail: "Seleção inválida." };
-
-    if (kind === "org") {
-      return await updateAgendorCustomField({
-        resource: "organizations",
-        id,
-        identifier: "protocolo_de_atendimento",
-        value: protocol,
-      });
-    }
-
-    if (kind === "person") {
-      // Só funciona se você também criar o campo customizado em Pessoas com mesmo identifier
-      return await updateAgendorCustomField({
-        resource: "people",
-        id,
-        identifier: "protocolo_de_atendimento",
-        value: protocol,
-      });
-    }
-
-    if (kind === "deal") {
-      // Só funciona se você também criar o campo customizado em Negócios com mesmo identifier
-      return await updateAgendorCustomField({
-        resource: "deals",
-        id,
-        identifier: "protocolo_de_atendimento",
-        value: protocol,
-      });
-    }
-
-    return { sent: false, detail: "Tipo não suportado." };
-  }
-
-  async function updateAgendorCustomField({ resource, id, identifier, value }) {
-    const token = process.env.AGENDOR_API_TOKEN;
-    const base = "https://api.agendor.com.br/v3";
-    if (!token) return { sent: false, detail: "AGENDOR_API_TOKEN não configurado." };
-
-    const payload = { customFields: { [identifier]: value } };
-
-    const r = await fetch(`${base}/${resource}/${encodeURIComponent(id)}`, {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Token ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      const msg = (Array.isArray(data?.errors) && data.errors[0]) || data?.message || `HTTP ${r.status}`;
-      return { sent: false, detail: msg };
-    }
-
-    return { sent: true, detail: "ok", resource, id };
-  }
-
     const { phone, phoneRaw, agent, channel, agendorPick, requestedBy } = req.body || {};
 
     const phoneDigits = digitsOnly(phone);
+
     if (phoneDigits.length < 10) {
       return res.status(400).json({ error: "Telefone inválido (com DDD)." });
     }
 
     const protocol = generateProtocol(phoneDigits);
 
-    // 1) Se usuário já escolheu um registro, atualiza direto
+    // Se o usuário já escolheu uma empresa no dropdown
     if (agendorPick) {
       const agendor = await updateByPick({ agendorPick, protocol });
+
       if (!agendor.sent) {
-        return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
+        return res.status(502).json({
+          error: "Falha ao registrar no Agendor.",
+          protocol,
+          agendor
+        });
       }
-      return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
+
+      return res.status(200).json({
+        protocol,
+        agendor,
+        sheets: { ok: false, detail: "skip" }
+      });
     }
 
-    // 2) Senão, buscar "até encontrar"
-    const found = await findAnyByPhoneExact(phoneDigits);
+    // Buscar empresa pelo telefone
+    const found = await findOrganizationByPhoneExact(phoneDigits);
 
     if (found.status === "not_found") {
-      return res.status(404).json({ error: "Nenhum registro encontrado no Agendor para este telefone.", protocol });
+      return res.status(404).json({
+        error: "Nenhuma empresa encontrada no Agendor para este telefone.",
+        protocol
+      });
     }
 
     if (found.status === "multiple") {
       return res.status(409).json({
-        error: "Mais de um registro encontrado. Selecione um.",
+        error: "Mais de uma empresa encontrada. Selecione uma.",
         protocol,
-        matches: found.matches, // [{key,label}]
-        agendor: { sent: false, detail: "multiple" },
+        matches: found.matches.map(m => ({
+          key: `org:${m.id}`,
+          label: `Empresa — ${m.name} (ID ${m.id})`
+        })),
+        agendor: { sent: false, detail: "multiple" }
       });
     }
 
-    // 3) Single: atualizar
-    const agendor = await updateByPick({ agendorPick: found.pick, protocol });
+    // Single match
+    const agendor = await updateByPick({
+      agendorPick: `org:${found.organizationId}`,
+      protocol
+    });
+
     if (!agendor.sent) {
-      return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
+      return res.status(502).json({
+        error: "Falha ao registrar no Agendor.",
+        protocol,
+        agendor
+      });
     }
 
-    return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
+    return res.status(200).json({
+      protocol,
+      agendor,
+      sheets: { ok: false, detail: "skip" }
+    });
+
   } catch (e) {
     return res.status(500).json({ error: e?.message || "Erro interno." });
   }
