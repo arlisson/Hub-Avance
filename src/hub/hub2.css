@@ -248,22 +248,27 @@ body.dark-mode .hub-title {
   margin-bottom: 60px;
 }
 
-/* --- A BARRA DE ILUMINAÇÃO (EFEITO CHÃO) --- */
+/* --- A BARRA DE ILUMINAÇÃO (EFEITO CHÃO - GLOW NEON) --- */
 .hero-section::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  /* Empurra o elemento físico lá para baixo, escondendo a "linha" dura */
+  bottom: -100px; 
   left: 50%;
   transform: translateX(-50%);
-  width: 70%; /* A luz se concentra no meio e some nas pontas */
-  height: 2px;
+  width: 70%; 
+  height: 120px; /* Cria um formato oval */
   
-  /* Cria uma linha que é ciano no meio e transparente nas bordas */
-  background: radial-gradient(circle, var(--brand-action) 0%, transparent 80%);
+  background: var(--brand-action);
   
-  /* A mágica do brilho subindo na tela */
-  box-shadow: 0 -20px 100px 20px rgba(87, 197, 234, 0.4);
+  /* A mágica: desfoca essa forma oval até ela virar pura luz */
+  filter: blur(90px); 
+  
+  /* Controle da força do brilho (0.6 é bem forte, se quiser menos, diminua para 0.4) */
+  opacity: 0.65; 
+  
   z-index: 1;
+  pointer-events: none; /* Garante que esse brilho não atrapalhe o clique em nada */
 }
 
 .hero-content {
