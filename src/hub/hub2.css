@@ -232,89 +232,88 @@ body.dark-mode .hub-title {
 }
 
 /* ==========================================================
-   BANNER DE BOAS-VINDAS
+   HERO SECTION PRINCIPAL (Estilo Apple / Dark Mode Nativo)
    ========================================================== */
-.welcome-banner {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--bg-sidebar) 100%);
-  border-radius: 20px;
-  padding: 36px 40px;
+.hero-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  color: #FAFEFF;
-  box-shadow: 0 15px 35px var(--shadow-color);
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px 80px; /* Muito espaço para dar impacto e respiro */
   position: relative;
-  overflow: hidden;
+  border-bottom: 1px solid var(--border-subtle); /* Linha sutil separando os cards */
+  margin-bottom: 40px;
 }
 
-/* Efeito de iluminação (Glow) abstrato no fundo do banner */
-.welcome-banner::after {
-  content: "";
-  position: absolute;
-  top: -60px;
-  right: -40px;
-  width: 250px;
-  height: 250px;
-  background: var(--brand-action);
-  filter: blur(90px);
-  opacity: 0.4;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.welcome-content {
-  position: relative;
-  z-index: 2; /* Fica acima do glow */
-  max-width: 600px;
-}
-
-.welcome-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
-  color: var(--brand-light);
-}
-
-.welcome-title {
-  font-size: 32px;
+.hero-title {
+  /* Tamanho de fonte que encolhe no celular e cresce no PC */
+  font-size: clamp(38px, 5vw, 64px); 
   font-weight: 800;
-  margin: 0 0 12px 0;
-  letter-spacing: -0.5px;
+  line-height: 1.15;
+  color: var(--brand-primary);
+  margin: 0 0 24px 0;
+  letter-spacing: -1.5px; /* Deixa as letras juntinhas, padrão tech */
 }
 
-.welcome-desc {
-  font-size: 15px;
-  opacity: 0.85;
+/* No modo escuro, o título fica branco para dar aquele contraste igual na foto */
+body.dark-mode .hero-title {
+  color: #FAFEFF;
+}
+
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
   line-height: 1.6;
-  margin: 0;
+  color: var(--text-primary);
+  opacity: 0.8;
+  max-width: 680px;
+  margin: 0 auto 40px auto;
 }
 
-/* Ícone grande decorativo na direita */
-.welcome-illustration {
-  position: relative;
-  z-index: 2;
-  font-size: 100px;
-  color: rgba(255, 255, 255, 0.1);
-  transform: rotate(15deg);
-  transition: transform 0.4s ease;
+body.dark-mode .hero-subtitle {
+  color: var(--brand-light);
+  opacity: 0.85;
 }
 
-.welcome-banner:hover .welcome-illustration {
-  transform: rotate(0deg) scale(1.1);
-  color: rgba(255, 255, 255, 0.2);
+/* ==========================
+   BOTÃO "GLOW" (Neon Cyan)
+   ========================== */
+.hero-btn {
+  background-color: var(--brand-action); /* Aquele azul clarinho vibrante (57C5EA) */
+  color: #131739; /* Texto escuro para dar leitura perfeita com o cyan brilhante */
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 36px;
+  border: none;
+  border-radius: 50px; /* Formato de pílula igual o da sua foto */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* A Mágica do Brilho (Glow Effect) */
+  box-shadow: 0 10px 30px rgba(87, 197, 234, 0.4);
 }
 
-/* Título da seção de cards */
+.hero-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  /* Aumenta o brilho e muda levemente a cor no hover */
+  box-shadow: 0 15px 40px rgba(87, 197, 234, 0.7);
+  background-color: var(--brand-accent); 
+}
+
+.hero-btn i {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ==========================================================
+   TÍTULO DA SEÇÃO DE CARDS
+   ========================================================== */
 .hub-section-title {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  text-align: left;
 }
 
 .hub-section-title h2 {
@@ -322,24 +321,6 @@ body.dark-mode .hub-title {
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-}
-
-/* Ajustes para celular */
-@media (max-width: 680px) {
-  .welcome-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 28px 24px;
-  }
-  .welcome-illustration {
-    position: absolute;
-    bottom: -20px;
-    right: -10px;
-    font-size: 120px;
-  }
-  .welcome-title {
-    font-size: 26px;
-  }
 }
 
 /* ==========================================================
