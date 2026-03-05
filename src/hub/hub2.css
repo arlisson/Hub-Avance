@@ -729,11 +729,12 @@ body.dark-mode .hub-footer {
   position: sticky;
   top: 0;
   flex-shrink: 0;
-  overflow: visible;
-  overflow-x: hidden;
+
+  overflow: visible !important; 
+  z-index: 9999 !important; /* Garante que nada passe por cima dela */
+
   white-space: nowrap; 
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, left 0.3s ease;
-  z-index: 999;
 }
 
 body.dark-mode .sidebar {
