@@ -83,6 +83,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         throw new Error("Informe um telefone válido com DDD.");
       }
 
+      const agendorType = agendorTypeEl?.value || "";
+      const agendorId = (agendorIdEl?.value || "").trim();
+
+      // Este passo é: preencher no Agendor.
+      // Você criou o campo em Empresas, então exigimos "empresa" + ID.
+      if (agendorType !== "empresa") {
+        throw new Error("Selecione 'Empresa' em 'Tipo no Agendor' (por enquanto).");
+      }
+      if (!agendorId) {
+        throw new Error("Informe o ID da empresa no Agendor.");
+      }
+
       btnGenerate.disabled = true;
 
       const payload = {
@@ -90,17 +102,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         phoneRaw,
         agent: (agentEl?.value || "").trim(),
         channel: channelEl?.value || "whatsapp",
-        agendorType: agendorTypeEl?.value || "",
-        agendorId: (agendorIdEl?.value || "").trim(),
-        // futuramente: enviar também o usuário logado
+        agendorType,
+        agendorId,
         requestedBy: email,
       };
 
-      // opcional: autenticar o endpoint com token Supabase
-      // (já que seu Hub é protegido)
       const token = sessionData.session.access_token;
 
-      const resp = await fetch("/api/generate-protocol", {
+      const resp = await fetch("/api/protoclo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,14 +123,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       try { data = JSON.parse(raw); } catch { data = { error: raw }; }
 
       if (!resp.ok) {
-        throw new Error(data?.error || "Falha ao gerar protocolo.");
+        // Se o backend retornar protocol mesmo com falha, mostrar ao usuário
+        const maybeProtocol = data?.protocol ? `\nProtocolo gerado: ${data.protocol}` : "";
+        throw new Error((data?.error || "Falha ao gerar protocolo.") + maybeProtocol);
       }
 
       const protocol = data.protocol || "";
       if (protoEl) protoEl.textContent = protocol;
 
-      if (sheetStatusEl) sheetStatusEl.textContent = data.sheets?.ok ? "OK" : "Falhou";
-      if (agendorStatusEl) agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : "Não enviado";
+      // Sheets ainda não implementado
+      if (sheetStatusEl) sheetStatusEl.textContent = "Pendente";
+
+      if (agendorStatusEl) {
+        agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : (data.agendor?.detail || "Não enviado");
+      }
 
       if (msgEl) {
         msgEl.value = buildMessage(protocol);
