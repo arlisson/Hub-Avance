@@ -232,6 +232,117 @@ body.dark-mode .hub-title {
 }
 
 /* ==========================================================
+   BANNER DE BOAS-VINDAS
+   ========================================================== */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--bg-sidebar) 100%);
+  border-radius: 20px;
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  color: #FAFEFF;
+  box-shadow: 0 15px 35px var(--shadow-color);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de iluminação (Glow) abstrato no fundo do banner */
+.welcome-banner::after {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 250px;
+  height: 250px;
+  background: var(--brand-action);
+  filter: blur(90px);
+  opacity: 0.4;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2; /* Fica acima do glow */
+  max-width: 600px;
+}
+
+.welcome-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  color: var(--brand-light);
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+}
+
+.welcome-desc {
+  font-size: 15px;
+  opacity: 0.85;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Ícone grande decorativo na direita */
+.welcome-illustration {
+  position: relative;
+  z-index: 2;
+  font-size: 100px;
+  color: rgba(255, 255, 255, 0.1);
+  transform: rotate(15deg);
+  transition: transform 0.4s ease;
+}
+
+.welcome-banner:hover .welcome-illustration {
+  transform: rotate(0deg) scale(1.1);
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Título da seção de cards */
+.hub-section-title {
+  margin-bottom: 20px;
+}
+
+.hub-section-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Ajustes para celular */
+@media (max-width: 680px) {
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+  }
+  .welcome-illustration {
+    position: absolute;
+    bottom: -20px;
+    right: -10px;
+    font-size: 120px;
+  }
+  .welcome-title {
+    font-size: 26px;
+  }
+}
+
+/* ==========================================================
    GRID E CARDS (ESTILO GALERIA / POSTER)
    ========================================================== */
 .hub-grid {
