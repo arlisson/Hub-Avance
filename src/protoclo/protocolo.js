@@ -102,8 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         phoneRaw,
         agent: (agentEl?.value || "").trim(),
         channel: channelEl?.value || "whatsapp",
-        agendorType,
-        agendorId,
+        agendorType,        
         requestedBy: email,
       };
 
