@@ -4,75 +4,125 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Método não permitido." });
     }
 
-    const {
-      phone,
-      phoneRaw,
-      agent,
-      channel,
-      agendorType,
-      agendorId, // opcional: quando usuário escolhe no dropdown
-      requestedBy,
-    } = req.body || {};
+    async function findAnyByPhoneExact(phoneDigits) {
+    // tenta organizations, depois people, depois deals
+    const org = await findOrganizationsByPhoneExact(phoneDigits);
+    if (org.status === "single") return { status: "single", pick: `org:${org.id}` };
+    if (org.status === "multiple") return { status: "multiple", matches: org.matches.map(m => ({ key: `org:${m.id}`, label: `Empresa — ${m.name} (ID ${m.id})` })) };
+
+    const people = await findPeopleByPhoneExact(phoneDigits);
+    if (people.status === "single") return { status: "single", pick: `person:${people.id}` };
+    if (people.status === "multiple") return { status: "multiple", matches: people.matches.map(m => ({ key: `person:${m.id}`, label: `Pessoa — ${m.name} (ID ${m.id})` })) };
+
+    const deals = await findDealsByPhoneExact(phoneDigits);
+    if (deals.status === "single") return { status: "single", pick: `deal:${deals.id}` };
+    if (deals.status === "multiple") return { status: "multiple", matches: deals.matches.map(m => ({ key: `deal:${m.id}`, label: `Negócio — ${m.name} (ID ${m.id})` })) };
+
+    return { status: "not_found" };
+  }
+
+  async function updateByPick({ agendorPick, protocol }) {
+    const [kind, id] = String(agendorPick || "").split(":");
+    if (!kind || !id) return { sent: false, detail: "Seleção inválida." };
+
+    if (kind === "org") {
+      return await updateAgendorCustomField({
+        resource: "organizations",
+        id,
+        identifier: "protocolo_de_atendimento",
+        value: protocol,
+      });
+    }
+
+    if (kind === "person") {
+      // Só funciona se você também criar o campo customizado em Pessoas com mesmo identifier
+      return await updateAgendorCustomField({
+        resource: "people",
+        id,
+        identifier: "protocolo_de_atendimento",
+        value: protocol,
+      });
+    }
+
+    if (kind === "deal") {
+      // Só funciona se você também criar o campo customizado em Negócios com mesmo identifier
+      return await updateAgendorCustomField({
+        resource: "deals",
+        id,
+        identifier: "protocolo_de_atendimento",
+        value: protocol,
+      });
+    }
+
+    return { sent: false, detail: "Tipo não suportado." };
+  }
+
+  async function updateAgendorCustomField({ resource, id, identifier, value }) {
+    const token = process.env.AGENDOR_API_TOKEN;
+    const base = "https://api.agendor.com.br/v3";
+    if (!token) return { sent: false, detail: "AGENDOR_API_TOKEN não configurado." };
+
+    const payload = { customFields: { [identifier]: value } };
+
+    const r = await fetch(`${base}/${resource}/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Token ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const msg = (Array.isArray(data?.errors) && data.errors[0]) || data?.message || `HTTP ${r.status}`;
+      return { sent: false, detail: msg };
+    }
+
+    return { sent: true, detail: "ok", resource, id };
+  }
+
+    const { phone, phoneRaw, agent, channel, agendorPick, requestedBy } = req.body || {};
 
     const phoneDigits = digitsOnly(phone);
     if (phoneDigits.length < 10) {
       return res.status(400).json({ error: "Telefone inválido (com DDD)." });
     }
 
-    // Neste MVP o campo foi criado em Empresas
-    if (agendorType !== "empresa") {
-      return res.status(400).json({ error: "Por enquanto, selecione 'Empresa' no Agendor." });
-    }
-
     const protocol = generateProtocol(phoneDigits);
 
-    // Se o front já escolheu uma empresa, usa direto
-    let organizationId = String(agendorId || "").trim();
-    let matchedBy = organizationId ? "selected" : "";
-
-    if (!organizationId) {
-      const found = await findOrganizationByPhoneExact(phoneDigits);
-
-      if (found.status === "not_found") {
-        return res.status(404).json({
-          error: "Nenhuma empresa encontrada no Agendor para este telefone.",
-          protocol,
-          agendor: { sent: false, detail: "not_found" },
-        });
+    // 1) Se usuário já escolheu um registro, atualiza direto
+    if (agendorPick) {
+      const agendor = await updateByPick({ agendorPick, protocol });
+      if (!agendor.sent) {
+        return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
       }
-
-      if (found.status === "multiple") {
-        return res.status(409).json({
-          error: "Mais de uma empresa encontrada para este telefone. Selecione uma.",
-          protocol,
-          matches: found.matches, // [{id,name}]
-          agendor: { sent: false, detail: "multiple" },
-        });
-      }
-
-      organizationId = found.organizationId;
-      matchedBy = found.matchedBy || "phone_exact";
+      return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
     }
 
-    const agendor = await updateAgendorOrganizationProtocol({
-      organizationId,
-      protocol,
-      meta: { phoneRaw, agent, channel, requestedBy, matchedBy },
-    });
+    // 2) Senão, buscar "até encontrar"
+    const found = await findAnyByPhoneExact(phoneDigits);
 
-    if (!agendor.sent) {
-      return res.status(502).json({
-        error: "Falha ao registrar no Agendor.",
+    if (found.status === "not_found") {
+      return res.status(404).json({ error: "Nenhum registro encontrado no Agendor para este telefone.", protocol });
+    }
+
+    if (found.status === "multiple") {
+      return res.status(409).json({
+        error: "Mais de um registro encontrado. Selecione um.",
         protocol,
-        agendor,
+        matches: found.matches, // [{key,label}]
+        agendor: { sent: false, detail: "multiple" },
       });
     }
 
-    return res.status(200).json({
-      protocol,
-      agendor: { sent: true, detail: "ok", organizationId, matchedBy },
-      sheets: { ok: false, detail: "skip" }, // depois você pluga Sheets aqui
-    });
+    // 3) Single: atualizar
+    const agendor = await updateByPick({ agendorPick: found.pick, protocol });
+    if (!agendor.sent) {
+      return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
+    }
+
+    return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
   } catch (e) {
     return res.status(500).json({ error: e?.message || "Erro interno." });
   }
@@ -126,7 +176,7 @@ function generateProtocol(phoneDigits) {
   const ss = String(now.getSeconds()).padStart(2, "0");
   const rand2 = String(Math.floor(Math.random() * 100)).padStart(2, "0");
 
-  return `TEL-${yyyy}${MM}${dd}-${hh}${mm}${ss}-${phoneDigits}-${rand2}`;
+  return `TEL-${yyyy}${MM}${dd}${hh}${mm}${ss}${phoneDigits}${rand2}`;
 }
 
 async function findOrganizationByPhoneExact(phoneDigits) {

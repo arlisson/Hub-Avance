@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const phoneEl = document.getElementById("phone");
   const agentEl = document.getElementById("agent");
   const channelEl = document.getElementById("channel");
-  const agendorTypeEl = document.getElementById("agendorType");
+  // const agendorTypeEl = document.getElementById("agendorType");
 
   // Picker de empresa (quando houver múltiplas)
   const orgPickerWrap = document.getElementById("orgPickerWrap");
@@ -73,7 +73,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!orgPickerWrap || !orgPicker) return;
     orgPicker.innerHTML = "";
 
-    // placeholder
     const ph = document.createElement("option");
     ph.value = "";
     ph.textContent = "Selecione...";
@@ -81,8 +80,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     for (const m of matches || []) {
       const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = `${m.name} (ID ${m.id})`;
+      opt.value = m.key;       // <- antes era m.id
+      opt.textContent = m.label; // <- antes era `${m.name} (ID ${m.id})`
       orgPicker.appendChild(opt);
     }
 
@@ -92,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnClear?.addEventListener("click", () => {
     if (phoneEl) phoneEl.value = "";
     if (agentEl) agentEl.value = "";
-    if (agendorTypeEl) agendorTypeEl.value = "";
+    // if (agendorTypeEl) agendorTypeEl.value = "";
     if (channelEl) channelEl.value = "whatsapp";
 
     hideOrgPicker();
@@ -133,25 +132,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         throw new Error("Informe um telefone válido com DDD.");
       }
 
-      const agendorType = agendorTypeEl?.value || "";
-
-      // MVP: empresa
-      if (agendorType !== "empresa") {
-        throw new Error("Selecione 'Empresa' em 'Tipo no Agendor' (por enquanto).");
-      }
+      
 
       btnGenerate.disabled = true;
 
       // Se usuário já selecionou uma empresa no picker, usamos esse id
-      const selectedOrgId = (orgPicker && !orgPickerWrap.hidden) ? (orgPicker.value || "") : "";
+      const selectedPick = (orgPicker && !orgPickerWrap.hidden) ? (orgPicker.value || "") : "";
 
       const payload = {
         phone,
         phoneRaw,
         agent: (agentEl?.value || "").trim(),
         channel: channelEl?.value || "whatsapp",
-        agendorType,
-        agendorId: selectedOrgId || undefined,
+        agendorPick: selectedPick || undefined, // <- novo
         requestedBy: email,
       };
 
