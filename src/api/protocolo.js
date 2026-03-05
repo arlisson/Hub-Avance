@@ -34,13 +34,46 @@ export default async function handler(req, res) {
     }
 
     // Buscar empresa pelo telefone
-    const found = await findOrganizationByPhoneExact(phoneDigits);
+    
+    let found = await findOrganizationByPhoneExact(phoneDigits);
 
+    // Se não encontrou empresa, tenta pessoa
     if (found.status === "not_found") {
-      return res.status(404).json({
-        error: "Nenhuma empresa encontrada no Agendor para este telefone.",
-        protocol
-      });
+
+      const person = await findPersonByPhoneExact(phoneDigits);
+
+      if (person.status === "single") {
+
+        const org = await resolveOrganizationFromPerson(person.personId);
+
+        if (org?.organizationId) {
+          found = { status: "single", organizationId: org.organizationId };
+        } else {
+          return res.status(404).json({
+            error: "Pessoa encontrada, mas sem empresa vinculada no Agendor.",
+            protocol
+          });
+        }
+      }
+
+      else if (person.status === "multiple") {
+        return res.status(409).json({
+          error: "Mais de uma pessoa encontrada. Selecione uma.",
+          protocol,
+          matches: person.matches.map(m => ({
+            key: `person:${m.id}`,
+            label: `Pessoa — ${m.name} (ID ${m.id})`
+          })),
+          agendor: { sent: false, detail: "multiple_people" }
+        });
+      }
+
+      else {
+        return res.status(404).json({
+          error: "Nenhuma empresa ou pessoa encontrada no Agendor para este telefone.",
+          protocol
+        });
+      }
     }
 
     if (found.status === "multiple") {
@@ -144,7 +177,7 @@ function generateProtocol(phoneDigits) {
   const ss = String(now.getSeconds()).padStart(2, "0");
   const rand2 = String(Math.floor(Math.random() * 100)).padStart(2, "0");
 
-  return `TEL-${yyyy}${MM}${dd}${hh}${mm}${ss}${phoneDigits}${rand2}`;
+  return `${dd}${MM}${yyyy}-${hh}${mm}${ss}-${phoneDigits}-${rand2}`;
 }
 
 async function findOrganizationByPhoneExact(phoneDigits) {
@@ -302,4 +335,73 @@ async function updateAgendorOrganizationProtocol({ organizationId, protocol }) {
   }
 
   return { sent: true, detail: "ok" };
+}
+
+async function resolveOrganizationFromPerson(personId) {
+
+  const token = process.env.AGENDOR_API_TOKEN;
+  const base = "https://api.agendor.com.br/v3";
+
+  const r = await fetch(`${base}/people/${encodeURIComponent(personId)}`, {
+    headers: { authorization: `Token ${token}` },
+  });
+
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) return null;
+
+  const data = j?.data || j;
+
+  const orgIds = extractOrganizationIdsDeep(data);
+
+  if (orgIds.length === 1) {
+    return { organizationId: orgIds[0] };
+  }
+
+  return null;
+}
+
+function extractOrganizationIdsDeep(obj) {
+
+  const out = new Set();
+
+  const visit = (node) => {
+
+    if (!node) return;
+
+    if (Array.isArray(node)) {
+      node.forEach(visit);
+      return;
+    }
+
+    if (typeof node !== "object") return;
+
+    for (const [k,v] of Object.entries(node)) {
+
+      const key = k.toLowerCase();
+
+      if (key === "organizationid" && (typeof v === "number" || typeof v === "string")) {
+
+        const id = String(v).replace(/\D/g,"");
+
+        if (id.length >= 6) out.add(id);
+      }
+
+      if (key.includes("organization") && v && typeof v === "object") {
+
+        if (v.id != null) {
+
+          const id = String(v.id).replace(/\D/g,"");
+
+          if (id.length >= 6) out.add(id);
+        }
+      }
+
+      visit(v);
+    }
+
+  };
+
+  visit(obj);
+
+  return [...out];
 }
