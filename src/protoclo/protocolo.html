@@ -98,22 +98,23 @@
             </div>
           </div>
 
-          <div class="grid-2">
-            <div class="field">
-              <label for="agendorType">Tipo no Agendor</label>
-              <select id="agendorType" class="input-dark-lite">
-                <option value="">Não enviar ao Agendor (por enquanto)</option>
-                <option value="empresa">Empresa</option>
-                <option value="pessoa">Pessoa</option>
-                <option value="negocio">Negócio</option>
-              </select>
-            </div>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="agendorType">Tipo no Agendor</label>
+                    <select id="agendorType" class="input-dark-lite">
+                    <option value="">Não enviar ao Agendor (por enquanto)</option>
+                    <option value="empresa">Empresa</option>
+                    <option value="pessoa">Pessoa</option>
+                    <option value="negocio">Negócio</option>
+                    </select>
+                </div>
 
-            <!-- <div class="field">
-              <label for="agendorId">ID do Agendor (opcional)</label>
-              <input id="agendorId" class="input-dark-lite" placeholder="Ex.: 123456" />
-            </div> -->
-          </div>
+                <div class="field" id="orgPickerWrap" hidden>
+                    <label for="orgPicker">Empresa encontrada</label>
+                    <select id="orgPicker" class="input-dark-lite"></select>
+                    <small class="hint">Selecione a empresa correta e clique em “Gerar” novamente.</small>
+                </div>
+            </div>
 
           <div class="actions">
             <button id="btn-generate" class="btn-primary" type="button">

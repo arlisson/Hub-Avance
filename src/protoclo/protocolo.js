@@ -45,7 +45,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const agentEl = document.getElementById("agent");
   const channelEl = document.getElementById("channel");
   const agendorTypeEl = document.getElementById("agendorType");
-  const agendorIdEl = document.getElementById("agendorId");
+
+  // Picker de empresa (quando houver múltiplas)
+  const orgPickerWrap = document.getElementById("orgPickerWrap");
+  const orgPicker = document.getElementById("orgPicker");
 
   const btnGenerate = document.getElementById("btn-generate");
   const btnClear = document.getElementById("btn-clear");
@@ -60,16 +63,62 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCopyProto = document.getElementById("btn-copy-proto");
   const btnCopyMsg = document.getElementById("btn-copy-msg");
 
+  function hideOrgPicker() {
+    if (!orgPickerWrap || !orgPicker) return;
+    orgPicker.innerHTML = "";
+    orgPickerWrap.hidden = true;
+  }
+
+  function showOrgPicker(matches) {
+    if (!orgPickerWrap || !orgPicker) return;
+    orgPicker.innerHTML = "";
+
+    // placeholder
+    const ph = document.createElement("option");
+    ph.value = "";
+    ph.textContent = "Selecione...";
+    orgPicker.appendChild(ph);
+
+    for (const m of matches || []) {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = `${m.name} (ID ${m.id})`;
+      orgPicker.appendChild(opt);
+    }
+
+    orgPickerWrap.hidden = false;
+  }
+
   btnClear?.addEventListener("click", () => {
     if (phoneEl) phoneEl.value = "";
     if (agentEl) agentEl.value = "";
-    if (agendorIdEl) agendorIdEl.value = "";
     if (agendorTypeEl) agendorTypeEl.value = "";
     if (channelEl) channelEl.value = "whatsapp";
+
+    hideOrgPicker();
 
     if (resultBox) resultBox.hidden = true;
     if (errorBox) { errorBox.hidden = true; errorBox.textContent = ""; }
   });
+
+  async function callApi(payload) {
+    const token = sessionData.session.access_token;
+
+    const resp = await fetch("/api/protocolo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const raw = await resp.text();
+    let data;
+    try { data = JSON.parse(raw); } catch { data = { error: raw }; }
+
+    return { resp, data };
+  }
 
   btnGenerate?.addEventListener("click", async () => {
     try {
@@ -84,55 +133,49 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const agendorType = agendorTypeEl?.value || "";
-      const agendorId = (agendorIdEl?.value || "").trim();
 
-      // Este passo é: preencher no Agendor.
-      // Você criou o campo em Empresas, então exigimos "empresa" + ID.
+      // MVP: empresa
       if (agendorType !== "empresa") {
         throw new Error("Selecione 'Empresa' em 'Tipo no Agendor' (por enquanto).");
       }
-    //   if (!agendorId) {
-    //     throw new Error("Informe o ID da empresa no Agendor.");
-    //   }
 
       btnGenerate.disabled = true;
+
+      // Se usuário já selecionou uma empresa no picker, usamos esse id
+      const selectedOrgId = (orgPicker && !orgPickerWrap.hidden) ? (orgPicker.value || "") : "";
 
       const payload = {
         phone,
         phoneRaw,
         agent: (agentEl?.value || "").trim(),
         channel: channelEl?.value || "whatsapp",
-        agendorType,        
+        agendorType,
+        agendorId: selectedOrgId || undefined,
         requestedBy: email,
       };
 
-      const token = sessionData.session.access_token;
+      const { resp, data } = await callApi(payload);
 
-      const resp = await fetch("/api/protocolo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      // Caso de múltiplas empresas: mostra select e pede para reenviar
+      if (resp.status === 409 && Array.isArray(data?.matches)) {
+        showOrgPicker(data.matches);
 
-      const raw = await resp.text();
-      let data;
-      try { data = JSON.parse(raw); } catch { data = { error: raw }; }
+        const maybeProtocol = data?.protocol ? ` Protocolo gerado: ${data.protocol}` : "";
+        throw new Error((data?.error || "Mais de uma empresa encontrada.") + maybeProtocol);
+      }
 
       if (!resp.ok) {
-        // Se o backend retornar protocol mesmo com falha, mostrar ao usuário
         const maybeProtocol = data?.protocol ? `\nProtocolo gerado: ${data.protocol}` : "";
         throw new Error((data?.error || "Falha ao gerar protocolo.") + maybeProtocol);
       }
 
+      // Sucesso: esconde picker (já resolveu)
+      hideOrgPicker();
+
       const protocol = data.protocol || "";
       if (protoEl) protoEl.textContent = protocol;
 
-      // Sheets ainda não implementado
       if (sheetStatusEl) sheetStatusEl.textContent = "Pendente";
-
       if (agendorStatusEl) {
         agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : (data.agendor?.detail || "Não enviado");
       }

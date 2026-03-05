@@ -125,3 +125,10 @@
   .protocol-wrap { padding: 14px; }
   .grid-2 { grid-template-columns: 1fr; }
 }
+
+.hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
