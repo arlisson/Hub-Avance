@@ -35,9 +35,24 @@ export default async function handler(req, res) {
         if (org?.organizationId) {
           found = { status: "single", organizationId: org.organizationId };
         } else {
-          return res.status(404).json({
-            error: "Pessoa encontrada, mas sem empresa vinculada no Agendor.",
+          // Sem empresa vinculada: registra diretamente na pessoa
+          const agendor = await updateByPick({
+            agendorPick: `person:${person.personId}`,
             protocol,
+          });
+
+          if (!agendor.sent) {
+            return res.status(502).json({
+              error: "Pessoa encontrada, mas falhou ao registrar protocolo na pessoa no Agendor.",
+              protocol,
+              agendor,
+            });
+          }
+
+          return res.status(200).json({
+            protocol,
+            agendor,
+            sheets: { ok: false, detail: "skip" },
           });
         }
       } else if (person.status === "multiple") {
@@ -93,7 +108,10 @@ async function updateByPick({ agendorPick, protocol }) {
     return await updateAgendorOrganizationProtocol({ organizationId: id, protocol });
   }
 
-  // Se chegar aqui com person:..., você pode implementar seleção de pessoa depois.
+  if (kind === "person") {
+    return await updateAgendorPersonProtocol({ personId: id, protocol });
+  }
+
   return { sent: false, detail: "Tipo não suportado." };
 }
 
@@ -286,6 +304,40 @@ async function findPersonByPhoneExact(phoneDigits) {
   if (exact.length === 0) return { status: "not_found" };
   if (exact.length === 1) return { status: "single", personId: exact[0].id };
   return { status: "multiple", matches: exact };
+}
+
+async function updateAgendorPersonProtocol({ personId, protocol }) {
+  const token = process.env.AGENDOR_API_TOKEN;
+  const base = "https://api.agendor.com.br/v3";
+  const identifier = "protocolo_de_atendimento";
+
+  if (!token) return { sent: false, detail: "AGENDOR_API_TOKEN não configurado." };
+
+  const payload = {
+    customFields: {
+      [identifier]: protocol,
+    },
+  };
+
+  const r = await fetch(`${base}/people/${encodeURIComponent(personId)}`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Token ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const msg =
+      (Array.isArray(data?.errors) && data.errors[0]) ||
+      data?.message ||
+      `HTTP ${r.status}`;
+    return { sent: false, detail: msg };
+  }
+
+  return { sent: true, detail: "ok", personId };
 }
 
 async function updateAgendorOrganizationProtocol({ organizationId, protocol }) {
