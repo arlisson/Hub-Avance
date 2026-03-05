@@ -120,7 +120,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return { resp, data };
   }
 
-  btnGenerate?.addEventListener("click", async () => {
+  btnGenerate?.addEventListener("click", async (e) => {
+    e.preventDefault();
     try {
       if (errorBox) { errorBox.hidden = true; errorBox.textContent = ""; }
       if (resultBox) resultBox.hidden = true;
