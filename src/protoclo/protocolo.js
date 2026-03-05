@@ -91,9 +91,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (agendorType !== "empresa") {
         throw new Error("Selecione 'Empresa' em 'Tipo no Agendor' (por enquanto).");
       }
-      if (!agendorId) {
-        throw new Error("Informe o ID da empresa no Agendor.");
-      }
+    //   if (!agendorId) {
+    //     throw new Error("Informe o ID da empresa no Agendor.");
+    //   }
 
       btnGenerate.disabled = true;
 
