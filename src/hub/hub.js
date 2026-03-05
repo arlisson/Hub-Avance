@@ -21,12 +21,12 @@ const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
 const APPS = [
   {
     id: "agent",
-    badge: "Agente de suporte | EM PRODUÇÃO",
-    icon: "ph-globe",
+    badge: "Consultor estratégico de vendas",
+    image: "../img/vasco.webp",
     title: "Agente Web | EM PRODUÇÃO",
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
-      "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+      "Este é o agente consultor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
     youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
@@ -149,6 +149,79 @@ document.addEventListener("DOMContentLoaded", async () => {
 // -------------------------
 // Renderização dos cards
 // -------------------------
+// function renderHubCards() {
+//   const grid = document.getElementById("hub-grid");
+//   if (!grid) return;
+
+//   grid.innerHTML = "";
+
+//   APPS.forEach((app) => {
+//     const card = document.createElement("article");
+//     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
+//     card.setAttribute("data-app-id", app.id);
+
+//     // Card clicável abre modal (mas não se estiver desabilitado)
+//     if (app.enabled) {
+//       card.style.cursor = "pointer";
+//       card.addEventListener("click", (e) => {
+//         // Evita abrir modal ao clicar no botão
+//         const isInteractive = e.target.closest("button,a");
+//         if (isInteractive) return;
+//         openAppModal(app.id);
+//       });
+//     } else {
+//       card.style.cursor = "not-allowed";
+//     }
+
+//     // Apenas botão "Detalhes"
+//     card.innerHTML = `
+//       <div class="hub-card-top">
+//         <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
+//         <div class="hub-icon">
+//           <i class="ph ${escapeHtml(app.icon || "ph-cube")}"></i>
+//         </div>
+//       </div>
+
+//       <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
+//       <p class="hub-card-desc">${escapeHtml(app.shortDesc || "")}</p>
+
+//       <div class="hub-card-actions">
+//         ${
+//           app.enabled
+//             ? `
+//               <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
+//                 app.id
+//               )}">
+//                 <i class="ph ph-info"></i>
+//                 <span>Detalhes</span>
+//               </button>
+//             `
+//             : `
+//               <button class="hub-btn" type="button" disabled>
+//                 <i class="ph ph-lock"></i>
+//                 <span>Indisponível</span>
+//               </button>
+//             `
+//         }
+//       </div>
+//     `;
+
+//     grid.appendChild(card);
+//   });
+
+//   // Botão “Detalhes” abre modal
+//   grid.querySelectorAll("[data-details]").forEach((btn) => {
+//     btn.addEventListener("click", (e) => {
+//       e.stopPropagation();
+//       const id = btn.getAttribute("data-details");
+//       openAppModal(id);
+//     });
+//   });
+// }
+
+// -------------------------
+// Renderização dos cards (Estilo Galeria)
+// -------------------------
 function renderHubCards() {
   const grid = document.getElementById("hub-grid");
   if (!grid) return;
@@ -160,62 +233,26 @@ function renderHubCards() {
     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
     card.setAttribute("data-app-id", app.id);
 
-    // Card clicável abre modal (mas não se estiver desabilitado)
+    // O card inteiro agora é clicável e abre o modal
     if (app.enabled) {
-      card.style.cursor = "pointer";
-      card.addEventListener("click", (e) => {
-        // Evita abrir modal ao clicar no botão
-        const isInteractive = e.target.closest("button,a");
-        if (isInteractive) return;
+      card.addEventListener("click", () => {
         openAppModal(app.id);
       });
-    } else {
-      card.style.cursor = "not-allowed";
     }
 
-    // Apenas botão "Detalhes"
+    // Estrutura limpa: Imagem de fundo, overlay com gradiente e título
+    // Se não tiver imagem cadastrada, ele pode puxar um fundo de fallback em cor sólida
+    const bgImage = app.image ? `url('${escapeHtml(app.image)}')` : 'var(--brand-primary)';
+
     card.innerHTML = `
-      <div class="hub-card-top">
-        <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
-        <div class="hub-icon">
-          <i class="ph ${escapeHtml(app.icon || "ph-cube")}"></i>
-        </div>
-      </div>
-
-      <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
-      <p class="hub-card-desc">${escapeHtml(app.shortDesc || "")}</p>
-
-      <div class="hub-card-actions">
-        ${
-          app.enabled
-            ? `
-              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(
-                app.id
-              )}">
-                <i class="ph ph-info"></i>
-                <span>Detalhes</span>
-              </button>
-            `
-            : `
-              <button class="hub-btn" type="button" disabled>
-                <i class="ph ph-lock"></i>
-                <span>Indisponível</span>
-              </button>
-            `
-        }
+      <div class="hub-card-bg" style="background-image: ${bgImage};"></div>
+      <div class="hub-card-overlay"></div>
+      <div class="hub-card-content">
+        <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
       </div>
     `;
 
     grid.appendChild(card);
-  });
-
-  // Botão “Detalhes” abre modal
-  grid.querySelectorAll("[data-details]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const id = btn.getAttribute("data-details");
-      openAppModal(id);
-    });
   });
 }
 

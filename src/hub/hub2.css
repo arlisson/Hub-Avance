@@ -215,110 +215,106 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   opacity: 0.7;
   font-size: 15px;
 }
-
+/* ==========================================================
+   GRID E CARDS (ESTILO GALERIA / POSTER)
+   ========================================================== */
 .hub-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 1fr));
-  gap: 24px;
-}
-
-@media (max-width: 980px) {
-  .hub-grid { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
-}
-
-@media (max-width: 680px) {
-  .hub-grid { grid-template-columns: 1fr; }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
 }
 
 .hub-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 24px;
+  position: relative;
+  width: 180px;         /* Largura fixa baseada na sua imagem */
+  height: 260px;        /* Altura maior que a largura (Retrato) */
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  
+  /* Borda sutil no estado normal */
+  border: 2px solid rgba(87, 197, 234, 0.2); 
+  
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px var(--shadow-color);
+  background-color: var(--brand-deep);
+  flex-shrink: 0;       /* Evita que os cards esmaguem uns aos outros */
+}
+
+/* O estado desabilitado (Novo Produto em breve) */
+.hub-card.hub-card-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+/* ==========================================
+   ANIMAÇÃO DE HOVER (Igual à imagem)
+   ========================================== */
+.hub-card:not(.hub-card-disabled):hover {
+  transform: translateY(-12px); /* Sobe o card */
+  border-color: var(--brand-action); /* Borda Cyan Brilhante */
+  box-shadow: 0 10px 25px rgba(87, 197, 234, 0.4); /* Brilho externo */
+  z-index: 2; /* Garante que ele fique por cima dos outros na animação */
+}
+
+/* A imagem de fundo cobrindo o card */
+.hub-card-bg {
+  position: absolute;
+  top: 0; left: 0; 
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+  z-index: 1;
+}
+
+/* Leve zoom na imagem de fundo quando passa o mouse */
+.hub-card:not(.hub-card-disabled):hover .hub-card-bg {
+  transform: scale(1.08);
+}
+
+/* O gradiente escuro na base do card para a letra branca ficar legível */
+.hub-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(19, 23, 57, 0.95) 100%);
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+/* Container do texto */
+.hub-card-content {
+  position: absolute;
+  bottom: 0; left: 0; 
+  width: 100%;
+  padding: 20px 16px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  min-height: 240px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 20px var(--shadow-color);
-  will-change: transform;
+  justify-content: flex-end;
 }
 
-/* Efeito de Vidro Sutil no Hover */
-.hub-card:hover {
-  transform: translateY(-8px) scale(1.01);
-  border-color: var(--brand-accent);
-  box-shadow: 0 20px 40px var(--shadow-color);
-}
-
-.hub-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 4px;
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.hub-card:hover::before { opacity: 1; }
-
-.hub-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.hub-badge {
-  background: rgba(87, 197, 234, 0.15);
-  color: var(--brand-action);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.hub-icon {
-  width: 44px;
-  height: 44px;
-  background: var(--brand-light);
-  color: var(--brand-primary);
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-}
-body.dark-mode .hub-icon { 
-  background: rgba(173, 229, 242, 0.1); 
-  color: var(--brand-light); 
-}
-
-.hub-icon i { font-size: 22px; }
-
+/* Título sempre branco e em destaque */
 .hub-card-title {
-  margin: 6px 0 10px;
-  font-size: 18px;
+  color: #FAFEFF; 
+  font-size: 16px;
   font-weight: 700;
-  color: var(--text-primary);
-}
-
-.hub-card-desc {
   margin: 0;
-  opacity: 0.85;
-  font-size: 14px;
-  line-height: 1.5;
-  flex: 1;
+  text-align: left;
+  line-height: 1.3;
 }
 
-.hub-card-actions {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.hub-card-disabled {
-  opacity: 0.6;
-  filter: grayscale(0.8);
+/* Responsividade para telas menores */
+@media (max-width: 680px) {
+  .hub-grid {
+    justify-content: center; /* Centraliza no mobile */
+  }
+  .hub-card {
+    width: 160px;
+    height: 230px;
+  }
 }
 
 /* ==========================================================
