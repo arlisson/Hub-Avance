@@ -3,26 +3,26 @@
    ========================================================== */
 :root {
   /* Cores de Fundo e Superfície */
-  --bg-main: #FAFEFF;           
+  --bg-main: #FAFEFF;
   --bg-card: #FFFFFF;
-  --bg-sidebar: #131739;        
-  
+  --bg-sidebar: #131739;
+
   /* Cores de Marca e Ação */
-  --brand-primary: #133868;     
-  --brand-accent: #5AC3E8;      
-  --brand-light: #ADE5F2;       
-  --brand-action: #57C5EA;      
-  
+  --brand-primary: #133868;
+  --brand-accent: #5AC3E8;
+  --brand-light: #ADE5F2;
+  --brand-action: #57C5EA;
+
   /* Texto e Bordas */
-  --text-primary: #0F2C58;      
-  --text-secondary: #5AC3E8;    
+  --text-primary: #0F2C58;
+  --text-secondary: #5AC3E8;
   --border-subtle: rgba(173, 229, 242, 0.4);
   --shadow-color: rgba(19, 56, 104, 0.08);
 }
 
 /* Modo Escuro */
 body.dark-mode {
-  --bg-main: #0B0E23;           
+  --bg-main: #0B0E23;
   --bg-card: #131739;
   --text-primary: #FAFEFF;
   --text-secondary: #ADE5F2;
@@ -76,13 +76,15 @@ body.dark-mode .sidebar {
 }
 
 .company-logo {
-  max-width: 160px; /* Trava o tamanho da logo */
+  max-width: 160px;
+  /* Trava o tamanho da logo */
   height: auto;
 }
 
 /* Lista de navegação (Menu) */
 .chat-list {
-  flex: 1; /* Empurra o footer lá para baixo */
+  flex: 1;
+  /* Empurra o footer lá para baixo */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -123,15 +125,23 @@ body.dark-mode .chat-item.active {
   flex-direction: column;
 }
 
-.chat-title { font-size: 15px; }
-.chat-date { font-size: 12px; opacity: 0.7; }
+.chat-title {
+  font-size: 15px;
+}
+
+.chat-date {
+  font-size: 12px;
+  opacity: 0.7;
+}
 
 /* --- CONTEÚDO PRINCIPAL --- */
 .main-content {
-  flex: 1; /* Ocupa o resto da tela */
+  flex: 1;
+  /* Ocupa o resto da tela */
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Previne quebra de layout */
+  min-width: 0;
+  /* Previne quebra de layout */
   height: 100vh;
   overflow-y: auto;
 }
@@ -148,7 +158,8 @@ body.dark-mode .chat-item.active {
 }
 
 .mobile-menu-btn {
-  display: none; /* Esconde no desktop */
+  display: none;
+  /* Esconde no desktop */
   background: none;
   border: none;
   font-size: 24px;
@@ -165,15 +176,15 @@ body.dark-mode .chat-item.active {
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .sidebar {
     position: fixed;
     left: -300px;
     z-index: 9999;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   body.sidebar-open .sidebar {
     left: 0;
   }
@@ -197,7 +208,9 @@ body {
   flex: 1;
 }
 
-.hub-head { margin-bottom: 24px; }
+.hub-head {
+  margin-bottom: 24px;
+}
 
 .hub-title {
   margin: 0;
@@ -207,7 +220,9 @@ body {
   letter-spacing: -0.5px;
 }
 
-body.dark-mode .hub-title { color: var(--brand-accent); }
+body.dark-mode .hub-title {
+  color: var(--brand-accent);
+}
 
 .hub-subtitle {
   margin: 8px 0 0;
@@ -215,6 +230,118 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   opacity: 0.7;
   font-size: 15px;
 }
+
+/* ==========================================================
+   BANNER DE BOAS-VINDAS
+   ========================================================== */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--bg-sidebar) 100%);
+  border-radius: 20px;
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  color: #FAFEFF;
+  box-shadow: 0 15px 35px var(--shadow-color);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de iluminação (Glow) abstrato no fundo do banner */
+.welcome-banner::after {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 250px;
+  height: 250px;
+  background: var(--brand-action);
+  filter: blur(90px);
+  opacity: 0.4;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2; /* Fica acima do glow */
+  max-width: 600px;
+}
+
+.welcome-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  color: var(--brand-light);
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+}
+
+.welcome-desc {
+  font-size: 15px;
+  opacity: 0.85;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Ícone grande decorativo na direita */
+.welcome-illustration {
+  position: relative;
+  z-index: 2;
+  font-size: 100px;
+  color: rgba(255, 255, 255, 0.1);
+  transform: rotate(15deg);
+  transition: transform 0.4s ease;
+}
+
+.welcome-banner:hover .welcome-illustration {
+  transform: rotate(0deg) scale(1.1);
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Título da seção de cards */
+.hub-section-title {
+  margin-bottom: 20px;
+}
+
+.hub-section-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Ajustes para celular */
+@media (max-width: 680px) {
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+  }
+  .welcome-illustration {
+    position: absolute;
+    bottom: -20px;
+    right: -10px;
+    font-size: 120px;
+  }
+  .welcome-title {
+    font-size: 26px;
+  }
+}
+
 /* ==========================================================
    GRID E CARDS (ESTILO GALERIA / POSTER)
    ========================================================== */
@@ -227,19 +354,22 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
 
 .hub-card {
   position: relative;
-  width: 180px;         /* Largura fixa baseada na sua imagem */
-  height: 260px;        /* Altura maior que a largura (Retrato) */
+  width: 180px;
+  /* Largura fixa baseada na sua imagem */
+  height: 260px;
+  /* Altura maior que a largura (Retrato) */
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  
+
   /* Borda sutil no estado normal */
-  border: 2px solid rgba(87, 197, 234, 0.2); 
-  
+  border: 2px solid rgba(87, 197, 234, 0.2);
+
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 0 4px 15px var(--shadow-color);
   background-color: var(--brand-deep);
-  flex-shrink: 0;       /* Evita que os cards esmaguem uns aos outros */
+  flex-shrink: 0;
+  /* Evita que os cards esmaguem uns aos outros */
 }
 
 /* O estado desabilitado (Novo Produto em breve) */
@@ -253,17 +383,23 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
    ANIMAÇÃO DE HOVER (Igual à imagem)
    ========================================== */
 .hub-card:not(.hub-card-disabled):hover {
-  transform: translateY(-12px); /* Sobe o card */
-  border-color: var(--brand-action); /* Borda Cyan Brilhante */
-  box-shadow: 0 10px 25px rgba(87, 197, 234, 0.4); /* Brilho externo */
-  z-index: 2; /* Garante que ele fique por cima dos outros na animação */
+  transform: translateY(-12px);
+  /* Sobe o card */
+  border-color: var(--brand-action);
+  /* Borda Cyan Brilhante */
+  box-shadow: 0 10px 25px rgba(87, 197, 234, 0.4);
+  /* Brilho externo */
+  z-index: 2;
+  /* Garante que ele fique por cima dos outros na animação */
 }
 
 /* A imagem de fundo cobrindo o card */
 .hub-card-bg {
   position: absolute;
-  top: 0; left: 0; 
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   transition: transform 0.5s ease;
@@ -287,7 +423,8 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
 /* Container do texto */
 .hub-card-content {
   position: absolute;
-  bottom: 0; left: 0; 
+  bottom: 0;
+  left: 0;
   width: 100%;
   padding: 20px 16px;
   z-index: 3;
@@ -298,7 +435,7 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
 
 /* Título sempre branco e em destaque */
 .hub-card-title {
-  color: #FAFEFF; 
+  color: #FAFEFF;
   font-size: 16px;
   font-weight: 700;
   margin: 0;
@@ -309,8 +446,10 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
 /* Responsividade para telas menores */
 @media (max-width: 680px) {
   .hub-grid {
-    justify-content: center; /* Centraliza no mobile */
+    justify-content: center;
+    /* Centraliza no mobile */
   }
+
   .hub-card {
     width: 160px;
     height: 230px;
@@ -367,7 +506,8 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: rgba(19, 23, 57, 0.6); /* --brand-deep com opacidade */
+  background: rgba(19, 23, 57, 0.6);
+  /* --brand-deep com opacidade */
   backdrop-filter: blur(4px);
 }
 
@@ -397,7 +537,9 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   background: linear-gradient(to bottom, rgba(173, 229, 242, 0.1), transparent);
 }
 
-.app-modal-titlewrap { min-width: 0; }
+.app-modal-titlewrap {
+  min-width: 0;
+}
 
 .app-modal-badge {
   display: inline-block;
@@ -436,14 +578,17 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   opacity: 1;
 }
 
-.app-modal-close i { font-size: 20px; }
+.app-modal-close i {
+  font-size: 20px;
+}
 
 .app-modal-body {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 20px 24px;
-  height: calc(100% - 85px); /* Ajustado para o novo padding do header */
+  height: calc(100% - 85px);
+  /* Ajustado para o novo padding do header */
   box-sizing: border-box;
   overflow: auto;
 }
@@ -480,7 +625,9 @@ body.dark-mode .hub-title { color: var(--brand-accent); }
   border: 0;
 }
 
-body.modal-open { overflow: hidden; }
+body.modal-open {
+  overflow: hidden;
+}
 
 /* ==========================================================
    5. TOAST (Boas-vindas)
@@ -519,7 +666,8 @@ body.modal-open { overflow: hidden; }
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(19, 23, 57, 0.6); /* Ajustado para a paleta */
+  background: rgba(19, 23, 57, 0.6);
+  /* Ajustado para a paleta */
   backdrop-filter: blur(8px);
 }
 
@@ -625,7 +773,10 @@ body.modal-open { overflow: hidden; }
   position: relative;
 }
 
-.sidebar-footer-item i { font-size: 20px; color: var(--brand-action); }
+.sidebar-footer-item i {
+  font-size: 20px;
+  color: var(--brand-action);
+}
 
 button.sidebar-footer-item {
   cursor: pointer;
@@ -636,7 +787,9 @@ button.sidebar-footer-item:hover {
   background-color: rgba(87, 197, 234, 0.1);
 }
 
-.user-info-item { cursor: default; }
+.user-info-item {
+  cursor: default;
+}
 
 .user-email-text {
   flex: 1;
@@ -660,8 +813,13 @@ button.sidebar-footer-item:hover {
   transition: all 0.2s;
 }
 
-.settings-dots:hover { background-color: rgba(19, 56, 104, 0.1); }
-body.dark-mode .settings-dots:hover { background-color: rgba(255, 255, 255, 0.1); }
+.settings-dots:hover {
+  background-color: rgba(19, 56, 104, 0.1);
+}
+
+body.dark-mode .settings-dots:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
 
 .settings-dropdown {
   position: absolute;
@@ -705,8 +863,10 @@ body.dark-mode .settings-dots:hover { background-color: rgba(255, 255, 255, 0.1)
   padding: 24px 20px;
   font-size: 13px;
   font-weight: 500;
-  opacity: 0.6; /* Deixa o texto levemente apagado/discreto */
-  margin-top: auto; /* Força o rodapé a ficar sempre no fundo da página */
+  opacity: 0.6;
+  /* Deixa o texto levemente apagado/discreto */
+  margin-top: auto;
+  /* Força o rodapé a ficar sempre no fundo da página */
   width: 100%;
 }
 
@@ -730,10 +890,11 @@ body.dark-mode .hub-footer {
   top: 0;
   flex-shrink: 0;
 
-  overflow: visible !important; 
-  z-index: 9999 !important; /* Garante que nada passe por cima dela */
+  overflow: visible !important;
+  z-index: 9999 !important;
+  /* Garante que nada passe por cima dela */
 
-  white-space: nowrap; 
+  white-space: nowrap;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, left 0.3s ease;
 }
 
@@ -765,7 +926,7 @@ body.sidebar-collapsed .sidebar-footer-item {
 }
 
 body.sidebar-collapsed .logo-container {
-  height: 40px; 
+  height: 40px;
   margin-bottom: 30px;
 }
 
@@ -778,9 +939,11 @@ body.sidebar-collapsed .logo-container {
   right: -16px; /* Empurrado para fora */
   width: 32px;
   height: 32px;
-  background: var(--brand-primary);
-  color: #FAFEFF;
-  border: none;
+
+  background: var(--bg-card); /* Fica branco no claro e escuro no dark mode */
+  color: var(--text-primary); /* Ícone acompanha a cor do texto */
+  border: 1px solid var(--border-subtle); /* Bordinha leve igual a do menu */
+
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -793,11 +956,14 @@ body.sidebar-collapsed .logo-container {
 
 .sidebar-toggle-btn:hover {
   transform: scale(1.1);
-  background: var(--brand-action);
+  background: rgba(87, 197, 234, 0.15); 
+  color: var(--brand-action);
+  border-color: var(--brand-action);
 }
 
 body.sidebar-collapsed .sidebar-toggle-btn {
-  right: 24px; /* Desliza para dentro do menu */
+  right: 24px;
+  /* Desliza para dentro do menu */
   background: transparent;
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
@@ -805,14 +971,16 @@ body.sidebar-collapsed .sidebar-toggle-btn {
 }
 
 body.sidebar-collapsed .sidebar-toggle-btn i {
-  transform: rotate(180deg); /* Vira a setinha */
+  transform: rotate(180deg);
+  /* Vira a setinha */
 }
 
 /* ==========================================================
    BOTÃO QUADRADO HAMBÚRGUER (APENAS MOBILE)
    ========================================================== */
 .mobile-menu-btn {
-  display: none; /* Mantém escondido no computador! */
+  display: none;
+  /* Mantém escondido no computador! */
   background: transparent;
   border: 1px solid var(--border-subtle);
   font-size: 24px;
@@ -827,18 +995,26 @@ body.sidebar-collapsed .sidebar-toggle-btn i {
    ========================================================== */
 @media (max-width: 900px) {
   .mobile-menu-btn {
-    display: block; /* Aparece o hambúrguer no mobile */
+    display: block;
+    /* Aparece o hambúrguer no mobile */
   }
+
   .sidebar-toggle-btn {
-    display: none; /* Esconde o botão redondo no celular */
+    display: none;
+    /* Esconde o botão redondo no celular */
   }
+
   .sidebar {
     position: fixed;
-    left: -300px; /* Menu começa fora da tela */
-    width: 280px !important; /* Garante que não encolha no celular */
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    left: -300px;
+    /* Menu começa fora da tela */
+    width: 280px !important;
+    /* Garante que não encolha no celular */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
   }
+
   body.sidebar-open .sidebar {
-    left: 0; /* Menu desliza pra dentro quando clica no hambúrguer */
+    left: 0;
+    /* Menu desliza pra dentro quando clica no hambúrguer */
   }
 }
