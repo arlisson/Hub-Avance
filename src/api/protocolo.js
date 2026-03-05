@@ -121,16 +121,18 @@ function digitsOnly(v) {
 
 function generateProtocol(phoneDigits) {
   const now = new Date();
-  const yyyy = now.getFullYear();
+
+  const yy = String(now.getFullYear()).slice(-2);
   const MM = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
-  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  const last4 = String(phoneDigits || "").slice(-4).padStart(4, "0");
   const rand2 = String(Math.floor(Math.random() * 100)).padStart(2, "0");
 
-  // Seu formato (ajuste livremente)
-  return `${dd}${MM}${yyyy}-${hh}${mm}${ss}-${phoneDigits}-${rand2}`;
+  // Ex: 2603051822484325
+  return `${yy}${MM}${dd}${hh}${mm}${last4}${rand2}`;
 }
 
 function normalizePhone(v) {
