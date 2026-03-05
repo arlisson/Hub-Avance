@@ -80,6 +80,22 @@ export default async function handler(req, res) {
   }
 }
 
+async function updateByPick({ agendorPick, protocol }) {
+  const [kind, id] = String(agendorPick || "").split(":");
+
+  if (!kind || !id) {
+    return { sent: false, detail: "Seleção inválida." };
+  }
+
+  if (kind === "org") {
+    return await updateAgendorOrganizationProtocol({
+      organizationId: id,
+      protocol
+    });
+  }
+
+  return { sent: false, detail: "Tipo não suportado." };
+}
 function digitsOnly(v) {
   return String(v || "").replace(/\D/g, "");
 }
@@ -210,7 +226,7 @@ async function findOrganizationByPhoneExact(phoneDigits) {
   }
 
   if (exact.length === 0) return { status: "not_found" };
-  if (exact.length === 1) return { status: "single", organizationId: exact[0].id, matchedBy: "phone_exact" };
+  if (exact.length === 1) return { status: "single", organizationId: exact[0].id };
 
   return { status: "multiple", matches: exact };
 }
