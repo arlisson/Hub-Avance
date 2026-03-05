@@ -778,3 +778,76 @@ body.sidebar-collapsed .logo-container {
 body.dark-mode .mobile-menu-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+/* ==========================================================
+   BOTÃO DE RECOLHER (DESKTOP)
+   ========================================================== */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 32px;
+  right: -16px; /* Empurrado para fora (metade dentro, metade fora) */
+  width: 32px;
+  height: 32px;
+  background: var(--brand-primary);
+  color: #FAFEFF;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-toggle-btn i {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: scale(1.1);
+  background: var(--brand-action);
+}
+
+/* Quando o menu está recolhido (80px) */
+body.sidebar-collapsed .sidebar-toggle-btn {
+  right: 24px; /* Fica perfeitamente centralizado dentro do menu */
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
+}
+
+body.sidebar-collapsed .sidebar-toggle-btn:hover {
+  background: rgba(87, 197, 234, 0.1);
+}
+
+/* Vira a setinha para a direita quando está recolhido */
+body.sidebar-collapsed .sidebar-toggle-btn i {
+  transform: rotate(180deg);
+}
+
+/* ==========================================================
+   BOTÃO DE MENU HAMBÚRGUER (MOBILE)
+   ========================================================== */
+.mobile-menu-btn {
+  display: none; /* Esconde no desktop */
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .mobile-menu-btn {
+    display: block; /* Volta a aparecer só no celular */
+  }
+  .sidebar-toggle-btn {
+    display: none; /* Esconde o botão redondo no celular */
+  }
+}

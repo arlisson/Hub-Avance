@@ -385,16 +385,17 @@ function updateThemeIcon(themeToggle, isDark) {
 // Sidebar (Recolhível no Desktop / Gaveta no Mobile)
 // -------------------------
 function initMobileSidebar() {
-  const menuBtn = document.getElementById("mobile-menu-btn");
+  const mobileBtn = document.getElementById("mobile-menu-btn");
+  const desktopBtn = document.getElementById("desktop-toggle-btn");
 
-  menuBtn?.addEventListener("click", () => {
-    // Se a tela for menor que 900px (Mobile/Tablet)
-    if (window.innerWidth <= 900) {
-      document.body.classList.toggle("sidebar-open");
-    } else {
-      // Se for Desktop, ativa o modo recolhido
-      document.body.classList.toggle("sidebar-collapsed");
-    }
+  // Botão redondo do Desktop
+  desktopBtn?.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-collapsed");
+  });
+
+  // Botão hambúrguer do Mobile
+  mobileBtn?.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
   });
 
   // Fecha a sidebar no mobile se clicar fora dela
@@ -402,9 +403,9 @@ function initMobileSidebar() {
     if (window.innerWidth <= 900 && document.body.classList.contains("sidebar-open")) {
       const sidebar = document.querySelector(".sidebar");
       const clickedInsideSidebar = sidebar?.contains(e.target);
-      const clickedMenuBtn = menuBtn?.contains(e.target);
+      const clickedMobileBtn = mobileBtn?.contains(e.target);
 
-      if (!clickedInsideSidebar && !clickedMenuBtn) {
+      if (!clickedInsideSidebar && !clickedMobileBtn) {
         document.body.classList.remove("sidebar-open");
       }
     }
