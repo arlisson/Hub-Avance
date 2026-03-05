@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const token = sessionData.session.access_token;
 
-      const resp = await fetch("/api/protoclo", {
+      const resp = await fetch("/api/protocolo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
