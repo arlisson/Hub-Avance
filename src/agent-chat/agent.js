@@ -202,23 +202,34 @@ function initMobileSidebar(menuBtn) {
 
 function initTheme(themeToggle) {
   if (!themeToggle) return;
-  const isDark = localStorage.getItem("theme") === "dark";
-  document.body.classList.toggle("dark-mode", isDark);
-  updateThemeIcon(themeToggle, isDark);
+
+  const savedTheme = localStorage.getItem("theme");
+  const isLight = savedTheme === "light";
+
+  document.body.classList.toggle("light-mode", isLight);
+  updateThemeIcon(themeToggle);
 
   themeToggle.addEventListener("click", () => {
-    const nowDark = document.body.classList.toggle("dark-mode");
-    localStorage.setItem("theme", nowDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, nowDark);
+    const nowLight = document.body.classList.toggle("light-mode");
+    localStorage.setItem("theme", nowLight ? "light" : "dark");
+    updateThemeIcon(themeToggle);
   });
 }
 
-function updateThemeIcon(btn, isDark) {
+function updateThemeIcon(btn) {
   const icon = btn.querySelector("i");
   const text = btn.querySelector("span");
   if (!icon || !text) return;
-  icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
-  text.textContent = isDark ? "Modo claro" : "Modo escuro";
+
+  const isLight = document.body.classList.contains("light-mode");
+
+  if (isLight) {
+    icon.className = "ph ph-moon";
+    text.textContent = "Modo escuro";
+  } else {
+    icon.className = "ph ph-sun";
+    text.textContent = "Modo claro";
+  }
 }
 
 // ---------------------------------------------------------
