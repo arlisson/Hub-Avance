@@ -13,68 +13,50 @@
 </head>
 
 <body>
-  <aside class="sidebar">
-    <button class="sidebar-toggle-btn" id="desktop-toggle-btn" type="button" aria-label="Recolher menu">
-      <i class="ph ph-caret-left"></i>
-    </button>
-    <div class="logo-container">
-      <img src="../../img/avanceVip.png" alt="Logo AVANCE" class="company-logo" />
-    </div>
-
-
-
-    <div class="chat-list">
-      <div class="chat-item active">
-        <i class="ph ph-squares-four"></i>
-        <div class="chat-info">
-          <div class="chat-title">Hub de Aplicações</div>
-          <div class="chat-date">Produtos disponíveis</div>
-        </div>
+  <header class="top-navbar">
+      <div class="navbar-left">
+        <a href="#" class="navbar-brand">
+          <div class="brand-icon">
+            <i class="ph ph-squares-four"></i>
+          </div>
+          <span class="brand-name">App Hub</span>
+        </a>
+        
+        <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Alternar tema">
+          <i class="ph ph-moon"></i>
+          <span style="display: none;">Modo escuro</span> </button>
       </div>
-    </div>
 
-    <div class="sidebar-footer">
+      <nav class="navbar-links">
+        <a href="#" class="nav-link active">Início</a>
+        <a href="#hub-grid" class="nav-link">Aplicativos</a>
+        <a href="#" class="nav-link">Sobre</a>
+        <a href="#" class="nav-link">Contato</a>
+      </nav>
 
-      <div class="sidebar-footer-item user-info-item" id="sidebar-userbar">
-        <i class="ph ph-envelope-simple"></i>
-        <span class="user-email-text" id="user-email"></span>
-
-        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
-          <i class="ph ph-dots-three-vertical"></i>
-        </button>
-
-        <div class="settings-dropdown" id="settings-menu" hidden>
-          <button type="button" class="dropdown-item danger" id="menu-logout">
-            <i class="ph ph-sign-out"></i>
-            <span>Sair</span>
+      <div class="navbar-right">
+        <div class="user-menu-container">
+          <button class="user-profile-btn" id="settings-btn" type="button">
+            <i class="ph ph-user-circle"></i>
+            <span id="user-email" class="nav-user-email">Carregando...</span>
+            <i class="ph ph-caret-down" style="font-size: 14px;"></i>
           </button>
+          
+          <div class="settings-dropdown" id="settings-menu" hidden>
+            <button type="button" class="dropdown-item danger" id="menu-logout">
+              <i class="ph ph-sign-out"></i>
+              <span>Sair</span>
+            </button>
+          </div>
         </div>
+
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
+          <i class="ph ph-list"></i>
+        </button>
       </div>
-
-      <button class="sidebar-footer-item" id="theme-toggle" type="button">
-        <i class="ph ph-moon"></i>
-        <span>Modo escuro</span>
-      </button>
-
-    </div>
-  </aside>
+    </header>
 
   <main class="main-content">
-    <header class="chat-header">
-      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
-        <i class="ph ph-list"></i>
-      </button>
-
-      <!-- <div class="assistant-info">
-          <div class="assistant-avatar">
-            <img src="../../img/icone.jpg" alt="Avatar" />
-          </div>
-          <div class="assistant-details">
-            <span class="name">Hub AVANCE</span>
-            <span class="status">Acesso controlado por login</span>
-          </div>
-        </div> -->
-    </header>
 
     <section class="hero-section">
       <div class="hero-content">
