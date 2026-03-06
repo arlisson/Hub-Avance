@@ -978,107 +978,80 @@ body.dark-mode .nav-link.active {
 /* ==========================================================
    MENU DO USUÁRIO (Corrigido)
    ========================================================== */
-.user-menu-container {
-  position: relative;
-}
-
-/* --- Botão do Perfil --- */
+/* 1. Limpa qualquer efeito de borda/brilho ao clicar no botão de perfil */
 .user-profile-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-card); /* Fundo sólido para tampar a luz de trás */
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 50px; /* Mantém o seu formato de pílula */
-  transition: all 0.2s ease;
-}
-
-/* Remove a borda preta feia do navegador e põe um brilho da sua marca */
-.user-profile-btn:focus {
   outline: none !important;
-  border-color: var(--brand-action) !important;
-  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.2);
+  -webkit-tap-highlight-color: transparent !important;
 }
 
-.user-profile-btn:hover {
-  background: rgba(87, 197, 234, 0.05);
-  border-color: var(--brand-action);
+.user-profile-btn:focus, .user-profile-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--border-subtle) !important;
 }
 
-.nav-user-email {
-  max-width: 140px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* --- Dropdown de Sair --- */
+/* 2. A Caixa do Menu */
 .settings-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 14px); /* Espaçamento exato abaixo do botão */
+  position: absolute !important;
+  top: calc(100% + 12px) !important;
+  right: 0 !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  padding: 6px !important;
+  min-width: 140px !important;
   
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); /* Sombra forte para destacar */
-  
-  padding: 6px;
-  min-width: 160px;
-  z-index: 99999 !important; /* Camada máxima absoluta */
-  
-  /* Garante que o fundo não suma */
-  display: flex;
-  flex-direction: column;
+  /* O Segredo: Força a caixa a abraçar o conteúdo e voltar ao tamanho normal */
+  height: auto !important;
+  max-height: none !important;
+  display: block !important; 
+  overflow: visible !important;
+  z-index: 99999 !important;
 }
 
-/* Resolve a briga com o HTML (Quando o JS esconder o menu, ele some de verdade) */
+/* Regra para o menu sumir de verdade quando escondido pelo JS */
 .settings-dropdown[hidden] {
   display: none !important;
 }
 
-/* Setinha no topo apontando para o botão (Toque Premium) */
+/* 3. A setinha do menu */
 .settings-dropdown::before {
   content: '';
-  position: absolute;
-  top: -6px;
-  right: 24px;
-  width: 10px;
-  height: 10px;
-  background: var(--bg-card);
-  border-left: 1px solid var(--border-subtle);
-  border-top: 1px solid var(--border-subtle);
-  transform: rotate(45deg);
+  position: absolute !important;
+  top: -6px !important;
+  right: 24px !important;
+  width: 10px !important;
+  height: 10px !important;
+  background: var(--bg-card) !important;
+  border-left: 1px solid var(--border-subtle) !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  transform: rotate(45deg) !important;
 }
 
-/* --- Botão "Sair" --- */
+/* 4. O Botão Sair por dentro */
 .dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  color: #ef4444; /* Vermelho Sair */
-  font-weight: 600;
-  transition: all 0.2s;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  margin: 0 !important; /* Remove margens fantasmas */
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+  color: #ef4444 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
   
-  /* Fica acima da setinha pra não sobrepor o hover */
-  position: relative; 
-  z-index: 2; 
+  /* Garante que o botão fique DENTRO da caixa branca */
+  position: static !important; 
+  line-height: 1 !important;
 }
 
 .dropdown-item:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.1) !important;
 }
 
 /* ==========================================================
