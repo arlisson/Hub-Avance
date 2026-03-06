@@ -245,6 +245,227 @@
   display: none !important;
 }
 
+/* =========================
+   TEMA CLARO
+   ========================= */
+body:not(.dark-mode) .protocol-wrap {
+  background:
+    radial-gradient(circle at top center, rgba(87, 197, 234, 0.12), transparent 35%),
+    linear-gradient(to bottom, rgba(250, 254, 255, 0.96), rgba(237, 247, 251, 0.9));
+}
+
+body:not(.dark-mode) .protocol-card {
+  background: rgba(250, 254, 255, 0.96);
+  border: 1px solid rgba(19, 44, 88, 0.10);
+  box-shadow:
+    0 18px 36px rgba(15, 44, 88, 0.10),
+    0 0 0 1px rgba(87, 197, 234, 0.05);
+}
+
+body:not(.dark-mode) .protocol-title {
+  color: #0f2c58;
+}
+
+body:not(.dark-mode) .protocol-subtitle {
+  color: #4b6785;
+}
+
+body:not(.dark-mode) .protocol-form label {
+  color: #133869;
+}
+
+body:not(.dark-mode) .input-dark-lite,
+body:not(.dark-mode) .protocol-form input,
+body:not(.dark-mode) .protocol-form select,
+body:not(.dark-mode) .protocol-form textarea {
+  background: rgba(237, 247, 251, 0.95);
+  border: 1px solid rgba(19, 44, 88, 0.12);
+  color: #0f2c58;
+}
+
+body:not(.dark-mode) .input-dark-lite::placeholder,
+body:not(.dark-mode) .protocol-form input::placeholder,
+body:not(.dark-mode) .protocol-form textarea::placeholder {
+  color: #6b85a1;
+  opacity: 0.8;
+}
+
+body:not(.dark-mode) .input-dark-lite:hover,
+body:not(.dark-mode) .protocol-form input:hover,
+body:not(.dark-mode) .protocol-form select:hover,
+body:not(.dark-mode) .protocol-form textarea:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(232, 244, 249, 1);
+}
+
+body:not(.dark-mode) .input-dark-lite:focus,
+body:not(.dark-mode) .protocol-form input:focus,
+body:not(.dark-mode) .protocol-form select:focus,
+body:not(.dark-mode) .protocol-form textarea:focus {
+  background: #ffffff;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.18);
+}
+
+body:not(.dark-mode) .btn-secondary {
+  background: rgba(255, 255, 255, 0.7);
+  color: #0f2c58;
+  border-color: rgba(19, 44, 88, 0.14);
+}
+
+body:not(.dark-mode) .btn-secondary:hover {
+  background: rgba(87, 197, 234, 0.10);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(87, 197, 234, 0.10);
+}
+
+body:not(.dark-mode) .btn-primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #0f2c58;
+}
+
+body:not(.dark-mode) .btn-primary:hover {
+  background: #0f2c58;
+  border-color: #0f2c58;
+  color: #ffffff;
+}
+
+body:not(.dark-mode) .result {
+  border-top: 1px solid rgba(19, 44, 88, 0.10);
+}
+
+body:not(.dark-mode) .result-row {
+  border-bottom: 1px dashed rgba(19, 44, 88, 0.10);
+}
+
+body:not(.dark-mode) .result-row .k {
+  color: #5f7893;
+}
+
+body:not(.dark-mode) .result-row .v {
+  color: #0f2c58;
+}
+
+body:not(.dark-mode) .error {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.18);
+  color: #b42318;
+}
+
+body:not(.dark-mode) .hint {
+  color: #5f7893;
+}
+
+/* =========================
+   TEMA ESCURO EXPLÍCITO
+   ========================= */
+body.dark-mode .protocol-wrap {
+  background:
+    radial-gradient(circle at top center, rgba(87, 197, 234, 0.08), transparent 35%),
+    linear-gradient(to bottom, rgba(11, 14, 35, 0.98), rgba(15, 23, 42, 0.98));
+}
+
+body.dark-mode .protocol-card {
+  background: rgba(19, 23, 57, 0.92);
+  border: 1px solid var(--border-color);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(87, 197, 234, 0.04);
+}
+
+body.dark-mode .protocol-title {
+  color: var(--text-primary);
+}
+
+body.dark-mode .protocol-subtitle {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .protocol-form label {
+  color: var(--text-primary);
+}
+
+body.dark-mode .input-dark-lite,
+body.dark-mode .protocol-form input,
+body.dark-mode .protocol-form select,
+body.dark-mode .protocol-form textarea {
+  background: rgba(15, 44, 88, 0.92);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-mode .input-dark-lite::placeholder,
+body.dark-mode .protocol-form input::placeholder,
+body.dark-mode .protocol-form textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.55;
+}
+
+body.dark-mode .input-dark-lite:hover,
+body.dark-mode .protocol-form input:hover,
+body.dark-mode .protocol-form select:hover,
+body.dark-mode .protocol-form textarea:hover {
+  border-color: var(--accent-cyan);
+}
+
+body.dark-mode .input-dark-lite:focus,
+body.dark-mode .protocol-form input:focus,
+body.dark-mode .protocol-form select:focus,
+body.dark-mode .protocol-form textarea:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.16);
+  background: rgba(19, 56, 104, 0.96);
+}
+
+body.dark-mode .btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+body.dark-mode .btn-secondary:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent-cyan);
+}
+
+body.dark-mode .btn-primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #0f2c58;
+}
+
+body.dark-mode .btn-primary:hover {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: #0f2c58;
+}
+
+body.dark-mode .result {
+  border-top: 1px solid rgba(173, 229, 242, 0.14);
+}
+
+body.dark-mode .result-row {
+  border-bottom: 1px dashed rgba(173, 229, 242, 0.14);
+}
+
+body.dark-mode .result-row .k {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .result-row .v {
+  color: var(--text-primary);
+}
+
+body.dark-mode .error {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: #ffd7d7;
+}
+
+body.dark-mode .hint {
+  color: var(--text-secondary);
+}
+
 @media (max-width: 768px) {
   .protocol-wrap {
     padding: 16px;
