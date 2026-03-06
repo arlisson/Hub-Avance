@@ -998,12 +998,12 @@ body.dark-mode .nav-link.active {
    PARTÍCULAS FLUTUANTES (BACKGROUND DO HERO)
    ========================================================== */
 #hero-particles {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0; /* Garante que fique no fundo */
+  width: 100vw;
+  height: 100vh;
+  z-index: -10; /* Garante que fique no fundo */
   pointer-events: none; /* O mouse ignora as partículas, permitindo clicar nos botões */
 }
 
@@ -1011,6 +1011,74 @@ body.dark-mode .nav-link.active {
 .hero-content {
   position: relative;
   z-index: 2; 
+}
+
+/* =========================================
+   BLOCO "SALTADO" COM BORDA NEON (LUZ)
+   ========================================= */
+.showcase-wrapper {
+  position: relative;
+  width: 95%;
+  max-width: 1200px;
+  margin: 80px auto; /* Dá um bom respiro do topo e centraliza */
+  border-radius: 20px;
+  padding: 3px; /* ESSA É A ESPESSURA DA LUZ. Aumente se quiser mais grossa */
+  overflow: hidden; /* Corta o excesso de luz */
+  
+  /* Efeito de 3D saltado para a frente */
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(87, 197, 234, 0.15);
+  z-index: 10;
+}
+
+/* A luz ciano rodando no fundo (gradiente cônico) */
+.showcase-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  /* Usei a sua cor --accent-cyan (#57C5EA) */
+  background: conic-gradient(
+    transparent, 
+    transparent, 
+    transparent, 
+    #57C5EA
+  );
+  animation: rotateGlow 4s linear infinite;
+  z-index: -2;
+}
+
+/* O fundo sólido do bloco que "tampa" o miolo da luz */
+.showcase-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 3px; /* Mesmo valor do padding acima */
+  background-color: #0F2C58; /* Fundo interno do bloco (azul escuro da sua paleta) */
+  border-radius: 18px; 
+  z-index: -1;
+}
+
+/* Conteúdo interno */
+.showcase-content {
+  position: relative;
+  z-index: 1;
+  padding: 50px 30px; /* Espaço para não grudar na borda de luz */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.showcase-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #FAFEFF; /* Cor branca/gelo da sua paleta */
+}
+
+@keyframes rotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* =========================================
