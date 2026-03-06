@@ -121,8 +121,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   btnGenerate?.addEventListener("click", async (e) => {
     e.preventDefault();
+
     try {
-      if (errorBox) { errorBox.hidden = true; errorBox.textContent = ""; }
+      if (errorBox) {
+        errorBox.hidden = true;
+        errorBox.textContent = "";
+      }
       if (resultBox) resultBox.hidden = true;
 
       const phoneRaw = (phoneEl?.value || "").trim();
@@ -131,8 +135,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (phone.length < 10) {
         throw new Error("Informe um telefone válido com DDD.");
       }
-
-      
 
       btnGenerate.disabled = true;
 
@@ -144,34 +146,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         phoneRaw,
         agent: (agentEl?.value || "").trim(),
         channel: channelEl?.value || "whatsapp",
-        agendorPick: selectedPick || undefined, // <- novo
+        agendorPick: selectedPick || undefined,
         requestedBy: email,
       };
 
+      AppLoading.show({
+        title: "Gerando protocolo",
+        message: "Validando os dados informados..."
+      });
+
+      AppLoading.update({
+        title: "Consultando Agendor",
+        message: "Buscando empresa ou pessoa vinculada ao telefone..."
+      });
+
       const { resp, data } = await callApi(payload);
 
-      // Caso de múltiplas empresas: mostra select e pede para reenviar
-      if (resp.status === 409 && Array.isArray(data?.matches)) {
-        showOrgPicker(data.matches);
+      // Caso de múltiplas empresas/pessoas
+      // if (resp.status === 409 && Array.isArray(data?.matches)) {
+      //   AppLoading.update({
+      //     title: "Seleção necessária",
+      //     message: "Foram encontrados múltiplos registros."
+      //   });
 
-        const maybeProtocol = data?.protocol ? ` Protocolo gerado: ${data.protocol}` : "";
-        throw new Error((data?.error || "Mais de uma empresa encontrada.") + maybeProtocol);
-      }
+      //   showOrgPicker(data.matches);
+
+      //   const maybeProtocol = data?.protocol ? ` Protocolo gerado: ${data.protocol}` : "";
+      //   throw new Error((data?.error || "Mais de um registro encontrado.") + maybeProtocol);
+      // }
 
       if (!resp.ok) {
         const maybeProtocol = data?.protocol ? `\nProtocolo gerado: ${data.protocol}` : "";
         throw new Error((data?.error || "Falha ao gerar protocolo.") + maybeProtocol);
       }
 
-      // Sucesso: esconde picker (já resolveu)
+      AppLoading.update({
+        title: "Finalizando",
+        message: "Preparando o retorno da operação..."
+      });
+
       hideOrgPicker();
 
       const protocol = data.protocol || "";
       if (protoEl) protoEl.textContent = protocol;
 
-     if (sheetStatusEl) {
+      if (sheetStatusEl) {
         sheetStatusEl.textContent = data.sheets?.ok ? "Registrado" : (data.sheets?.detail || "Falhou");
       }
+
       if (agendorStatusEl) {
         agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : (data.agendor?.detail || "Não enviado");
       }
@@ -188,6 +210,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         errorBox.hidden = false;
       }
     } finally {
+      AppLoading.hide();
       btnGenerate.disabled = false;
     }
   });
