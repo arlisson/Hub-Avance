@@ -206,11 +206,12 @@ body.dark-mode .hub-title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Centraliza verticalmente na tela */
+  justify-content: center;
+  /* Centraliza verticalmente na tela */
   text-align: center;
-  
+
   /* Faz a seção ocupar 85% da altura da tela, empurrando os cards pra baixo */
-  min-height: 85vh; 
+  min-height: 85vh;
   padding: 20px;
   position: relative;
   margin-bottom: 60px;
@@ -223,28 +224,33 @@ body.dark-mode .hub-title {
   content: "";
   position: absolute;
   /* Empurra o elemento físico para baixo, para que o brilho vaze para cima */
-  bottom: -40px; 
+  bottom: -40px;
   left: 50%;
   transform: translateX(-50%);
-  
+
   /* Largura total para atravessar a página principal */
-  width: 100%; 
-  height: 2px; /* Espessura da LINHA NÍTIDA */
-  
+  width: 100%;
+  height: 2px;
+  /* Espessura da LINHA NÍTIDA */
+
   /* --- A LINHA NÍTIDA --- */
   background: radial-gradient(circle, var(--brand-action) 0%, var(--brand-action) 60%, transparent 100%);
-  box-shadow: 0 0 15px rgba(87, 197, 234, 0.8); /* Leve brilho na própria linha */
-  
+  box-shadow: 0 0 15px rgba(87, 197, 234, 0.8);
+  /* Leve brilho na própria linha */
+
   /* --- A NÉVOA DE LUZ (Glow Difuso) --- */
-  box-shadow: 
-    0 0 15px rgba(87, 197, 234, 0.8), /* Brilho na linha */
-    0 -15px 70px 20px rgba(87, 197, 234, 0.4); /* Névoa difusa subindo */
-  
-  filter: blur(2px); /* Desfoca levemente para dar suavidade */
-  
+  box-shadow:
+    0 0 15px rgba(87, 197, 234, 0.8),
+    /* Brilho na linha */
+    0 -15px 70px 20px rgba(87, 197, 234, 0.4);
+  /* Névoa difusa subindo */
+
+  filter: blur(2px);
+  /* Desfoca levemente para dar suavidade */
+
   z-index: 1;
   pointer-events: none;
-  
+
   /* ==========================================
      ANIMAÇÃO: RESPIRAÇÃO DE LUZ
      ========================================== */
@@ -253,25 +259,33 @@ body.dark-mode .hub-title {
 
 /* Definição da Animação de Respiração */
 @keyframes lightBreath {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.6;
-    box-shadow: 
+    box-shadow:
       0 0 15px rgba(87, 197, 234, 0.8),
       0 -15px 70px 20px rgba(87, 197, 234, 0.4);
   }
+
   50% {
-    opacity: 0.8; /* Aumenta a intensidade no meio */
-    box-shadow: 
-      0 0 25px rgba(87, 197, 234, 1), /* Brilho na linha mais forte */
-      0 -20px 100px 30px rgba(87, 197, 234, 0.6); /* Névoa mais forte e alta */
+    opacity: 0.8;
+    /* Aumenta a intensidade no meio */
+    box-shadow:
+      0 0 25px rgba(87, 197, 234, 1),
+      /* Brilho na linha mais forte */
+      0 -20px 100px 30px rgba(87, 197, 234, 0.6);
+    /* Névoa mais forte e alta */
   }
 }
 
 .hero-content {
   position: relative;
-  z-index: 2; /* Mantém o texto e o botão acima do brilho */
+  z-index: 2;
+  /* Mantém o texto e o botão acima do brilho */
   max-width: 900px;
-  margin-top: -5vh; /* Dá um leve ajuste visual pra cima */
+  margin-top: -5vh;
+  /* Dá um leve ajuste visual pra cima */
 }
 
 /* ==========================
@@ -280,8 +294,9 @@ body.dark-mode .hub-title {
 .hero-title {
   /* Fonte limpa e sofisticada */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(42px, 6vw, 76px); 
-  font-weight: 500; /* Reduzido de 800 para 500 para ficar igual à sua imagem */
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 500;
+  /* Reduzido de 800 para 500 para ficar igual à sua imagem */
   line-height: 1.1;
   color: var(--brand-primary);
   margin: 0 0 30px 0;
@@ -289,7 +304,8 @@ body.dark-mode .hub-title {
 }
 
 body.dark-mode .hero-title {
-  color: #FAFEFF; /* Branco puro no modo escuro */
+  color: #FAFEFF;
+  /* Branco puro no modo escuro */
 }
 
 .hero-subtitle {
@@ -304,7 +320,8 @@ body.dark-mode .hero-title {
 }
 
 body.dark-mode .hero-subtitle {
-  color: var(--brand-light); /* Azul pastel para não brigar com o título */
+  color: var(--brand-light);
+  /* Azul pastel para não brigar com o título */
   opacity: 0.8;
 }
 
@@ -330,7 +347,7 @@ body.dark-mode .hero-subtitle {
 .hero-btn:hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 15px 40px rgba(87, 197, 234, 0.6);
-  background-color: var(--brand-accent); 
+  background-color: var(--brand-accent);
 }
 
 .hero-btn i {
@@ -339,7 +356,8 @@ body.dark-mode .hero-subtitle {
 }
 
 .hero-btn:hover i {
-  transform: translate(2px, -2px); /* Setinha aponta pra cima/direita no hover */
+  transform: translate(2px, -2px);
+  /* Setinha aponta pra cima/direita no hover */
 }
 
 /* ==========================================================
@@ -854,7 +872,7 @@ body.dark-mode .hub-footer {
    ========================================================== */
 body {
   /* Garante que o conteúdo flua de cima para baixo agora */
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .top-navbar {
@@ -868,7 +886,7 @@ body {
   top: 0;
   z-index: 1000;
   /* Efeito de vidro para quando rolar a página por cima da luz */
-  background-color: rgba(250, 254, 255, 0.85); 
+  background-color: rgba(250, 254, 255, 0.85);
   backdrop-filter: blur(12px);
 }
 
@@ -876,41 +894,41 @@ body.dark-mode .top-navbar {
   background-color: rgba(11, 14, 35, 0.85);
 }
 
-.navbar-left, .navbar-right {
+.navbar-left,
+.navbar-right {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* --- LOGO --- */
+/* --- LOGO DA EMPRESA --- */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--brand-primary);
   text-decoration: none;
   margin-right: 12px;
 }
 
-body.dark-mode .navbar-brand { color: #FAFEFF; }
-
-.brand-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--brand-primary);
-  color: #FAFEFF;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
+.navbar-logo {
+  height: 38px;
+  /* Controla a altura da logo. Aumente ou diminua se precisar! */
+  width: auto;
+  /* Mantém a proporção original da imagem */
+  display: block;
+  transition: transform 0.2s ease;
 }
 
-body.dark-mode .brand-icon {
-  background: rgba(173, 229, 242, 0.1);
-  color: var(--brand-light);
+.navbar-logo:hover {
+  transform: scale(1.05);
+  /* Leve efeito de zoom ao passar o mouse */
+}
+
+/* Opcional: Se você tiver uma versão branca da logo para o fundo escuro, 
+   pode usar o CSS abaixo invertendo as cores dela no Dark Mode */
+body.dark-mode .navbar-logo {
+  /* Se a sua logo atual for escura e sumir no fundo escuro, 
+     você pode testar descomentar a linha abaixo para inverter a cor dela: */
+  filter: brightness(0) invert(1); */
 }
 
 /* --- BOTÃO DE TEMA --- */
@@ -919,7 +937,7 @@ body.dark-mode .brand-icon {
   height: 40px;
   border-radius: 12px;
   border: none;
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -935,7 +953,7 @@ body.dark-mode .brand-icon {
 }
 
 body.dark-mode .theme-toggle-top {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* --- LINKS CENTRAIS --- */
@@ -944,7 +962,8 @@ body.dark-mode .theme-toggle-top {
   gap: 32px;
   position: absolute;
   left: 50%;
-  transform: translateX(-50%); /* Centraliza perfeitamente no meio da tela */
+  transform: translateX(-50%);
+  /* Centraliza perfeitamente no meio da tela */
 }
 
 .nav-link {
@@ -956,12 +975,14 @@ body.dark-mode .theme-toggle-top {
   transition: all 0.2s;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   opacity: 1;
   color: var(--brand-primary);
 }
 
-body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
   color: var(--brand-action);
 }
 
@@ -986,14 +1007,16 @@ body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
 }
 
 .user-profile-btn:hover {
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 
-body.dark-mode .user-profile-btn:hover { 
-  background: rgba(255,255,255,0.05); 
+body.dark-mode .user-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.user-profile-btn i { font-size: 20px; }
+.user-profile-btn i {
+  font-size: 20px;
+}
 
 .nav-user-email {
   max-width: 140px;
@@ -1006,7 +1029,8 @@ body.dark-mode .user-profile-btn:hover {
 .settings-dropdown {
   position: absolute;
   right: 0;
-  top: 100%; /* Desce a partir do botão */
+  top: 100%;
+  /* Desce a partir do botão */
   margin-top: 10px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -1032,8 +1056,21 @@ body.dark-mode .user-profile-btn:hover {
 }
 
 @media (max-width: 900px) {
-  .navbar-links { display: none; /* Esconde links centrais no cel */ }
-  .nav-user-email { display: none; /* Esconde email no cel */ }
-  .top-navbar { padding: 16px 20px; }
-  .mobile-menu-btn { display: block; }
+  .navbar-links {
+    display: none;
+    /* Esconde links centrais no cel */
+  }
+
+  .nav-user-email {
+    display: none;
+    /* Esconde email no cel */
+  }
+
+  .top-navbar {
+    padding: 16px 20px;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
 }
