@@ -1019,7 +1019,7 @@ body.dark-mode .nav-link.active {
 
 /* Garante que ambas as logos tenham o mesmo tamanho */
 .company-logo {
-  max-width: 140px;
+  max-width: 200px;
   height: auto;
 }
 
