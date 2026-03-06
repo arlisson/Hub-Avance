@@ -283,16 +283,15 @@
    MODO CLARO
    ========================= */
 body:not(.dark-mode) {
---bg-sidebar: #131739;
-  --bg-main: #0F2C58;
-  --border-color: #235B8B;
-  --bg-hover: #133868;
-  --accent-cyan: #57C5EA;
-  --accent-light: #C9EEF8;
+  --bg-main: #f4f9fc;
+  --bg-sidebar: #ffffff;
+  --bg-hover: #eef7fb;
+  --border-color: #d7e7f1;
   --text-primary: #FAFEFF;
-  --text-secondary: #ADE5F2;
+  --text-secondary: #5d7892;
+  --accent-cyan: #57c5ea;
+  --accent-light: #8edcf5;
 }
-
 
 body:not(.dark-mode) .main-content {
   background-color: var(--bg-main);
