@@ -523,42 +523,50 @@ document.addEventListener('DOMContentLoaded', () => {
 initNavbarScroll();
 
 // -------------------------
-// Animação de Partículas no Hero (Estilo Tech/AI)
+// Animação de Partículas no Hero (Versão Forçada)
 // -------------------------
-document.addEventListener('DOMContentLoaded', () => {
+function initHeroParticles() {
   const canvas = document.getElementById('hero-particles');
-  if (!canvas) return;
+  
+  if (!canvas) {
+    console.warn("Elemento canvas não encontrado no HTML!");
+    return;
+  }
 
   const ctx = canvas.getContext('2d');
   let particlesArray = [];
 
-  // Ajusta o tamanho do canvas para o tamanho da seção Hero
+  // Força o canvas a ter exatamente o tamanho da janela do navegador
   function setCanvasSize() {
-    canvas.width = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.parentElement.offsetHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
+  
+  // Chama a função de tamanho imediatamente
   setCanvasSize();
+  
+  // Se redimensionar a tela, ajusta o canvas
   window.addEventListener('resize', () => {
     setCanvasSize();
-    init(); // Recria as partículas ao redimensionar a tela
   });
 
-  // Molde da Partícula
+  // Criador das Partículas
   class Particle {
     constructor() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 2 + 0.5; // Tamanhos variados (pequenos e delicados)
-      this.speedX = (Math.random() - 0.5) * 0.6; // Velocidade horizontal lenta
-      this.speedY = (Math.random() - 0.5) * 0.6; // Velocidade vertical lenta
-      this.opacity = Math.random() * 0.5 + 0.1; // Transparência variada
+      // Aumentei o tamanho (de 1 a 4px) para ficar bem visível no teste
+      this.size = Math.random() * 3 + 1; 
+      this.speedX = (Math.random() - 0.5) * 0.8; 
+      this.speedY = (Math.random() - 0.5) * 0.8; 
+      this.opacity = Math.random() * 0.8 + 0.2; 
     }
 
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      // Se bater na borda, inverte a direção (faz elas quicarem invisivelmente)
+      // Rebate nas bordas da tela
       if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
       if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
@@ -567,29 +575,29 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       
-      // Cor ciano da AVANCE com brilho (glow)
+      // Cor Ciano com brilho
       ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = 'rgba(87, 197, 234, 0.8)';
+      ctx.shadowBlur = 10; // Aumentei o glow
+      ctx.shadowColor = 'rgba(87, 197, 234, 1)';
       
       ctx.fill();
     }
   }
 
-  // Inicializa o exército de partículas
+  // Popula a tela com as partículas
   function init() {
     particlesArray = [];
-    // Calcula a quantidade baseada no tamanho da tela (para não sobrecarregar)
-    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 12000);
+    // Gera cerca de 80 a 100 partículas dependendo do monitor
+    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 9000);
     
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle());
     }
   }
 
-  // Loop de animação contínua (60 frames por segundo)
+  // Motor da animação
   function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o rastro
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particlesArray.length; i++) {
       particlesArray[i].update();
       particlesArray[i].draw();
@@ -597,7 +605,11 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animate);
   }
 
-  // Roda a mágica
   init();
   animate();
-});
+}
+
+// Executa a função imediatamente (Tiramos o DOMContentLoaded para não ter erro de atraso)
+initHeroParticles();
+// Como garantia extra, tenta rodar de novo quando a janela terminar de carregar
+window.addEventListener('load', initHeroParticles);

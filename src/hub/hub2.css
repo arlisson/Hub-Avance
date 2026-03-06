@@ -1155,3 +1155,8 @@ body.dark-mode .nav-link.active {
   position: relative;
   z-index: 2; 
 }
+
+.hero-section {
+  min-height: 100vh;
+  position: relative; /* ISSO AQUI É OBRIGATÓRIO PARA O CANVAS FUNCIONAR */
+}
