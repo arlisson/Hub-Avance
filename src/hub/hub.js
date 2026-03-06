@@ -42,7 +42,7 @@ const APPS = [
   {
     id: "desktop",
     badge: "Preenche Fácil",
-    image: "",
+    image: "../img/PreencheFacil.png",
     title: "Aplicação Desktop",
     shortDesc:
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
