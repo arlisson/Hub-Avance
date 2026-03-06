@@ -194,3 +194,18 @@ body {
     object-fit: contain;
     margin-bottom: 20px;
 }
+
+/* Coloque a classe correta que você usou no modal de API */
+.api-modal-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-sidebar);
+  padding: 20px;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  z-index: 1000;
+  /* Se ele deve ficar escondido por padrão: */
+  /* display: none; */ 
+}
