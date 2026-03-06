@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("settings-btn"),
     document.getElementById("settings-menu")
   );
-  initMobileSidebar(document.getElementById("mobile-menu-btn"));
+  // initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
 
   // Logout
