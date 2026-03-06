@@ -406,18 +406,30 @@ function initTheme(themeToggle) {
   });
 }
 
-function updateThemeIcon(themeToggle, isDark) {
-  if (!themeToggle) return;
-  const icon = themeToggle.querySelector("i");
-  const text = themeToggle.querySelector("span");
-  if (!icon || !text) return;
+function updateThemeIcon(btn, isDark) {
+  // Pega os elementos do botão de tema
+  const icon = btn.querySelector("i");
+  const text = btn.querySelector("span");
+  
+  // Pega a imagem da logo lá no topo da sidebar
+  const logo = document.querySelector(".company-logo"); 
 
-  if (isDark) {
-    icon.classList.replace("ph-moon", "ph-sun");
-    text.textContent = "Modo claro";
-  } else {
-    icon.classList.replace("ph-sun", "ph-moon");
-    text.textContent = "Modo escuro";
+  // Atualiza o botão (Ícone e Texto)
+  if (icon && text) {
+    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
+    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  }
+
+  // Atualiza a Logo da Avance
+  if (logo) {
+    // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
+    if (isDark) {
+      // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
+      logo.src = "../img/LogoEscuroSemFundo.png"; 
+    } else {
+      // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
+      logo.src = "../img/LogoClaraSemFundo.png"; 
+    }
   }
 }
 
