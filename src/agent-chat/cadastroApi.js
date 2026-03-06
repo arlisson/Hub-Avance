@@ -1,7 +1,4 @@
-console.log("1. Arquivo cadastroApi.js carregado!");
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("2. DOM carregado, buscando elementos do Modal...");
 
   const modalApi = document.getElementById('modalApi');
   const btnAbrirModal = document.getElementById('btnAbrirModalSidebar');
@@ -11,17 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnMostrarSenha = document.getElementById('btnMostrarSenha');
   const mensagemApi = document.getElementById('mensagemApi');
 
-  // Verifica se achou os botões principais
-  if (!modalApi || !btnAbrirModal) {
-    console.error("ERRO: Não encontrou o HTML do Modal ou o Botão de abrir!");
-    return; // Para tudo se não achar
-  } else {
-    console.log("3. Elementos encontrados com sucesso. Adicionando eventos...");
-  }
 
   // Função para abrir o modal
   btnAbrirModal.addEventListener('click', () => {
-    console.log("4. Botão de abrir modal clicado!");
     modalApi.classList.add('active');
     
     const savedKey = localStorage.getItem('gemini_api_key');

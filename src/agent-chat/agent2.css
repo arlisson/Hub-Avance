@@ -430,3 +430,128 @@ button {
 }
 .mensagem-sucesso { color: #4ade80; }
 .mensagem-erro { color: #ff4d4d; }
+
+/* =========================================
+   6. ÁREA DE MENSAGENS E BOLHAS DE CHAT
+   ========================================= */
+
+/* O container que engloba todas as mensagens */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 20px;
+}
+
+/* Estrutura base de qualquer mensagem */
+.message {
+  display: flex;
+  gap: 16px;
+  max-width: 85%; /* Impede que a bolha ocupe a tela toda */
+  animation: fadeIn 0.3s ease-out; /* Animação suave ao aparecer */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------
+   MENSAGEM DO USUÁRIO
+   -------------------------------------- */
+.message-user {
+  align-self: flex-end; /* Joga para a direita */
+  flex-direction: row-reverse;
+}
+
+.message-user .message-bubble {
+  background-color: var(--accent-cyan);
+  color: #0F2C58; /* Texto azul escuro para máximo contraste no fundo claro */
+  border-radius: 20px 20px 4px 20px; /* Bico apontando para a direita */
+  padding: 14px 20px;
+  box-shadow: 0 4px 15px rgba(87, 197, 234, 0.2); /* Brilho ciano sutil */
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* --------------------------------------
+   MENSAGEM DA IA (BOT)
+   -------------------------------------- */
+.message-bot {
+  align-self: flex-start; /* Joga para a esquerda */
+}
+
+.message-bot .message-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  color: var(--accent-cyan);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0; /* Impede que o avatar seja esmagado */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.message-bot .message-bubble {
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 20px 20px 20px 4px; /* Bico apontando para a esquerda */
+  padding: 16px 24px;
+  line-height: 1.6;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Formatação do conteúdo (Markdown) dentro da bolha da IA */
+.message-bot .message-bubble p {
+  margin-bottom: 12px;
+}
+.message-bot .message-bubble p:last-child {
+  margin-bottom: 0;
+}
+.message-bot .message-bubble strong {
+  color: var(--accent-light); /* Negritos ganham um azul mais claro */
+  font-weight: 600;
+}
+.message-bot .message-bubble ul, 
+.message-bot .message-bubble ol {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+.message-bot .message-bubble hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--border-color); /* Arruma aquela linha branca solta */
+  margin: 16px 0;
+}
+
+/* --------------------------------------
+   ANIMAÇÃO DE DIGITANDO (TYPING)
+   -------------------------------------- */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 24px !important;
+}
+
+.typing-indicator span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: typingPulse 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingPulse {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
