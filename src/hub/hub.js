@@ -478,54 +478,6 @@ function clearAgentChatSessionStorage() {
 }
 
 // -------------------------
-// Toast (boas-vindas)
-// -------------------------
-function showToast({ title, message, durationMs = 4500, backgroundImage }) {
-  const toast = document.getElementById("welcome-toast");
-  if (!toast) return;
-
-  const titleEl = document.getElementById("welcome-toast-title");
-  const msgEl = document.getElementById("welcome-toast-message");
-  const backdrop = document.getElementById("toast-backdrop");
-  const closeBtn = document.getElementById("welcome-toast-close");
-
-  if (titleEl) titleEl.textContent = title || "Bem-vindo!";
-  if (msgEl) msgEl.textContent = message || "";
-
-  if (backgroundImage) {
-    toast.style.backgroundImage = `url("${backgroundImage}")`;
-  }
-
-  if (backdrop) backdrop.hidden = false;
-  document.body.classList.add("modal-open");
-
-  toast.setAttribute("tabindex", "-1");
-  toast.focus();
-
-  toast.hidden = false;
-  toast.classList.remove("hide");
-  toast.offsetHeight;
-  toast.classList.add("show");
-
-  const hide = () => {
-    toast.classList.remove("show");
-    toast.classList.add("hide");
-
-    window.setTimeout(() => {
-      toast.hidden = true;
-      if (backdrop) backdrop.hidden = true;
-      document.body.classList.remove("modal-open");
-    }, 200);
-  };
-
-  if (closeBtn) closeBtn.onclick = hide;
-
-  if (durationMs && durationMs > 0) {
-    window.setTimeout(hide, durationMs);
-  }
-}
-
-// -------------------------
 // Helpers anti-injeção
 // -------------------------
 function escapeHtml(s) {

@@ -216,19 +216,30 @@ function initTheme(themeToggle) {
   });
 }
 
-function updateThemeIcon(btn) {
+function updateThemeIcon(btn, isDark) {
+  // Pega os elementos do botão de tema
   const icon = btn.querySelector("i");
   const text = btn.querySelector("span");
-  if (!icon || !text) return;
+  
+  // Pega a imagem da logo lá no topo da sidebar
+  const logo = document.querySelector(".company-logo"); 
 
-  const isLight = document.body.classList.contains("light-mode");
+  // Atualiza o botão (Ícone e Texto)
+  if (icon && text) {
+    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
+    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  }
 
-  if (isLight) {
-    icon.className = "ph ph-moon";
-    text.textContent = "Modo escuro";
-  } else {
-    icon.className = "ph ph-sun";
-    text.textContent = "Modo claro";
+  // Atualiza a Logo da Avance
+  if (logo) {
+    // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
+    if (isDark) {
+      // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
+      logo.src = "../img/LogoEscuroSemFundo.png"; 
+    } else {
+      // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
+      logo.src = "../img/LogoClaraSemFundo.png"; 
+    }
   }
 }
 
