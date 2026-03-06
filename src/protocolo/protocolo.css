@@ -333,7 +333,7 @@ body:not(.dark-mode) .protocol-form textarea {
 body:not(.dark-mode) .input-dark-lite::placeholder,
 body:not(.dark-mode) .protocol-form input::placeholder,
 body:not(.dark-mode) .protocol-form textarea::placeholder {
-  color: #7c94ab;
+  color: #fff;
 }
 
 body:not(.dark-mode) .input-dark-lite:hover,
