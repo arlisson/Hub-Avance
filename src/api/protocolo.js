@@ -122,17 +122,25 @@ function digitsOnly(v) {
 function generateProtocol(phoneDigits) {
   const now = new Date();
 
-  const yy = String(now.getFullYear()).slice(-2);
-  const MM = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const hh = String(now.getHours()).padStart(2, "0");
-  // const mm = String(now.getMinutes()).padStart(2, "0");
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+  }).formatToParts(now);
+
+  const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+
+  const dd = map.day;
+  const MM = map.month;
+  const yy = map.year;
+  const hh = map.hour;
 
   const last4 = String(phoneDigits || "").slice(-4).padStart(4, "0");
-  const rand2 = String(Math.floor(Math.random() * 100)).padStart(2, "0");
 
-
-  return `${yy}${MM}${dd}${hh}${last4}${rand2}`;
+  return `${last4}${dd}${MM}${yy}${hh}`;
 }
 
 function normalizePhone(v) {
