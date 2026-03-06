@@ -871,12 +871,22 @@ body {
   padding: 16px 40px;
   background-color: var(--bg-main);
   border-bottom: 1px solid var(--border-subtle);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
-  /* Efeito de vidro para quando rolar a página por cima da luz */
-  background-color: rgba(250, 254, 255, 0.85);
+
+  background-color: rgba(250, 254, 255, 0.85); 
   backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  
+  /* A MÁGICA: Esconde a barra jogando ela 100% para cima da tela */
+  transform: translateY(-100%);
+  opacity: 0;
+  
+  /* Animação suave para quando ela descer e subir */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, background-color 0.3s ease;
 }
 
 body.dark-mode .top-navbar {

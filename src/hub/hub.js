@@ -484,3 +484,25 @@ function escapeHtml(s) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
+// -------------------------
+// Efeito da Navbar (Aparecer ao Rolar)
+// -------------------------
+function initNavbarScroll() {
+  const navbar = document.querySelector('.top-navbar');
+  
+  if (!navbar) return;
+
+  window.addEventListener('scroll', () => {
+    // Se o usuário rolou mais de 50 pixels para baixo, adiciona a classe
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      // Se voltou pro topo, esconde de novo
+      navbar.classList.remove('scrolled');
+    }
+  });
+}
+
+// Inicializa a função
+initNavbarScroll();
