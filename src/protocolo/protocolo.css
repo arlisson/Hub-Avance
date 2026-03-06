@@ -479,23 +479,133 @@ body.light-mode .error {
 }
 
 /* =========================================
-   10. AJUSTES DA SIDEBAR / HUB
+   10. SIDEBAR / FOOTER IGUAL AO AGENT2.CSS
    ========================================= */
+
+/* sidebar */
+.sidebar {
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* item ativo do menu principal */
+.menu-item.active,
+.chat-item.active {
+  background-color: rgba(87, 197, 234, 0.12);
+  border-color: rgba(87, 197, 234, 0.22);
+  color: var(--text-primary);
+}
+
+body.light-mode .menu-item.active,
+body.light-mode .chat-item.active {
+  background-color: rgba(44, 169, 214, 0.12);
+  border-color: rgba(44, 169, 214, 0.22);
+}
+
+/* footer da sidebar */
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+/* itens do footer */
+.sidebar-footer-item,
+#theme-toggle,
+#sidebar-userbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-footer-item i,
+#theme-toggle i,
+#sidebar-userbar i,
+.settings-dots,
+#settings-btn i {
+  font-size: 18px;
+  color: inherit;
+}
+
+.sidebar-footer-item span,
+#theme-toggle span,
+#sidebar-userbar span,
+#user-email,
+.user-email-text {
+  color: inherit;
+}
+
+/* hover idêntico ao agent */
+.sidebar-footer-item:hover,
+#theme-toggle:hover,
+#sidebar-userbar:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* botão/settings do footer */
+.settings-dots,
+#settings-btn {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+#settings-btn:hover,
+.settings-dots:hover {
+  color: var(--text-primary);
+}
+
+/* textos gerais da sidebar */
+.sidebar .logo-text,
+.sidebar .nav-label,
+.sidebar .menu-item,
+.sidebar .user-email-text,
+.sidebar i,
+.sidebar-footer i,
+#user-email,
+.chat-title,
+.chat-date,
+.chat-info {
+  color: var(--text-primary);
+}
+
+.sidebar .menu-item:hover,
+.sidebar .chat-item:hover {
+  background-color: var(--bg-hover);
+}
+
+/* email truncado */
+#user-email,
+.user-email-text {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* modo claro */
 body.light-mode .sidebar {
   background-color: #ffffff;
-  border-right: 1px solid var(--border-color);
 }
 
-body.light-mode .sidebar-footer {
-  border-top: 1px solid var(--border-color);
-}
-
+body.light-mode .sidebar .menu-item,
+body.light-mode .sidebar .chat-item,
 body.light-mode .sidebar .logo-text,
 body.light-mode .sidebar .nav-label,
-body.light-mode .sidebar .menu-item,
-body.light-mode .sidebar .sidebar-footer-item,
 body.light-mode .sidebar .user-email-text,
-body.light-mode .sidebar .settings-dots,
 body.light-mode .sidebar i,
 body.light-mode .sidebar-footer i,
 body.light-mode #user-email,
@@ -505,63 +615,26 @@ body.light-mode .chat-info {
   color: var(--text-primary);
 }
 
-body.light-mode .sidebar .menu-item:hover,
-body.light-mode .sidebar .sidebar-footer-item:hover,
-body.light-mode .sidebar .chat-item:hover {
-  background-color: var(--bg-hover);
+body.light-mode .sidebar-footer-item,
+body.light-mode #theme-toggle,
+body.light-mode #sidebar-userbar,
+body.light-mode .settings-dots,
+body.light-mode #settings-btn {
+  color: var(--text-secondary);
 }
 
-body.light-mode .sidebar .menu-item.active,
-body.light-mode .chat-item.active {
-  background-color: rgba(44, 169, 214, 0.12);
-  border-color: rgba(44, 169, 214, 0.22);
+body.light-mode .sidebar-footer-item:hover,
+body.light-mode #theme-toggle:hover,
+body.light-mode #sidebar-userbar:hover {
   color: var(--text-primary);
 }
 
-body:not(.light-mode) .sidebar,
-body:not(.light-mode) .sidebar-footer {
-  color: #235B8B;
+/* dropdown */
+.settings-dropdown {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-body:not(.light-mode) .sidebar .logo-text,
-body:not(.light-mode) .sidebar .nav-label,
-body:not(.light-mode) .sidebar .menu-item,
-body:not(.light-mode) .sidebar .sidebar-footer-item,
-body:not(.light-mode) .sidebar .user-email-text,
-body:not(.light-mode) .sidebar .settings-dots,
-body:not(.light-mode) .sidebar i,
-body:not(.light-mode) .sidebar-footer i,
-body:not(.light-mode) #user-email,
-body:not(.light-mode) .chat-title,
-body:not(.light-mode) .chat-date {
-  color: #eefcff;
-}
-
-body:not(.light-mode) .sidebar .menu-item,
-body:not(.light-mode) .sidebar .sidebar-footer-item {
-  opacity: 0.96;
-}
-
-body:not(.light-mode) .sidebar .menu-item:hover,
-body:not(.light-mode) .sidebar .sidebar-footer-item:hover {
-  color: #ffffff;
-}
-
-body:not(.light-mode) .sidebar .menu-item.active,
-body:not(.light-mode) .chat-item.active {
-  color: #ffffff;
-}
-
-body:not(.light-mode) .assistant-details .name,
-body:not(.light-mode) .assistant-details .status {
-  color: #eefcff;
-}
-
-body:not(.light-mode) .settings-dots {
-  color: #eefcff;
-}
-
-/* Dropdown */
 body.light-mode .settings-dropdown {
   background: #ffffff;
   border: 1px solid var(--border-color);
@@ -586,7 +659,7 @@ body.light-mode .dropdown-item.danger:hover {
 
 body:not(.light-mode) .settings-dropdown {
   background: #18214a;
-  border-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 body:not(.light-mode) .dropdown-item {
