@@ -1025,20 +1025,30 @@ body.dark-mode .user-profile-btn:hover {
   text-overflow: ellipsis;
 }
 
-/* Dropdown de Sair no Topo */
+/* Remove a borda preta padrão do navegador ao clicar no botão */
+.user-profile-btn:focus {
+  outline: none;
+  background: rgba(87, 197, 234, 0.1);
+}
+
+/* Dropdown de Sair no Topo (Corrigido) */
 .settings-dropdown {
   position: absolute;
   right: 0;
-  top: 100%;
-  /* Desce a partir do botão */
-  margin-top: 10px;
+  
+  /* A mágica aqui: 100% da altura do botão + 16px do padding da navbar + 4px de respiro */
+  top: calc(100% + 20px); 
+  
+  margin-top: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  box-shadow: 0 10px 25px var(--shadow-color);
+  box-shadow: 0 10px 30px var(--shadow-color);
   padding: 6px;
   min-width: 160px;
-  z-index: 10;
+  
+  /* Garante que ele seja a camada mais alta absoluta da tela */
+  z-index: 9999 !important; 
 }
 
 /* ==========================================================
