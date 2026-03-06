@@ -1087,8 +1087,6 @@ body,
   z-index: -1;
 }
 
-
-
 /* Conteúdo interno */
 .showcase-content {
   position: relative;
@@ -1115,32 +1113,41 @@ body,
    fazendo a luz "crescer" e "diminuir" de forma suave e estática. */
 @keyframes pulseNeonLED {
   0% {
-    box-shadow: 
-      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
-      0 0 10px 1px rgba(87, 197, 234, 0.3), /* Borda neon ciano suave */
-      0 0 40px 5px rgba(87, 197, 234, 0.1), /* Bloom neon ciano suave */
-      0 0 60px 10px rgba(15, 44, 88, 0.1); /* Bloom azul suave */
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.6),
+      /* Sombra de profundidade (fixa) */
+      0 0 10px 1px rgba(87, 197, 234, 0.3),
+      /* Borda neon ciano suave */
+      0 0 40px 5px rgba(87, 197, 234, 0.1),
+      /* Bloom neon ciano suave */
+      0 0 60px 10px rgba(15, 44, 88, 0.1);
+    /* Bloom azul suave */
   }
-  
+
   50% {
-    box-shadow: 
-      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
-      0 0 15px 1px rgba(87, 197, 234, 0.6), /* Borda neon ciano mais intensa */
-      0 0 70px 15px rgba(87, 197, 234, 0.3), /* Bloom neon ciano mais intenso */
-      0 0 100px 30px rgba(15, 44, 88, 0.3); /* Bloom azul mais intenso */
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.6),
+      /* Sombra de profundidade (fixa) */
+      0 0 15px 1px rgba(87, 197, 234, 0.6),
+      /* Borda neon ciano mais intensa */
+      0 0 70px 15px rgba(87, 197, 234, 0.3),
+      /* Bloom neon ciano mais intenso */
+      0 0 100px 30px rgba(15, 44, 88, 0.3);
+    /* Bloom azul mais intenso */
   }
-  
+
   100% {
-    box-shadow: 
-      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
-      0 0 10px 1px rgba(87, 197, 234, 0.3), /* Borda neon ciano suave */
-      0 0 40px 5px rgba(87, 197, 234, 0.1), /* Bloom neon ciano suave */
-      0 0 60px 10px rgba(15, 44, 88, 0.1); /* Bloom azul suave */
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.6),
+      /* Sombra de profundidade (fixa) */
+      0 0 10px 1px rgba(87, 197, 234, 0.3),
+      /* Borda neon ciano suave */
+      0 0 40px 5px rgba(87, 197, 234, 0.1),
+      /* Bloom neon ciano suave */
+      0 0 60px 10px rgba(15, 44, 88, 0.1);
+    /* Bloom azul suave */
   }
 }
-
-/* Removemos a animação antiga de rotação para limpar o arquivo */
-@keyframes rotateGlow { display: none; }
 
 /* =========================================
    7. CONTROLE DA LOGO (TEMA CLARO / ESCURO)
