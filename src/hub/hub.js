@@ -135,7 +135,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       "Seja bem-vindo ao Hub AVANCE. Selecione um produto para ver os detalhes e acessar.",
     durationMs: 0,
   };
-  showToast(WELCOME_TOAST);
 
   
   // Mostra email no footer (com tooltip ao passar o mouse)
