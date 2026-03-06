@@ -169,7 +169,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const protocol = data.protocol || "";
       if (protoEl) protoEl.textContent = protocol;
 
-      if (sheetStatusEl) sheetStatusEl.textContent = "Pendente";
+     if (sheetStatusEl) {
+        sheetStatusEl.textContent = data.sheets?.ok ? "Registrado" : (data.sheets?.detail || "Falhou");
+      }
       if (agendorStatusEl) {
         agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : (data.agendor?.detail || "Não enviado");
       }
