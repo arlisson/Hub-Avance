@@ -200,10 +200,10 @@ body.dark-mode .hub-title {
   text-align: center;
 
   /* Faz a seção ocupar 85% da altura da tela, empurrando os cards pra baixo */
-  min-height: 85vh;
+  min-height: 100vh;
   padding: 20px;
   position: relative;
-  margin-bottom: 60px;
+  margin-bottom: 0px;
 }
 
 /* ==========================================================
