@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // -------------------------
-// Renderização dos cards (Estilo Galeria)
+// Renderização dos cards
 // -------------------------
 function renderHubCards() {
   const grid = document.getElementById("hub-grid");
@@ -167,13 +167,15 @@ function renderHubCards() {
       });
     }
 
-    // Estrutura limpa: Imagem de fundo, overlay com gradiente e título
-    // Se não tiver imagem cadastrada, ele pode puxar um fundo de fallback em cor sólida
-    const bgImage = app.image ? `url('${escapeHtml(app.image)}')` : 'var(--brand-primary)';
+    // A MÁGICA ESTÁ AQUI: Cria uma tag <img> de verdade se a imagem existir
+    const imgTag = app.image 
+      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}">` 
+      : ''; 
+      // Se não tiver imagem, ele fica vazio e mostra só o fundo escuro do card
 
+    // Estrutura HTML limpa, casando 100% com o novo CSS
     card.innerHTML = `
-      <div class="hub-card-bg" style="background-image: ${bgImage};"></div>
-      <div class="hub-card-overlay"></div>
+      ${imgTag}
       <div class="hub-card-content">
         <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
       </div>
