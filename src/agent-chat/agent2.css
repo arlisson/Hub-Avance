@@ -66,10 +66,22 @@ button {
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 12px;
+  padding: 14px; /* Aumentamos o preenchimento interno */
+  font-size: 15px; /* Fonte maior */
+  font-weight: 600; /* Letra mais grossa para dar presença */
+  
+  /* Flexbox para centralizar o ícone e o texto perfeitamente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Espaço exato entre o ícone e o texto */
+  
   transition: all 0.2s ease;
-  font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 32px; 
+}
+
+.new-chat-btn i {
+  font-size: 18px; /* Deixa o ícone de + um pouco maior que o texto */
 }
 
 .new-chat-btn:hover {
