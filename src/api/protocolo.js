@@ -19,7 +19,35 @@ export default async function handler(req, res) {
       if (!agendor.sent) {
         return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
       }
-      return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
+      let sheets = { ok: false };
+
+      try {
+        const r = await fetch(process.env.GOOGLE_SHEETS_WEBHOOK, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            protocol,
+            phone: phoneRaw || phoneDigits,
+            agent,
+            channel,
+            requestedBy,
+            recordType: agendor?.organizationId ? "empresa" : "pessoa",
+            agendorId: agendor?.organizationId || agendor?.personId || ""
+          }),
+        });
+
+        const result = await r.json().catch(() => ({}));
+        sheets = { ok: r.ok && result?.ok === true, ...result };
+      } catch (err) {
+        sheets = { ok: false, error: err.message };
+      }
+      return res.status(200).json({
+        protocol,
+        agendor,
+        sheets
+      });
     }
 
     // 1) Tenta empresa por telefone
