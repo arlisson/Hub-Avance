@@ -188,6 +188,7 @@ body.dark-mode .hub-title {
   padding: 20px;
   position: relative;
   margin-bottom: 60px;
+  background-color: transparent !important;
 }
 
 /* ==========================================================
@@ -338,13 +339,15 @@ body.dark-mode .hero-subtitle {
    ========================================================== */
 .hub-section-title {
   text-align: center;
-  margin: 60px auto 40px auto; /* Dá um respiro grande em relação ao Hero */
+  margin: 60px auto 40px auto;
+  /* Dá um respiro grande em relação ao Hero */
   max-width: 800px;
 }
 
 .hub-section-title h2 {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(28px, 4vw, 42px); /* Fica gigante no PC e adapta no celular */
+  font-size: clamp(28px, 4vw, 42px);
+  /* Fica gigante no PC e adapta no celular */
   font-weight: 600;
   color: var(--brand-primary);
   letter-spacing: -1px;
@@ -361,8 +364,10 @@ body.dark-mode .hub-section-title h2 {
 .hub-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* A MÁGICA AQUI: Centraliza os cards perfeitamente */
-  gap: 40px; /* Aumenta o espaço entre eles para preencher a tela */
+  justify-content: center;
+  /* A MÁGICA AQUI: Centraliza os cards perfeitamente */
+  gap: 40px;
+  /* Aumenta o espaço entre eles para preencher a tela */
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 100px;
@@ -373,8 +378,10 @@ body.dark-mode .hub-section-title h2 {
    ========================================================== */
 /* IMPORTANTE: Mude ".hub-card" para o nome da classe que você usa nos seus cards */
 .hub-card {
-  width: 340px; /* Largura imponente */
-  height: 460px; /* Altura de um poster */
+  width: 340px;
+  /* Largura imponente */
+  height: 460px;
+  /* Altura de um poster */
   border-radius: 24px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -383,14 +390,16 @@ body.dark-mode .hub-section-title h2 {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Joga o título do card lá pro fundo */
-  
+  justify-content: flex-end;
+  /* Joga o título do card lá pro fundo */
+
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.dark-mode .hub-card {
-  background: rgba(255, 255, 255, 0.03); /* Fundo de vidro translúcido */
+  background: rgba(255, 255, 255, 0.03);
+  /* Fundo de vidro translúcido */
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
@@ -398,9 +407,12 @@ body.dark-mode .hub-card {
 
 /* --- EFEITO AO PASSAR O MOUSE (HOVER) --- */
 .hub-card:hover {
-  transform: translateY(-12px) scale(1.02); /* Levanta e dá um leve zoom */
-  border-color: var(--brand-action); /* A borda acende na cor ciano */
-  box-shadow: 0 20px 50px rgba(87, 197, 234, 0.2); /* Sombra neon */
+  transform: translateY(-12px) scale(1.02);
+  /* Levanta e dá um leve zoom */
+  border-color: var(--brand-action);
+  /* A borda acende na cor ciano */
+  box-shadow: 0 20px 50px rgba(87, 197, 234, 0.2);
+  /* Sombra neon */
 }
 
 .hub-card img {
@@ -415,7 +427,8 @@ body.dark-mode .hub-card {
 }
 
 .hub-card:hover img {
-  transform: scale(1.05); /* A imagem cresce suavemente por dentro */
+  transform: scale(1.05);
+  /* A imagem cresce suavemente por dentro */
 }
 
 /* Cria uma sombra escura embaixo para o texto branco sempre dar leitura */
@@ -441,7 +454,8 @@ body.dark-mode .hub-card {
 /* Título sempre branco e em destaque */
 .hub-card-title {
   color: #FAFEFF;
-  font-size: 20px; /* Deixei um pouco maior pra combinar com o card grande */
+  font-size: 20px;
+  /* Deixei um pouco maior pra combinar com o card grande */
   font-weight: 700;
   margin: 0;
   text-align: left;
@@ -456,7 +470,8 @@ body.dark-mode .hub-card {
   }
 
   .hub-card {
-    width: 100%; /* No celular o card ocupa a tela toda */
+    width: 100%;
+    /* No celular o card ocupa a tela toda */
     max-width: 340px;
     height: 400px;
   }
@@ -744,14 +759,14 @@ body {
   width: 100%;
   z-index: 1000;
 
-  background-color: rgba(250, 254, 255, 0.85); 
+  background-color: rgba(250, 254, 255, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
-  
+
   /* A MÁGICA: Esconde a barra jogando ela 100% para cima da tela */
   transform: translateY(-100%);
   opacity: 0;
-  
+
   /* Animação suave para quando ela descer e subir */
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, background-color 0.3s ease;
 }
@@ -768,7 +783,7 @@ body.dark-mode .top-navbar {
 .top-navbar.scrolled,
 .top-navbar.hover-active,
 .top-navbar:hover {
-  transform: translateY(0) !important; 
+  transform: translateY(0) !important;
   opacity: 1 !important;
 }
 
@@ -901,7 +916,8 @@ body.dark-mode .nav-link.active {
 /* --- 2. A Caixa Branca do Menu --- */
 .settings-dropdown {
   position: absolute;
-  top: calc(100% + 15px); /* Desce dando um respiro */
+  top: calc(100% + 15px);
+  /* Desce dando um respiro */
   right: 0;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -910,11 +926,11 @@ body.dark-mode .nav-link.active {
   padding: 6px;
   min-width: 140px;
   z-index: 9999;
-  
+
   /* A CHAVE PARA NÃO ESMAGAR: Força o comportamento de bloco e um tamanho mínimo */
   display: block;
   height: auto;
-  min-height: 48px; 
+  min-height: 48px;
 }
 
 /* Se o JavaScript mandar esconder, esconde mesmo */
@@ -945,15 +961,16 @@ body.dark-mode .nav-link.active {
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: #ef4444; /* Vermelho Sair */
+  color: #ef4444;
+  /* Vermelho Sair */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   border-radius: 8px;
-  
+
   /* Mantém o botão DENTRO da caixa e por cima da setinha */
   position: relative;
-  z-index: 2; 
+  z-index: 2;
 }
 
 .dropdown-item:hover {
@@ -1003,14 +1020,16 @@ body.dark-mode .nav-link.active {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -10; /* Garante que fique no fundo */
-  pointer-events: none; /* O mouse ignora as partículas, permitindo clicar nos botões */
+  z-index: -10;
+  /* Garante que fique no fundo */
+  pointer-events: none;
+  /* O mouse ignora as partículas, permitindo clicar nos botões */
 }
 
 /* IMPORTANTE: Garanta que o conteúdo do Hero fique acima das partículas */
 .hero-content {
   position: relative;
-  z-index: 2; 
+  z-index: 2;
 }
 
 /* =========================================
@@ -1020,14 +1039,23 @@ body.dark-mode .nav-link.active {
   position: relative;
   width: 95%;
   max-width: 1200px;
-  margin: 80px auto; /* Dá um bom respiro do topo e centraliza */
+  margin: 80px auto;
+  /* Dá um bom respiro do topo e centraliza */
   border-radius: 20px;
-  padding: 3px; /* ESSA É A ESPESSURA DA LUZ. Aumente se quiser mais grossa */
-  overflow: hidden; /* Corta o excesso de luz */
-  
+  padding: 3px;
+  /* ESSA É A ESPESSURA DA LUZ. Aumente se quiser mais grossa */
+  overflow: hidden;
+  /* Corta o excesso de luz */
+
   /* Efeito de 3D saltado para a frente */
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(87, 197, 234, 0.15);
   z-index: 10;
+}
+
+/* Isso garante que nada bloqueie a sua animação de fundo do topo */
+body,
+.main-content {
+  background-color: transparent !important;
 }
 
 /* A luz ciano rodando no fundo (gradiente cônico) */
@@ -1039,12 +1067,10 @@ body.dark-mode .nav-link.active {
   width: 200%;
   height: 200%;
   /* Usei a sua cor --accent-cyan (#57C5EA) */
-  background: conic-gradient(
-    transparent, 
-    transparent, 
-    transparent, 
-    #57C5EA
-  );
+  background: conic-gradient(transparent,
+      transparent,
+      transparent,
+      #57C5EA);
   animation: rotateGlow 4s linear infinite;
   z-index: -2;
 }
@@ -1053,9 +1079,11 @@ body.dark-mode .nav-link.active {
 .showcase-wrapper::after {
   content: "";
   position: absolute;
-  inset: 3px; /* Mesmo valor do padding acima */
-  background-color: #0F2C58; /* Fundo interno do bloco (azul escuro da sua paleta) */
-  border-radius: 18px; 
+  inset: 3px;
+  /* Mesmo valor do padding acima */
+  background-color: #0F2C58;
+  /* Fundo interno do bloco (azul escuro da sua paleta) */
+  border-radius: 18px;
   z-index: -1;
 }
 
@@ -1063,7 +1091,8 @@ body.dark-mode .nav-link.active {
 .showcase-content {
   position: relative;
   z-index: 1;
-  padding: 50px 30px; /* Espaço para não grudar na borda de luz */
+  padding: 50px 30px;
+  /* Espaço para não grudar na borda de luz */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1073,12 +1102,18 @@ body.dark-mode .nav-link.active {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 40px;
-  color: #FAFEFF; /* Cor branca/gelo da sua paleta */
+  color: #FAFEFF;
+  /* Cor branca/gelo da sua paleta */
 }
 
 @keyframes rotateGlow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* =========================================
@@ -1095,6 +1130,7 @@ body.dark-mode .nav-link.active {
 body.dark-mode .logo-escuro {
   display: block;
 }
+
 body.dark-mode .logo-claro {
   display: none;
 }
@@ -1103,6 +1139,7 @@ body.dark-mode .logo-claro {
 body:not(.dark-mode) .logo-escuro {
   display: none;
 }
+
 body:not(.dark-mode) .logo-claro {
   display: block;
 }
