@@ -501,7 +501,7 @@ body:not(.dark-mode) .dropdown-item.danger:hover {
    ========================= */
 body.dark-mode .sidebar,
 body.dark-mode .sidebar-footer {
-  color: #eefcff;
+  color: #235B8B;
 }
 
 body.dark-mode .sidebar .logo-text,
