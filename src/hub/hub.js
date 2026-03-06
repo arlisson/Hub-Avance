@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    const { data: profile, error } = await sb
     .from("profiles")
     .select("protocol")
-    .eq("id", user.id)
+    .eq("id", sessionData.session.user.id)
     .single();
 
   if (error) {
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Inicializa a função
-initNavbarScroll();
+// initNavbarScroll();
 
 // ==========================================================
 // ANIMAÇÃO DE PARTÍCULAS (VERSÃO À PROVA DE FALHAS)
