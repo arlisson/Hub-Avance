@@ -848,3 +848,192 @@ body.dark-mode .settings-dots:hover {
 body.dark-mode .hub-footer {
   opacity: 0.4;
 }
+
+/* ==========================================================
+   TOP NAVBAR (BARRA DE TOPO)
+   ========================================================== */
+body {
+  /* Garante que o conteúdo flua de cima para baixo agora */
+  flex-direction: column; 
+}
+
+.top-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background-color: var(--bg-main);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* Efeito de vidro para quando rolar a página por cima da luz */
+  background-color: rgba(250, 254, 255, 0.85); 
+  backdrop-filter: blur(12px);
+}
+
+body.dark-mode .top-navbar {
+  background-color: rgba(11, 14, 35, 0.85);
+}
+
+.navbar-left, .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* --- LOGO --- */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+body.dark-mode .navbar-brand { color: #FAFEFF; }
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--brand-primary);
+  color: #FAFEFF;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+body.dark-mode .brand-icon {
+  background: rgba(173, 229, 242, 0.1);
+  color: var(--brand-light);
+}
+
+/* --- BOTÃO DE TEMA --- */
+.theme-toggle-top {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(0,0,0,0.04);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+
+.theme-toggle-top:hover {
+  background: rgba(87, 197, 234, 0.15);
+  color: var(--brand-action);
+}
+
+body.dark-mode .theme-toggle-top {
+  background: rgba(255,255,255,0.05);
+}
+
+/* --- LINKS CENTRAIS --- */
+.navbar-links {
+  display: flex;
+  gap: 32px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* Centraliza perfeitamente no meio da tela */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  opacity: 1;
+  color: var(--brand-primary);
+}
+
+body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+  color: var(--brand-action);
+}
+
+/* --- MENU DO USUÁRIO --- */
+.user-menu-container {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.user-profile-btn:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+body.dark-mode .user-profile-btn:hover { 
+  background: rgba(255,255,255,0.05); 
+}
+
+.user-profile-btn i { font-size: 20px; }
+
+.nav-user-email {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dropdown de Sair no Topo */
+.settings-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%; /* Desce a partir do botão */
+  margin-top: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px var(--shadow-color);
+  padding: 6px;
+  min-width: 160px;
+  z-index: 10;
+}
+
+/* ==========================================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================================== */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .navbar-links { display: none; /* Esconde links centrais no cel */ }
+  .nav-user-email { display: none; /* Esconde email no cel */ }
+  .top-navbar { padding: 16px 20px; }
+  .mobile-menu-btn { display: block; }
+}
