@@ -10,7 +10,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <link rel="stylesheet" href="./agent.css" />
+  <link rel="stylesheet" href="./agent2.css" />
 </head>
 
 <body>
@@ -22,18 +22,18 @@
     </div>
 
     <button class="new-chat-btn">
-    + Resetar conversa
-  </button>
+      + Resetar conversa
+    </button>
 
-  <nav class="chat-history">
-    <div class="chat-item active">
-      <span class="icon">💬</span>
-      <div class="chat-info">
-        <span class="title">Consultora de Vendas</span>
-        <span class="subtitle">Sofia</span>
+    <nav class="chat-history">
+      <div class="chat-item active">
+        <span class="icon">💬</span>
+        <div class="chat-info">
+          <span class="title">Consultora de Vendas</span>
+          <span class="subtitle">Ludmilla</span>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
     <div class="sidebar-footer">
 
@@ -88,17 +88,14 @@
 
     <div class="chat-messages" id="chat-messages"></div>
 
-    <div class="input-area">
+    <div class="messages-area"></div>
+
+    <div class="input-wrapper">
       <div class="input-container">
-        <textarea id="user-input" placeholder="Digite sua mensagem..." rows="1" oninput="
-              this.style.height = '';
-              this.style.height = this.scrollHeight + 'px';
-            "></textarea>
-        <button id="send-btn" class="send-btn" type="button">
-          <i class="ph ph-paper-plane-right"></i>
-        </button>
+        <input type="text" placeholder="Digite sua mensagem para a Sofia..." />
+        <button class="send-btn">Enviar ➔</button>
       </div>
-      <p class="disclaimer">IA Avance</p>
+      <div class="footer-text">IA Avance</div>
     </div>
   </main>
 

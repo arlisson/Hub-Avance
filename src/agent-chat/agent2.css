@@ -1,0 +1,170 @@
+:root {
+    /* Fundo escuro profundo para a Sidebar */
+    --bg-sidebar: #131739;
+    /* Fundo principal da área de chat (um leve contraste) */
+    --bg-main: #0F2C58;
+    /* Bordas e separadores sutis */
+    --border-color: #235B8B;
+    /* Fundo de itens ao passar o mouse */
+    --bg-hover: #133868;
+    /* Cor principal de destaque (Botões, ícones ativos) */
+    --accent-cyan: #57C5EA;
+    /* Cor de texto principal (Branco gelo) */
+    --text-primary: #FAFEFF;
+    /* Cor de texto secundário (Azul clarinho) */
+    --text-secondary: #ADE5F2;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    /* Uma fonte moderna faz muita diferença */
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.new-chat-btn {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.new-chat-btn:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(87, 197, 234, 0.2);
+    /* Brilho sutil */
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.chat-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.chat-item.active {
+    background-color: rgba(87, 197, 234, 0.1);
+    border-left: 3px solid var(--accent-cyan);
+}
+
+.chat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-info .title {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chat-info .subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.input-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(to top, var(--bg-main) 60%, transparent);
+    /* Esmaece o fundo atrás do input */
+}
+
+.input-container {
+    width: 100%;
+    max-width: 768px;
+    /* Limita a largura para ficar mais elegante */
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    /* Cantos bem arredondados */
+    display: flex;
+    padding: 8px 12px;
+    align-items: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-container:focus-within {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 12px rgba(87, 197, 234, 0.15);
+}
+
+.input-container input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 15px;
+    padding: 10px;
+    outline: none;
+}
+
+.input-container input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.send-btn {
+    background-color: var(--accent-cyan);
+    color: #0F2C58;
+    /* Texto escuro para dar contraste no botão claro */
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.send-btn:hover {
+    background-color: var(--text-primary);
+    transform: scale(1.05);
+    /* Leve pulso ao passar o mouse */
+}
+
+.footer-text {
+    font-size: 11px;
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
