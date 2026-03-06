@@ -976,13 +976,13 @@ body.dark-mode .nav-link.active {
 }
 
 /* ==========================================================
-   MENU DO USUÁRIO (Limpo e Corrigido)
+   MENU DO USUÁRIO (CORREÇÃO FINAL DE COLAPSO)
    ========================================================== */
 .user-menu-container {
   position: relative;
 }
 
-/* 1. O Botão Principal (Perfil) */
+/* --- 1. Botão do Perfil (Sem bordas bizarras) --- */
 .user-profile-btn {
   display: flex;
   align-items: center;
@@ -998,13 +998,12 @@ body.dark-mode .nav-link.active {
   transition: all 0.2s ease;
 }
 
-/* Remove a borda quadrada cinza nativa do navegador de uma vez por todas */
+/* Mata de vez a borda feia de foco do navegador */
 .user-profile-btn:focus,
-.user-profile-btn:focus-visible,
 .user-profile-btn:active {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(87, 197, 234, 0.4); /* Fica com um anel de foco azul suave */
   border-color: var(--brand-action);
+  box-shadow: 0 0 0 2px rgba(87, 197, 234, 0.3);
 }
 
 .user-profile-btn:hover {
@@ -1018,62 +1017,62 @@ body.dark-mode .nav-link.active {
   text-overflow: ellipsis;
 }
 
-/* 2. A Caixa do Menu Sair */
+/* --- 2. A Caixa Branca do Menu --- */
 .settings-dropdown {
   position: absolute;
-  top: calc(100% + 12px); /* Desce logo abaixo do botão */
+  top: calc(100% + 15px); /* Desce dando um respiro */
   right: 0;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  padding: 8px; /* Dá espaço interno para a caixa respirar */
-  min-width: 150px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+  min-width: 140px;
   z-index: 9999;
   
-  /* Isso garante que a caixa abrace o botão Sair e não fique esmagada */
-  display: flex;
-  flex-direction: column;
+  /* A CHAVE PARA NÃO ESMAGAR: Força o comportamento de bloco e um tamanho mínimo */
+  display: block;
+  height: auto;
+  min-height: 48px; 
 }
 
-/* Quando o JavaScript mandar esconder, ele some perfeitamente */
+/* Se o JavaScript mandar esconder, esconde mesmo */
 .settings-dropdown[hidden] {
   display: none;
 }
 
-/* 3. A Setinha apontando pra cima */
+/* --- 3. A Setinha apontando pra cima --- */
 .settings-dropdown::before {
   content: '';
   position: absolute;
   top: -6px;
   right: 24px;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background-color: var(--bg-card);
   border-left: 1px solid var(--border-subtle);
   border-top: 1px solid var(--border-subtle);
   transform: rotate(45deg);
 }
 
-/* 4. O Botão de Sair (Dentro da caixa) */
+/* --- 4. O Botão Sair --- */
 .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   padding: 10px 12px;
   background: transparent;
   border: none;
-  border-radius: 8px;
-  color: #ef4444; /* Vermelho */
+  color: #ef4444; /* Vermelho Sair */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  border-radius: 8px;
   
-  /* Garante que o texto Sair fique alinhado e dentro do botão */
+  /* Mantém o botão DENTRO da caixa e por cima da setinha */
   position: relative;
-  z-index: 2;
+  z-index: 2; 
 }
 
 .dropdown-item:hover {
