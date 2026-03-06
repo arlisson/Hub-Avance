@@ -27,13 +27,24 @@ body {
 }
 
 .sidebar {
-    width: 260px;
-    background-color: var(--bg-sidebar);
-    border-right: 1px solid var(--border-color);
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  width: 260px;
+  background-color: var(--bg-sidebar); /* A cor super escura #131739 */
+  border-right: 1px solid var(--border-color);
+  padding: 20px 16px;
+  
+  /* Mantém os itens distribuídos (logo no topo, config no fundo) */
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  box-sizing: border-box;
+}
+
+/* Se você tiver uma div englobando os itens do fundo (Chave API, etc) */
+.sidebar-footer-menu { 
+  margin-top: auto; /* Empurra os botões de config lá para o final */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .new-chat-btn {
@@ -90,13 +101,19 @@ body {
 
 .chat-container {
     flex: 1;
+    /* Ocupa todo o resto da tela ao lado da sidebar */
     display: flex;
     flex-direction: column;
-    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    /* Usando a cor #0F2C58 da sua paleta */
 }
 
+/* A área onde as mensagens da Ludmilla vão aparecer */
 .messages-area {
-    flex: 1;
+    flex-grow: 1;
+    /* Isso é o que empurra o input para baixo */
     overflow-y: auto;
     padding: 24px;
 }
@@ -167,4 +184,13 @@ body {
     font-size: 11px;
     color: var(--text-secondary);
     opacity: 0.5;
+}
+
+.sidebar img,
+.logo-container img {
+    max-width: 80%;
+    /* Mantém a logo contida na sidebar */
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 20px;
 }
