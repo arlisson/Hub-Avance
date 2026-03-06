@@ -893,10 +893,16 @@ body.dark-mode .top-navbar {
   background-color: rgba(11, 14, 35, 0.85);
 }
 
-/* Essa é a classe que o JavaScript vai adicionar quando rolar a página */
-.top-navbar.scrolled {
-  transform: translateY(0); /* Volta para a posição original */
-  opacity: 1;
+/* A barra desce quando:
+   1. A página for rolada para baixo (.scrolled)
+   2. O JS detectar o mouse no teto (.hover-active)
+   3. O mouse estiver fisicamente em cima da barra ou dos seus menus (:hover) 
+*/
+.top-navbar.scrolled,
+.top-navbar.hover-active,
+.top-navbar:hover {
+  transform: translateY(0) !important; 
+  opacity: 1 !important;
 }
 
 .navbar-left,

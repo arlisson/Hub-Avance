@@ -486,24 +486,35 @@ function escapeHtml(s) {
 }
 
 // -------------------------
-// Efeito da Navbar (Aparecer ao Rolar)
+// Efeito da Navbar (Scroll e Hover no Topo)
 // -------------------------
 document.addEventListener('DOMContentLoaded', () => {
   const navbar = document.querySelector('.top-navbar');
   
-  // Se não achar a navbar, avisa no console para sabermos
   if (!navbar) {
     console.warn("Navbar não encontrada pelo script!");
     return;
   }
 
+  // 1. Efeito ao rolar a página (Scroll)
   window.addEventListener('scroll', () => {
-    // Se o usuário rolou mais de 50 pixels para baixo
     if (window.scrollY > 50) {
       navbar.classList.add('scrolled');
     } else {
-      // Se voltou pro topo
       navbar.classList.remove('scrolled');
+    }
+  });
+
+  // 2. Efeito ao encostar o mouse no teto (Hover invisível)
+  document.addEventListener('mousemove', (e) => {
+    // Se o mouse subir até os primeiros 30 pixels da tela (área invisível de gatilho)
+    if (e.clientY <= 30) {
+      navbar.classList.add('hover-active');
+    } else {
+      // Se descer, o JS tira a classe, mas fique tranquilo: 
+      // o CSS ":hover" que adicionamos vai segurar a barra aberta 
+      // caso o mouse já esteja navegando nela ou no menu "Sair".
+      navbar.classList.remove('hover-active');
     }
   });
 });
