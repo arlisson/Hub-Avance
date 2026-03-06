@@ -447,8 +447,10 @@ button {
 .message {
   display: flex;
   gap: 16px;
-  max-width: 85%; /* Impede que a bolha ocupe a tela toda */
-  animation: fadeIn 0.3s ease-out; /* Animação suave ao aparecer */
+  width: 100%;
+  max-width: 800px; /* Mesma largura máxima que usamos no seu Input lá embaixo! */
+  margin: 0 auto; /* Isso é o que centraliza a conversa no meio da tela */
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -459,9 +461,10 @@ button {
 /* --------------------------------------
    MENSAGEM DO USUÁRIO
    -------------------------------------- */
+
 .message-user {
-  align-self: flex-end; /* Joga para a direita */
-  flex-direction: row-reverse;
+  /* Removemos o align-self para ele não fugir pro canto da tela */
+  flex-direction: row-reverse; /* Isso garante que a bolha azul fique na direita dessa coluna de 800px */
 }
 
 .message-user .message-bubble {
@@ -478,7 +481,7 @@ button {
    MENSAGEM DA IA (BOT)
    -------------------------------------- */
 .message-bot {
-  align-self: flex-start; /* Joga para a esquerda */
+  flex-direction: row; 
 }
 
 .message-bot .message-avatar {
