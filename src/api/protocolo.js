@@ -126,13 +126,13 @@ function generateProtocol(phoneDigits) {
   const MM = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
   const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
+  // const mm = String(now.getMinutes()).padStart(2, "0");
 
   const last4 = String(phoneDigits || "").slice(-4).padStart(4, "0");
   const rand2 = String(Math.floor(Math.random() * 100)).padStart(2, "0");
 
-  // Ex: 2603051822484325
-  return `${yy}${MM}${dd}${hh}${mm}${last4}${rand2}`;
+
+  return `${yy}${MM}${dd}${hh}${last4}${rand2}`;
 }
 
 function normalizePhone(v) {
