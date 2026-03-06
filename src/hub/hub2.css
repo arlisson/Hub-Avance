@@ -1012,3 +1012,29 @@ body.dark-mode .nav-link.active {
   position: relative;
   z-index: 2; 
 }
+
+/* =========================================
+   7. CONTROLE DA LOGO (TEMA CLARO / ESCURO)
+   ========================================= */
+
+/* Garante que ambas as logos tenham o mesmo tamanho */
+.company-logo {
+  max-width: 140px;
+  height: auto;
+}
+
+/* Quando o site está no MODO ESCURO (com a classe .dark-mode no body) */
+body.dark-mode .logo-escuro {
+  display: block;
+}
+body.dark-mode .logo-claro {
+  display: none;
+}
+
+/* Quando o site está no MODO CLARO (sem a classe .dark-mode no body) */
+body:not(.dark-mode) .logo-escuro {
+  display: none;
+}
+body:not(.dark-mode) .logo-claro {
+  display: block;
+}
