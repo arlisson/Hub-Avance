@@ -1,20 +1,28 @@
-/* Variáveis de Cores (Tema Claro Padrão) */
 :root {
-  --bg-body: #f9fafb;
-  --bg-sidebar: #ffffff;
-  --border-color: #e5e7eb;
+  /* Fundo escuro profundo para a Sidebar */
+  --bg-sidebar: #131739; 
+  /* Fundo principal da área de chat (um leve contraste) */
+  --bg-main: #0F2C58; 
+  /* Bordas e separadores sutis */
+  --border-color: #235B8B; 
+  /* Fundo de itens ao passar o mouse */
+  --bg-hover: #133868; 
+  /* Cor principal de destaque (Botões, ícones ativos) */
+  --accent-cyan: #57C5EA; 
+  /* Cor de texto principal (Branco gelo) */
+  --text-primary: #FAFEFF; 
+  /* Cor de texto secundário (Azul clarinho) */
+  --text-secondary: #ADE5F2; 
+}
 
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-
-  --msg-bot-bg: #f3f4f6;
-  --msg-bot-text: #1f2937;
-  --msg-user-bg: #2563eb;
-  --msg-user-text: #ffffff;
-
-  --input-bg: #ffffff;
-  --hover-color: #f3f4f6;
-  --accent-color: #2563eb;
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', sans-serif; /* Uma fonte moderna faz muita diferença */
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Variáveis de Cores (Tema Escuro) */
@@ -41,17 +49,6 @@ body.dark-mode {
   margin: 0;
   padding: 0;
   font-family: "Inter", sans-serif;
-}
-
-body {
-  display: flex;
-  height: 100vh;
-  background-color: var(--bg-body);
-  color: var(--text-primary);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-  overflow: hidden;
 }
 
 /* --- SIDEBAR --- */
