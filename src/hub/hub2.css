@@ -114,26 +114,10 @@ body.dark-mode .chat-item.active {
   overflow-y: auto;
 }
 
-.mobile-menu-btn {
-  display: none;
-  /* Esconde no desktop */
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-}
-
 /* ==========================================================
    RESPONSIVIDADE (MOBILE)
    ========================================================== */
 @media (max-width: 900px) {
-  .mobile-menu-btn {
-    display: block;
-  }
-
   .sidebar {
     position: fixed;
     left: -300px;
