@@ -114,17 +114,6 @@ body.dark-mode .chat-item.active {
   overflow-y: auto;
 }
 
-.chat-header {
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: var(--bg-main);
-  /* border-bottom: 1px solid var(--border-subtle); Opcional */
-}
-
 .mobile-menu-btn {
   display: none;
   /* Esconde no desktop */
@@ -928,7 +917,7 @@ body.dark-mode .top-navbar {
 body.dark-mode .navbar-logo {
   /* Se a sua logo atual for escura e sumir no fundo escuro, 
      você pode testar descomentar a linha abaixo para inverter a cor dela: */
-  filter: brightness(0) invert(1); */
+  filter: brightness(0) invert(1);
 }
 
 /* --- BOTÃO DE TEMA --- */
@@ -1025,30 +1014,20 @@ body.dark-mode .user-profile-btn:hover {
   text-overflow: ellipsis;
 }
 
-/* Remove a borda preta padrão do navegador ao clicar no botão */
-.user-profile-btn:focus {
-  outline: none;
-  background: rgba(87, 197, 234, 0.1);
-}
-
-/* Dropdown de Sair no Topo (Corrigido) */
+/* Dropdown de Sair no Topo */
 .settings-dropdown {
   position: absolute;
   right: 0;
-  
-  /* A mágica aqui: 100% da altura do botão + 16px do padding da navbar + 4px de respiro */
-  top: calc(100% + 20px); 
-  
-  margin-top: 0;
+  top: 100%;
+  /* Desce a partir do botão */
+  margin-top: 10px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  box-shadow: 0 10px 30px var(--shadow-color);
+  box-shadow: 0 10px 25px var(--shadow-color);
   padding: 6px;
   min-width: 160px;
-  
-  /* Garante que ele seja a camada mais alta absoluta da tela */
-  z-index: 9999 !important; 
+  z-index: 10;
 }
 
 /* ==========================================================
