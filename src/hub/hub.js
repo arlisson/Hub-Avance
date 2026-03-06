@@ -61,6 +61,25 @@ const APPS = [
     ],
   },
   {
+    id: "protocol",
+    badge: "Gerador de Protocolo",
+    image: "../img/protocolo.png",
+    title: "Gerador de Protocolo",
+    shortDesc: "Gera e registra protocolos.",
+    longDesc: "Ferramenta para geração, registro e envio de protocolos.",
+    youtubeId: "",
+    enabled: true,
+    actions: [
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href: "../protocolo/protocolo.html",
+        primary: true,
+        targetBlank: false,
+      },
+    ],
+  },
+  {
     id: "novo-produto",
     badge: "Em breve",
     image: "",
@@ -95,6 +114,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const email = sessionData.session.user?.email || "";
 
+   const { data: profile, error } = await sb
+    .from("profiles")
+    .select("protocol")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Erro ao buscar permissões:", error);
+  }
+
+  const canAccessProtocol = !!profile?.protocol;
+
+
+
   // Toast de boas-vindas (opcional)
   const WELCOME_TOAST = {
     title: "Bem-vindo!",
@@ -112,6 +145,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     userEmailEl.title = email || ""; // balão nativo do navegador no hover
     userEmailEl.style.cursor = "default";
   }
+
+
 
   // Menu (3 pontinhos)
   const settingsBtn = document.getElementById("settings-btn");
@@ -144,36 +179,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Modal
   initAppModal();
+
+  renderHubCards({ canAccessProtocol });
 });
 
 // -------------------------
 // Renderização dos cards
 // -------------------------
-function renderHubCards() {
+function renderHubCards({ canAccessProtocol = false } = {}) {
   const grid = document.getElementById("hub-grid");
   if (!grid) return;
 
   grid.innerHTML = "";
 
-  APPS.forEach((app) => {
+  const visibleApps = APPS.filter(app => {
+    if (app.id === "protocol" && !canAccessProtocol) return false;
+    return true;
+  });
+
+  visibleApps.forEach((app) => {
     const card = document.createElement("article");
     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
     card.setAttribute("data-app-id", app.id);
 
-    // O card inteiro agora é clicável e abre o modal
     if (app.enabled) {
       card.addEventListener("click", () => {
         openAppModal(app.id);
       });
     }
 
-    // A MÁGICA ESTÁ AQUI: Cria uma tag <img> de verdade se a imagem existir
-    const imgTag = app.image 
-      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}">` 
-      : ''; 
-      // Se não tiver imagem, ele fica vazio e mostra só o fundo escuro do card
+    const imgTag = app.image
+      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}">`
+      : "";
 
-    // Estrutura HTML limpa, casando 100% com o novo CSS
     card.innerHTML = `
       ${imgTag}
       <div class="hub-card-content">

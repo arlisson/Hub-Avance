@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
+  const HUB_URL = "/hub/hub.html";
+
+  let sb;
+  let session;
 
   // Supabase guard
-  let sb;
   try {
     sb = await window.getSupabaseClient();
   } catch {
@@ -10,20 +13,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
+  try {
+    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+
+    if (sessionError || !sessionData?.session) {
+      window.location.href = LOGIN_URL;
+      return;
+    }
+
+    session = sessionData.session;
+  } catch {
     window.location.href = LOGIN_URL;
     return;
   }
 
-  const email = sessionData.session.user?.email || "";
+  const user = session.user;
+  const email = user?.email || "";
+
+  // Permissão de acesso ao protocolo
+  try {
+    const { data: profile, error: profileError } = await sb
+      .from("profiles")
+      .select("protocol")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    if (!profile?.protocol) {
+      alert("Você não tem permissão para acessar o Gerador de Protocolo.");
+      window.location.href = HUB_URL;
+      return;
+    }
+  } catch (err) {
+    console.error("Erro ao validar permissão de protocolo:", err);
+    alert("Não foi possível validar sua permissão de acesso.");
+    window.location.href = HUB_URL;
+    return;
+  }
+
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) {
     userEmailEl.textContent = email;
     userEmailEl.title = email;
   }
 
-  // Menus e tema (padrão)
+  // Menus e tema
   initSettingsMenu(
     document.getElementById("settings-btn"),
     document.getElementById("settings-menu")
@@ -35,8 +72,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const menuLogout = document.getElementById("menu-logout");
   if (menuLogout) {
     menuLogout.addEventListener("click", async () => {
-      try { await sb.auth.signOut(); }
-      finally { window.location.href = LOGIN_URL; }
+      try {
+        await sb.auth.signOut();
+      } finally {
+        window.location.href = LOGIN_URL;
+      }
     });
   }
 
@@ -44,9 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const phoneEl = document.getElementById("phone");
   const agentEl = document.getElementById("agent");
   const channelEl = document.getElementById("channel");
-  // const agendorTypeEl = document.getElementById("agendorType");
 
-  // Picker de empresa (quando houver múltiplas)
+  // Picker de empresa
   const orgPickerWrap = document.getElementById("orgPickerWrap");
   const orgPicker = document.getElementById("orgPicker");
 
@@ -71,6 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function showOrgPicker(matches) {
     if (!orgPickerWrap || !orgPicker) return;
+
     orgPicker.innerHTML = "";
 
     const ph = document.createElement("option");
@@ -80,28 +120,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     for (const m of matches || []) {
       const opt = document.createElement("option");
-      opt.value = m.key;       // <- antes era m.id
-      opt.textContent = m.label; // <- antes era `${m.name} (ID ${m.id})`
+      opt.value = m.key || "";
+      opt.textContent = m.label || "";
       orgPicker.appendChild(opt);
     }
 
+    orgPicker.value = "";
     orgPickerWrap.hidden = false;
+  }
+
+  function clearFeedback() {
+    if (resultBox) resultBox.hidden = true;
+    if (errorBox) {
+      errorBox.hidden = true;
+      errorBox.textContent = "";
+    }
   }
 
   btnClear?.addEventListener("click", () => {
     if (phoneEl) phoneEl.value = "";
     if (agentEl) agentEl.value = "";
-    // if (agendorTypeEl) agendorTypeEl.value = "";
     if (channelEl) channelEl.value = "whatsapp";
+    if (msgEl) msgEl.value = "";
+
+    if (protoEl) protoEl.textContent = "";
+    if (sheetStatusEl) sheetStatusEl.textContent = "";
+    if (agendorStatusEl) agendorStatusEl.textContent = "";
 
     hideOrgPicker();
-
-    if (resultBox) resultBox.hidden = true;
-    if (errorBox) { errorBox.hidden = true; errorBox.textContent = ""; }
+    clearFeedback();
   });
 
   async function callApi(payload) {
-    const token = sessionData.session.access_token;
+    const token = session.access_token;
 
     const resp = await fetch("/api/protocolo", {
       method: "POST",
@@ -113,8 +164,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     const raw = await resp.text();
+
     let data;
-    try { data = JSON.parse(raw); } catch { data = { error: raw }; }
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = { error: raw };
+    }
 
     return { resp, data };
   }
@@ -123,11 +179,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
 
     try {
-      if (errorBox) {
-        errorBox.hidden = true;
-        errorBox.textContent = "";
-      }
-      if (resultBox) resultBox.hidden = true;
+      clearFeedback();
 
       const phoneRaw = (phoneEl?.value || "").trim();
       const phone = digitsOnly(phoneRaw);
@@ -138,8 +190,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       btnGenerate.disabled = true;
 
-      // Se usuário já selecionou uma empresa no picker, usamos esse id
-      const selectedPick = (orgPicker && !orgPickerWrap.hidden) ? (orgPicker.value || "") : "";
+      const selectedPick =
+        orgPicker && orgPickerWrap && !orgPickerWrap.hidden
+          ? (orgPicker.value || "")
+          : "";
 
       const payload = {
         phone,
@@ -162,18 +216,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const { resp, data } = await callApi(payload);
 
-      // Caso de múltiplas empresas/pessoas
-      // if (resp.status === 409 && Array.isArray(data?.matches)) {
-      //   AppLoading.update({
-      //     title: "Seleção necessária",
-      //     message: "Foram encontrados múltiplos registros."
-      //   });
+      // Caso queira tratar múltiplos registros futuramente, pode reativar este bloco:
+      /*
+      if (resp.status === 409 && Array.isArray(data?.matches)) {
+        AppLoading.update({
+          title: "Seleção necessária",
+          message: "Foram encontrados múltiplos registros."
+        });
 
-      //   showOrgPicker(data.matches);
+        showOrgPicker(data.matches);
 
-      //   const maybeProtocol = data?.protocol ? ` Protocolo gerado: ${data.protocol}` : "";
-      //   throw new Error((data?.error || "Mais de um registro encontrado.") + maybeProtocol);
-      // }
+        const maybeProtocol = data?.protocol ? ` Protocolo gerado: ${data.protocol}` : "";
+        throw new Error((data?.error || "Mais de um registro encontrado.") + maybeProtocol);
+      }
+      */
 
       if (!resp.ok) {
         const maybeProtocol = data?.protocol ? `\nProtocolo gerado: ${data.protocol}` : "";
@@ -187,31 +243,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       hideOrgPicker();
 
-      const protocol = data.protocol || "";
-      if (protoEl) protoEl.textContent = protocol;
+      const protocol = data?.protocol || "";
+
+      if (protoEl) {
+        protoEl.textContent = protocol;
+      }
 
       if (sheetStatusEl) {
-        sheetStatusEl.textContent = data.sheets?.ok ? "Registrado" : (data.sheets?.detail || "Falhou");
+        sheetStatusEl.textContent = data?.sheets?.ok
+          ? "Registrado"
+          : (data?.sheets?.detail || "Falhou");
       }
 
       if (agendorStatusEl) {
-        agendorStatusEl.textContent = data.agendor?.sent ? "Enviado" : (data.agendor?.detail || "Não enviado");
+        agendorStatusEl.textContent = data?.agendor?.sent
+          ? "Enviado"
+          : (data?.agendor?.detail || "Não enviado");
       }
 
       if (msgEl) {
         msgEl.value = buildMessage(protocol);
       }
 
-      if (resultBox) resultBox.hidden = false;
-
+      if (resultBox) {
+        resultBox.hidden = false;
+      }
     } catch (e) {
       if (errorBox) {
-        errorBox.textContent = e.message || "Erro.";
+        errorBox.textContent = e?.message || "Erro.";
         errorBox.hidden = false;
       }
     } finally {
       AppLoading.hide();
-      btnGenerate.disabled = false;
+      if (btnGenerate) btnGenerate.disabled = false;
     }
   });
 
@@ -241,9 +305,19 @@ function buildMessage(protocol) {
 // -------------------------
 function initSettingsMenu(btn, menu) {
   if (!btn || !menu) return;
-  const close = () => (menu.hidden = true);
-  const open = () => (menu.hidden = false);
-  const toggle = () => (menu.hidden ? open() : close());
+
+  const close = () => {
+    menu.hidden = true;
+  };
+
+  const open = () => {
+    menu.hidden = false;
+  };
+
+  const toggle = () => {
+    if (menu.hidden) open();
+    else close();
+  };
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -252,22 +326,28 @@ function initSettingsMenu(btn, menu) {
 
   document.addEventListener("click", (e) => {
     const userbar = document.getElementById("sidebar-userbar");
-    if (!userbar?.contains(e.target)) close();
+    if (!userbar?.contains(e.target)) {
+      close();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") {
+      close();
+    }
   });
 }
 
 function initMobileSidebar(menuBtn) {
   if (!menuBtn) return;
+
   menuBtn.addEventListener("click", () => {
     document.body.classList.toggle("sidebar-open");
   });
 
   document.addEventListener("click", (e) => {
     if (!document.body.classList.contains("sidebar-open")) return;
+
     const sidebar = document.querySelector(".sidebar");
     if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
       document.body.classList.remove("sidebar-open");
@@ -290,9 +370,11 @@ function initTheme(themeToggle) {
 }
 
 function updateThemeIcon(btn, isDark) {
-  const icon = btn.querySelector("i");
-  const text = btn.querySelector("span");
+  const icon = btn?.querySelector("i");
+  const text = btn?.querySelector("span");
+
   if (!icon || !text) return;
+
   icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
   text.textContent = isDark ? "Modo claro" : "Modo escuro";
 }
