@@ -126,16 +126,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const canAccessProtocol = !!profile?.protocol;
 
-
-
-  // Toast de boas-vindas (opcional)
-  const WELCOME_TOAST = {
-    title: "Bem-vindo!",
-    message:
-      "Seja bem-vindo ao Hub AVANCE. Selecione um produto para ver os detalhes e acessar.",
-    durationMs: 0,
-  };
-
   
   // Mostra email no footer (com tooltip ao passar o mouse)
   const userEmailEl = document.getElementById("user-email");
