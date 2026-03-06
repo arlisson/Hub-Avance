@@ -975,36 +975,39 @@ body.dark-mode .nav-link.active {
   color: var(--brand-action);
 }
 
-/* --- MENU DO USUÁRIO --- */
+/* ==========================================================
+   MENU DO USUÁRIO (Corrigido)
+   ========================================================== */
 .user-menu-container {
   position: relative;
 }
 
+/* --- Botão do Perfil --- */
 .user-profile-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: transparent;
-  border: none;
+  background: var(--bg-card); /* Fundo sólido para tampar a luz de trás */
+  border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.2s;
+  padding: 8px 16px;
+  border-radius: 50px; /* Mantém o seu formato de pílula */
+  transition: all 0.2s ease;
+}
+
+/* Remove a borda preta feia do navegador e põe um brilho da sua marca */
+.user-profile-btn:focus {
+  outline: none !important;
+  border-color: var(--brand-action) !important;
+  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.2);
 }
 
 .user-profile-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-body.dark-mode .user-profile-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.user-profile-btn i {
-  font-size: 20px;
+  background: rgba(87, 197, 234, 0.05);
+  border-color: var(--brand-action);
 }
 
 .nav-user-email {
@@ -1014,20 +1017,68 @@ body.dark-mode .user-profile-btn:hover {
   text-overflow: ellipsis;
 }
 
-/* Dropdown de Sair no Topo */
+/* --- Dropdown de Sair --- */
 .settings-dropdown {
   position: absolute;
   right: 0;
-  top: 100%;
-  /* Desce a partir do botão */
-  margin-top: 10px;
+  top: calc(100% + 14px); /* Espaçamento exato abaixo do botão */
+  
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  box-shadow: 0 10px 25px var(--shadow-color);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); /* Sombra forte para destacar */
+  
   padding: 6px;
   min-width: 160px;
-  z-index: 10;
+  z-index: 99999 !important; /* Camada máxima absoluta */
+  
+  /* Garante que o fundo não suma */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Resolve a briga com o HTML (Quando o JS esconder o menu, ele some de verdade) */
+.settings-dropdown[hidden] {
+  display: none !important;
+}
+
+/* Setinha no topo apontando para o botão (Toque Premium) */
+.settings-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 24px;
+  width: 10px;
+  height: 10px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-subtle);
+  transform: rotate(45deg);
+}
+
+/* --- Botão "Sair" --- */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #ef4444; /* Vermelho Sair */
+  font-weight: 600;
+  transition: all 0.2s;
+  
+  /* Fica acima da setinha pra não sobrepor o hover */
+  position: relative; 
+  z-index: 2; 
+}
+
+.dropdown-item:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* ==========================================================
