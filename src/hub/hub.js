@@ -521,3 +521,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Inicializa a função
 initNavbarScroll();
+
+// -------------------------
+// Animação de Partículas no Hero (Estilo Tech/AI)
+// -------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('hero-particles');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let particlesArray = [];
+
+  // Ajusta o tamanho do canvas para o tamanho da seção Hero
+  function setCanvasSize() {
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+  }
+  setCanvasSize();
+  window.addEventListener('resize', () => {
+    setCanvasSize();
+    init(); // Recria as partículas ao redimensionar a tela
+  });
+
+  // Molde da Partícula
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5; // Tamanhos variados (pequenos e delicados)
+      this.speedX = (Math.random() - 0.5) * 0.6; // Velocidade horizontal lenta
+      this.speedY = (Math.random() - 0.5) * 0.6; // Velocidade vertical lenta
+      this.opacity = Math.random() * 0.5 + 0.1; // Transparência variada
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      // Se bater na borda, inverte a direção (faz elas quicarem invisivelmente)
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      
+      // Cor ciano da AVANCE com brilho (glow)
+      ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = 'rgba(87, 197, 234, 0.8)';
+      
+      ctx.fill();
+    }
+  }
+
+  // Inicializa o exército de partículas
+  function init() {
+    particlesArray = [];
+    // Calcula a quantidade baseada no tamanho da tela (para não sobrecarregar)
+    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 12000);
+    
+    for (let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+  }
+
+  // Loop de animação contínua (60 frames por segundo)
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o rastro
+    for (let i = 0; i < particlesArray.length; i++) {
+      particlesArray[i].update();
+      particlesArray[i].draw();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Roda a mágica
+  init();
+  animate();
+});
