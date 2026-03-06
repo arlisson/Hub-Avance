@@ -522,51 +522,72 @@ document.addEventListener('DOMContentLoaded', () => {
 // Inicializa a função
 initNavbarScroll();
 
-// -------------------------
-// Animação de Partículas no Hero (Versão Forçada)
-// -------------------------
-function initHeroParticles() {
-  const canvas = document.getElementById('hero-particles');
+// ==========================================================
+// ANIMAÇÃO DE PARTÍCULAS (VERSÃO À PROVA DE FALHAS)
+// ==========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const heroSection = document.querySelector('.hero-section');
+  const heroContent = document.querySelector('.hero-content');
   
-  if (!canvas) {
-    console.warn("Elemento canvas não encontrado no HTML!");
+  if (!heroSection) {
+    console.error("Erro: A classe .hero-section não foi encontrada no HTML.");
     return;
+  }
+
+  // 1. Força o CSS pelo JavaScript para garantir as camadas (Z-Index)
+  heroSection.style.position = 'relative';
+  heroSection.style.overflow = 'hidden';
+  if (heroContent) {
+    heroContent.style.position = 'relative';
+    heroContent.style.zIndex = '10'; // Joga o texto e o botão lá pra frente
+  }
+
+  // 2. Cria o Canvas dinamicamente (sem precisar mexer no HTML)
+  let canvas = document.getElementById('hero-particles');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'hero-particles';
+    
+    // Força o estilo do canvas para cobrir o fundo
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.zIndex = '1'; // Fica atrás do texto (10) e na frente do fundo (0)
+    canvas.style.pointerEvents = 'none'; // Ignora o mouse
+    
+    // Insere o canvas dentro da seção Hero
+    heroSection.insertBefore(canvas, heroSection.firstChild);
   }
 
   const ctx = canvas.getContext('2d');
   let particlesArray = [];
 
-  // Força o canvas a ter exatamente o tamanho da janela do navegador
+  // 3. Ajusta o tamanho da tela de pintura
   function setCanvasSize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = heroSection.offsetWidth;
+    canvas.height = heroSection.offsetHeight;
   }
-  
-  // Chama a função de tamanho imediatamente
   setCanvasSize();
-  
-  // Se redimensionar a tela, ajusta o canvas
-  window.addEventListener('resize', () => {
-    setCanvasSize();
-  });
+  window.addEventListener('resize', setCanvasSize);
 
-  // Criador das Partículas
+  // 4. Criação das Partículas Azuis
   class Particle {
     constructor() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
-      // Aumentei o tamanho (de 1 a 4px) para ficar bem visível no teste
-      this.size = Math.random() * 3 + 1; 
-      this.speedX = (Math.random() - 0.5) * 0.8; 
-      this.speedY = (Math.random() - 0.5) * 0.8; 
-      this.opacity = Math.random() * 0.8 + 0.2; 
+      this.size = Math.random() * 3 + 1.5; // Tamanho visível
+      this.speedX = (Math.random() - 0.5) * 1.2; // Velocidade suave
+      this.speedY = (Math.random() - 0.5) * 1.2;
+      this.opacity = Math.random() * 0.7 + 0.3; // Bem visível
     }
 
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      // Rebate nas bordas da tela
+      // Faz elas quicarem nas bordas invisíveis
       if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
       if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
@@ -574,28 +595,24 @@ function initHeroParticles() {
     draw() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      
-      // Cor Ciano com brilho
       ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
-      ctx.shadowBlur = 10; // Aumentei o glow
-      ctx.shadowColor = 'rgba(87, 197, 234, 1)';
-      
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = 'rgba(87, 197, 234, 1)'; // O brilho neon ciano
       ctx.fill();
     }
   }
 
-  // Popula a tela com as partículas
+  // 5. Motor de Inicialização
   function init() {
     particlesArray = [];
-    // Gera cerca de 80 a 100 partículas dependendo do monitor
-    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 9000);
-    
+    // Calcula a densidade de partículas
+    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle());
     }
   }
 
-  // Motor da animação
+  // 6. Loop de Animação
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particlesArray.length; i++) {
@@ -607,9 +624,4 @@ function initHeroParticles() {
 
   init();
   animate();
-}
-
-// Executa a função imediatamente (Tiramos o DOMContentLoaded para não ter erro de atraso)
-initHeroParticles();
-// Como garantia extra, tenta rodar de novo quando a janela terminar de carregar
-window.addEventListener('load', initHeroParticles);
+});

@@ -1140,7 +1140,7 @@ body.dark-mode .nav-link.active {
 /* ==========================================================
    PARTÍCULAS FLUTUANTES (BACKGROUND DO HERO)
    ========================================================== */
-.hero-particles {
+#hero-particles {
   position: absolute;
   top: 0;
   left: 0;
