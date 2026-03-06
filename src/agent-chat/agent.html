@@ -96,26 +96,29 @@
   <div id="modalApi" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Conectar Chave API</h3>
-        <button id="btnFecharModal" class="btn-fechar">&times;</button>
+        <h3>Configurações de API</h3>
+        <button id="btnFecharModal" class="btn-fechar" aria-label="Fechar">&times;</button>
       </div>
 
       <div class="modal-body">
+        <p class="modal-description">Insira sua chave do Google Gemini para habilitar a Sofia.</p>
+
         <form id="formApi">
           <div class="input-group">
             <label for="apiKey">Google Gemini API Key <span class="obrigatorio">*</span></label>
-            <div class="input-wrapper-api"> 
-              <i class="fa-solid fa-key input-icon icon-left"></i>
-              <input type="password" id="apiKey" class="input-dark password-input" placeholder="Colar API Key..." required>
-              <i class="fa-regular fa-eye input-icon toggle-password" id="btnMostrarSenha" title="Mostrar/Ocultar"></i>
+            <div class="input-wrapper-api">
+              <i class="ph ph-key input-icon"></i>
+              <input type="password" id="apiKey" placeholder="Colar API Key (AIzaSy...)" required>
+              <button type="button" class="toggle-password" id="btnMostrarSenha" aria-label="Mostrar/Ocultar senha">
+                <i class="ph ph-eye"></i>
+              </button>
             </div>
           </div>
 
-          <div class="modal-footer">
-            <button type="submit" id="btnSubmit" class="btn-salvar">Salvar Credencial</button>
-          </div>
+          <button type="submit" id="btnSubmit" class="btn-salvar">Salvar Credencial</button>
         </form>
-        <div id="mensagemApi"></div>
+
+        <div id="mensagemApi" class="mensagem-feedback"></div>
       </div>
     </div>
   </div>
