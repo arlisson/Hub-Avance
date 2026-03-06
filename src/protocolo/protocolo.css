@@ -56,7 +56,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px 16px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 15px;
   outline: none;
   transition: all 0.3s ease;
@@ -283,15 +283,16 @@
    MODO CLARO
    ========================= */
 body:not(.dark-mode) {
-  --bg-main: #f4f9fc;
-  --bg-sidebar: #ffffff;
-  --bg-hover: #eef7fb;
-  --border-color: #d7e7f1;
-  --text-primary: #12314f;
-  --text-secondary: #5d7892;
-  --accent-cyan: #57c5ea;
-  --accent-light: #8edcf5;
+--bg-sidebar: #131739;
+  --bg-main: #0F2C58;
+  --border-color: #235B8B;
+  --bg-hover: #133868;
+  --accent-cyan: #57C5EA;
+  --accent-light: #C9EEF8;
+  --text-primary: #FAFEFF;
+  --text-secondary: #ADE5F2;
 }
+
 
 body:not(.dark-mode) .main-content {
   background-color: var(--bg-main);
@@ -333,7 +334,7 @@ body:not(.dark-mode) .protocol-form textarea {
 body:not(.dark-mode) .input-dark-lite::placeholder,
 body:not(.dark-mode) .protocol-form input::placeholder,
 body:not(.dark-mode) .protocol-form textarea::placeholder {
-  color: #fff;
+  color: #7c94ab;
 }
 
 body:not(.dark-mode) .input-dark-lite:hover,
@@ -494,14 +495,6 @@ body:not(.dark-mode) .dropdown-item.danger {
 
 body:not(.dark-mode) .dropdown-item.danger:hover {
   background-color: #fef2f2;
-}
-
-
-body.dark-mode .input-dark-lite,
-body.dark-mode .protocol-form input,
-body.dark-mode .protocol-form select,
-body.dark-mode .protocol-form textarea {
-  color: #ffffff;
 }
 
 /* =========================
