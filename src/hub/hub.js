@@ -526,71 +526,54 @@ document.addEventListener('DOMContentLoaded', () => {
 // initNavbarScroll();
 
 // ==========================================================
-// ANIMAÇÃO DE PARTÍCULAS (VERSÃO À PROVA DE FALHAS)
+// ANIMAÇÃO DE PARTÍCULAS (FUNDO GLOBAL DA PÁGINA INTEIRA)
 // ==========================================================
 document.addEventListener('DOMContentLoaded', () => {
-  const heroSection = document.querySelector('.hero-section');
-  const heroContent = document.querySelector('.hero-content');
-  
-  if (!heroSection) {
-    console.error("Erro: A classe .hero-section não foi encontrada no HTML.");
-    return;
-  }
-
-  // 1. Força o CSS pelo JavaScript para garantir as camadas (Z-Index)
-  heroSection.style.position = 'relative';
-  heroSection.style.overflow = 'hidden';
-  if (heroContent) {
-    heroContent.style.position = 'relative';
-    heroContent.style.zIndex = '10'; // Joga o texto e o botão lá pra frente
-  }
-
-  // 2. Cria o Canvas dinamicamente (sem precisar mexer no HTML)
-  let canvas = document.getElementById('hero-particles');
+  // 1. Cria o Canvas dinamicamente e joga direto no Body (para pegar a tela toda)
+  let canvas = document.getElementById('global-particles');
   if (!canvas) {
     canvas = document.createElement('canvas');
-    canvas.id = 'hero-particles';
+    canvas.id = 'global-particles';
     
-    // Força o estilo do canvas para cobrir o fundo
-    canvas.style.position = 'absolute';
+    // Configura para ficar FIXO no fundo da tela
+    canvas.style.position = 'fixed';
     canvas.style.top = '0';
     canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.zIndex = '1'; // Fica atrás do texto (10) e na frente do fundo (0)
-    canvas.style.pointerEvents = 'none'; // Ignora o mouse
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.zIndex = '-10'; // Bem lá no fundo, atrás de tudo
+    canvas.style.pointerEvents = 'none'; // Ignora o mouse para não bugar cliques
     
-    // Insere o canvas dentro da seção Hero
-    heroSection.insertBefore(canvas, heroSection.firstChild);
+    document.body.prepend(canvas); // Coloca logo no começo do body
   }
 
   const ctx = canvas.getContext('2d');
   let particlesArray = [];
 
-  // 3. Ajusta o tamanho da tela de pintura
+  // 2. Ajusta o tamanho da tela baseado na Janela inteira do usuário
   function setCanvasSize() {
-    canvas.width = heroSection.offsetWidth;
-    canvas.height = heroSection.offsetHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   setCanvasSize();
   window.addEventListener('resize', setCanvasSize);
 
-  // 4. Criação das Partículas Azuis
+  // 3. Criação das Partículas Azuis (Seu design original mantido)
   class Particle {
     constructor() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 3 + 1.5; // Tamanho visível
-      this.speedX = (Math.random() - 0.5) * 1.2; // Velocidade suave
+      this.size = Math.random() * 3 + 1.5; 
+      this.speedX = (Math.random() - 0.5) * 1.2; 
       this.speedY = (Math.random() - 0.5) * 1.2;
-      this.opacity = Math.random() * 0.7 + 0.3; // Bem visível
+      this.opacity = Math.random() * 0.7 + 0.3; 
     }
 
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      // Faz elas quicarem nas bordas invisíveis
+      // Quicam nas bordas da tela inteira agora
       if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
       if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
@@ -600,22 +583,22 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
       ctx.shadowBlur = 15;
-      ctx.shadowColor = 'rgba(87, 197, 234, 1)'; // O brilho neon ciano
+      ctx.shadowColor = 'rgba(87, 197, 234, 1)'; 
       ctx.fill();
     }
   }
 
-  // 5. Motor de Inicialização
+  // 4. Motor de Inicialização
   function init() {
     particlesArray = [];
-    // Calcula a densidade de partículas
-    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
+    // Densidade ajustada para a tela toda não ficar muito poluída
+    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000);
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle());
     }
   }
 
-  // 6. Loop de Animação
+  // 5. Loop de Animação
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < particlesArray.length; i++) {
