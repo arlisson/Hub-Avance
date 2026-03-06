@@ -249,20 +249,16 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
   const persist = opts.persist !== false;
   const messageDiv = document.createElement("div");
   
-  // Adiciona classes para o CSS identificar se é usuário ou robô
   messageDiv.className = `message ${role === "user" ? "message-user" : "message-bot"}`;
-
-  // Trocado o texto "AI" pelo ícone Phosphor do Robô para manter o padrão visual
-  let avatarHTML = role === "bot" ? `<div class="message-avatar"><i class="ph ph-robot"></i></div>` : "";
 
   const contentHTML = role === "bot"
     ? (window.marked ? marked.parse(text) : `<div class="text-content">${escapeHtml(text)}</div>`)
     : `<div class="text-content">${escapeHtml(text)}</div>`;
 
-  messageDiv.innerHTML = `${avatarHTML}<div class="message-bubble">${contentHTML}</div>`;
+  // Removemos a variável do avatarHTML, deixando apenas a bolha de mensagem
+  messageDiv.innerHTML = `<div class="message-bubble">${contentHTML}</div>`;
   chatMessages.appendChild(messageDiv);
   
-  // Rola para o final suavemente
   chatMessages.scrollTo({
     top: chatMessages.scrollHeight,
     behavior: "smooth"
@@ -280,9 +276,8 @@ function showLoading(chatMessages) {
   loadingDiv.className = "message message-bot";
   loadingDiv.id = "loading-indicator";
   
-  // Animação de digitação mais elegante
+  // Removemos a div do message-avatar daqui também
   loadingDiv.innerHTML = `
-    <div class="message-avatar"><i class="ph ph-robot"></i></div>
     <div class="message-bubble typing-indicator">
       <span></span><span></span><span></span>
     </div>
