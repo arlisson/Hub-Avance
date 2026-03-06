@@ -278,37 +278,56 @@ button {
 }
 
 /* =========================================
-   5. MODAL CHAVE API (CORRIGIDO)
+   MODAL CHAVE API
    ========================================= */
 .modal-overlay {
-  position: fixed; /* Isso faz ele flutuar sobre a tela toda */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(15, 44, 88, 0.8); /* Fundo semi-transparente escuro */
-  backdrop-filter: blur(4px); /* Efeito vidro no fundo */
-  display: none; /* Por padrão fica escondido (seu JS deve mudar isso para flex) */
+  background-color: rgba(15, 44, 88, 0.7); /* Azul da paleta com transparência */
+  backdrop-filter: blur(6px);
+  display: none; /* Mantém escondido por padrão */
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Classe que o JS vai adicionar para mostrar o modal */
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
 }
 
 .modal-box {
   background-color: var(--bg-sidebar);
-  border: 1px solid var(--accent-cyan);
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 450px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-box {
+  transform: translateY(0); /* Faz a caixa subir suavemente */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .btn-fechar {
@@ -321,11 +340,22 @@ button {
   color: #ff4d4d;
 }
 
+.modal-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
 .input-group label {
   display: block;
   font-size: 14px;
+  font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 8px;
+}
+
+.obrigatorio {
+  color: var(--accent-cyan);
 }
 
 .input-wrapper-api {
@@ -333,9 +363,15 @@ button {
   align-items: center;
   background-color: var(--bg-main);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 10px 14px;
+  border-radius: 12px;
+  padding: 12px 16px;
   gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper-api:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.15); /* Brilho de foco */
 }
 
 .input-wrapper-api input {
@@ -343,30 +379,54 @@ button {
   background: transparent;
   border: none;
   color: var(--text-primary);
+  font-size: 15px;
   outline: none;
-  font-size: 14px;
+}
+
+.input-wrapper-api input::placeholder {
+  color: var(--border-color);
 }
 
 .input-icon {
   color: var(--text-secondary);
+  font-size: 22px;
+}
+
+.toggle-password {
+  color: var(--text-secondary);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--accent-cyan);
 }
 
 .btn-salvar {
   width: 100%;
   background-color: var(--accent-cyan);
-  color: var(--bg-sidebar);
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: bold;
+  color: #0F2C58;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
   margin-top: 24px;
-  transition: 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-salvar:hover {
-  background-color: var(--accent-light);
+  background-color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
-/* Oculta dropdowns que usam o atributo hidden do html */
-[hidden] {
-  display: none !important;
+.mensagem-feedback {
+  margin-top: 16px;
+  font-size: 14px;
+  text-align: center;
+  min-height: 20px;
+  font-weight: 500;
 }
+.mensagem-sucesso { color: #4ade80; }
+.mensagem-erro { color: #ff4d4d; }

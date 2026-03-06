@@ -3,12 +3,12 @@
  */
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // --- Elementos da Interface ---
+  // --- Elementos da Interface (CORRIGIDOS PARA O NOVO HTML) ---
   const chatMessages = document.getElementById("chat-messages");
-  const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.querySelector(".input-container input"); // Corrigido
+  const sendBtn = document.querySelector(".send-btn"); // Corrigido
   const themeToggle = document.getElementById("theme-toggle");
-  const newChatBtn = document.getElementById("new-chat-btn");
+  const newChatBtn = document.querySelector(".new-chat-btn"); // Corrigido
   const userEmailEl = document.getElementById("user-email");
 
   // Elementos de Navegação (Padrão Hub)
@@ -21,7 +21,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   initSettingsMenu(settingsBtn, settingsMenu);
   initMobileSidebar(menuBtn);
 
-  if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
+  // Trava de segurança: se faltar algum elemento crucial da interface de chat, para aqui.
+  if (!chatMessages || !userInput || !sendBtn || !newChatBtn) {
+      console.warn("Elementos do chat não encontrados na tela.");
+      return;
+  }
 
   // --- Configurações Iniciais ---
   const cfg = await loadAgentConfig().catch(() => null);
@@ -244,17 +248,25 @@ function renderHistory(chatMessages, messages) {
 function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {}) {
   const persist = opts.persist !== false;
   const messageDiv = document.createElement("div");
-  messageDiv.className = `message ${role}`;
+  
+  // Adiciona classes para o CSS identificar se é usuário ou robô
+  messageDiv.className = `message ${role === "user" ? "message-user" : "message-bot"}`;
 
-  let avatarHTML = role === "bot" ? `<div class="message-avatar"><span>AI</span></div>` : "";
+  // Trocado o texto "AI" pelo ícone Phosphor do Robô para manter o padrão visual
+  let avatarHTML = role === "bot" ? `<div class="message-avatar"><i class="ph ph-robot"></i></div>` : "";
 
   const contentHTML = role === "bot"
-    ? (window.marked ? marked.parse(text) : `<pre>${escapeHtml(text)}</pre>`)
-    : escapeHtml(text);
+    ? (window.marked ? marked.parse(text) : `<div class="text-content">${escapeHtml(text)}</div>`)
+    : `<div class="text-content">${escapeHtml(text)}</div>`;
 
   messageDiv.innerHTML = `${avatarHTML}<div class="message-bubble">${contentHTML}</div>`;
   chatMessages.appendChild(messageDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  // Rola para o final suavemente
+  chatMessages.scrollTo({
+    top: chatMessages.scrollHeight,
+    behavior: "smooth"
+  });
 
   if (persist && chatState && storageKey) {
     chatState.messages.push({ role, text });
@@ -265,11 +277,18 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
 function showLoading(chatMessages) {
   if (document.getElementById("loading-indicator")) return;
   const loadingDiv = document.createElement("div");
-  loadingDiv.className = "message bot";
+  loadingDiv.className = "message message-bot";
   loadingDiv.id = "loading-indicator";
-  loadingDiv.innerHTML = `<div class="message-avatar"><span>AI</span></div><div class="message-bubble">Digitando...</div>`;
+  
+  // Animação de digitação mais elegante
+  loadingDiv.innerHTML = `
+    <div class="message-avatar"><i class="ph ph-robot"></i></div>
+    <div class="message-bubble typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
+  `;
   chatMessages.appendChild(loadingDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: "smooth" });
 }
 
 function removeLoading() {
@@ -283,8 +302,12 @@ function removeLoading() {
 
 async function checkAgentApiStatus(sb, email) {
   try {
+    // Checa primeiro no banco de dados
     const { data } = await sb.from('profiles').select('chave_api').eq('email', email).single();
-    window.atualizarStatusAgente(!!(data && data.chave_api));
+    // Checa também se há uma chave salva localmente pelo script de cadastro
+    const localKey = localStorage.getItem('gemini_api_key');
+    
+    window.atualizarStatusAgente(!!(data?.chave_api || localKey));
   } catch {
     window.atualizarStatusAgente(false);
   }
@@ -293,8 +316,8 @@ async function checkAgentApiStatus(sb, email) {
 window.atualizarStatusAgente = function (isOnline) {
   const dot = document.getElementById("status-dot");
   const text = document.getElementById("status-text");
-  const inputBtn = document.getElementById("send-btn");
-  const inputBox = document.getElementById("user-input");
+  const inputBtn = document.querySelector(".send-btn");
+  const inputBox = document.querySelector(".input-container input");
 
   if (!dot || !text) return;
 
@@ -303,7 +326,10 @@ window.atualizarStatusAgente = function (isOnline) {
   text.textContent = isOnline ? "Online" : "Offline";
 
   if (inputBtn) inputBtn.disabled = !isOnline;
-  if (inputBox) inputBox.placeholder = isOnline ? "Digite sua mensagem..." : "IA offline. Adicione uma chave API.";
+  if (inputBox) {
+    inputBox.disabled = !isOnline;
+    inputBox.placeholder = isOnline ? "Digite sua mensagem para a Sofia..." : "IA offline. Conecte sua Chave API na barra lateral.";
+  }
 }
 
 function escapeHtml(str) {
