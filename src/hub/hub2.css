@@ -893,6 +893,12 @@ body.dark-mode .top-navbar {
   background-color: rgba(11, 14, 35, 0.85);
 }
 
+/* Essa é a classe que o JavaScript vai adicionar quando rolar a página */
+.top-navbar.scrolled {
+  transform: translateY(0); /* Volta para a posição original */
+  opacity: 1;
+}
+
 .navbar-left,
 .navbar-right {
   display: flex;
