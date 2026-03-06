@@ -63,7 +63,7 @@ const APPS = [
   {
     id: "protocol",
     badge: "Gerador de Protocolo",
-    image: "../img/protocolo.png",
+    image: "../img/PreencheFacil.png",
     title: "Gerador de Protocolo",
     shortDesc: "Gera e registra protocolos.",
     longDesc: "Ferramenta para geração, registro e envio de protocolos.",
@@ -73,7 +73,7 @@ const APPS = [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        href: "../protocolo/protocolo.html",
+        href: "/protocolo/protocolo.html",
         primary: true,
         targetBlank: false,
       },
