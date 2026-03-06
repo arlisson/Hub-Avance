@@ -128,7 +128,7 @@ button {
   flex-shrink: 0; /* Impede que ela achate se o texto for longo */
   
   /* Aqui está o segredo: um degradê suave (Roxo -> Pink) */
-  background: linear-gradient(135deg, #a78bfa 10%, #ec4899 90%);
+  background: linear-gradient(135deg, #FAFEFF 10%, #57C5EA 90%);
   
   /* Uma sombra interna sutil para dar profundidade, sem exagero */
   box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.2);
