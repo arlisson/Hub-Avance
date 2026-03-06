@@ -358,7 +358,6 @@ body.dark-mode .hub-section-title h2 {
 /* ==========================================================
    GRID DOS CARDS (Flexbox Centralizado)
    ========================================================== */
-/* Substitua sua classe da grade (ex: .hub-grid ou .cards-container) por esta */
 .hub-grid {
   display: flex;
   flex-wrap: wrap;
@@ -404,7 +403,6 @@ body.dark-mode .hub-card {
   box-shadow: 0 20px 50px rgba(87, 197, 234, 0.2); /* Sombra neon */
 }
 
-/* (Opcional) Se a imagem do Vasco for uma tag <img> dentro do card, isso ajusta ela */
 .hub-card img {
   position: absolute;
   top: 0;
@@ -637,123 +635,6 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* ==========================================================
-   5. TOAST (Boas-vindas)
-   ========================================================== */
-.toast-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: rgba(19, 23, 57, 0.7);
-  backdrop-filter: blur(4px);
-}
-
-.toast {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, calc(-50% - 10px));
-  z-index: 9999;
-  width: 80vw;
-  height: 80vh;
-  max-width: 1100px;
-  max-height: 800px;
-  border-radius: 20px;
-  overflow: hidden;
-  padding: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 20px 50px var(--shadow-color);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.toast::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(19, 23, 57, 0.6);
-  /* Ajustado para a paleta */
-  backdrop-filter: blur(8px);
-}
-
-.toast-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  padding: 24px;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translate(-50%, -50%);
-  pointer-events: auto;
-  transition: opacity 250ms ease, transform 250ms ease;
-}
-
-.toast.hide {
-  opacity: 0;
-  transform: translate(-50%, calc(-50% - 10px));
-  pointer-events: none;
-  transition: opacity 200ms ease, transform 200ms ease;
-}
-
-.toast-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
-.toast-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.toast-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.toast-title {
-  font-weight: 800;
-  font-size: 22px;
-  margin: 0 0 10px;
-  color: #FAFEFF;
-}
-
-.toast-message {
-  font-size: 15px;
-  opacity: 0.95;
-  line-height: 1.6;
-  color: #FAFEFF;
-  text-align: justify;
-}
-
-.toast-close {
-  border: 0;
-  background: rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  padding: 10px;
-  border-radius: 12px;
-  color: #fff;
-  transition: all 0.2s;
-}
-
-.toast-close:hover {
-  background: rgba(239, 68, 68, 0.8);
-}
-
 .user-info-item {
   cursor: default;
 }
@@ -823,7 +704,7 @@ body.dark-mode .settings-dots:hover {
 }
 
 /* ==========================================================
-   RODAPÉ DO CONTEÚDO (FOOTER)
+   RODAPÉ DO CONTEÚDO
    ========================================================== */
 .hub-footer {
   text-align: center;
@@ -918,14 +799,6 @@ body.dark-mode .top-navbar {
 .navbar-logo:hover {
   transform: scale(1.05);
   /* Leve efeito de zoom ao passar o mouse */
-}
-
-/* Opcional: Se você tiver uma versão branca da logo para o fundo escuro, 
-   pode usar o CSS abaixo invertendo as cores dela no Dark Mode */
-body.dark-mode .navbar-logo {
-  /* Se a sua logo atual for escura e sumir no fundo escuro, 
-     você pode testar descomentar a linha abaixo para inverter a cor dela: */
-  filter: brightness(0) invert(1);
 }
 
 /* --- BOTÃO DE TEMA --- */
