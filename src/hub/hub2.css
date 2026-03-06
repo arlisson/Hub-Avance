@@ -1032,60 +1032,62 @@ body.dark-mode .nav-link.active {
   z-index: 2;
 }
 
-/* =========================================
-   BLOCO "SALTADO" COM BORDA NEON (LUZ)
-   ========================================= */
-.showcase-wrapper {
-  position: relative;
-  width: 95%;
-  max-width: 1200px;
-  margin: 80px auto;
-  /* Dá um bom respiro do topo e centraliza */
-  border-radius: 20px;
-  padding: 3px;
-  /* ESSA É A ESPESSURA DA LUZ. Aumente se quiser mais grossa */
-  overflow: hidden;
-  /* Corta o excesso de luz */
-
-  /* Efeito de 3D saltado para a frente */
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(87, 197, 234, 0.15);
-  z-index: 10;
-}
-
 /* Isso garante que nada bloqueie a sua animação de fundo do topo */
 body,
 .main-content {
   background-color: transparent !important;
 }
 
-/* A luz ciano rodando no fundo (gradiente cônico) */
+/* =========================================
+   BLOCO "SALTADO" COM LED NEON PULSANTE (BLOOM)
+   ========================================= */
+.showcase-wrapper {
+  position: relative;
+  width: 95%;
+  max-width: 1200px;
+  margin: 40px auto 100px auto;
+  /* Afasta o bloco do topo e do rodapé */
+  border-radius: 20px;
+  overflow: visible;
+  /* IMPORTANTE: Deixa a luz "vazar" para fora da borda */
+
+  /* 1. Sombra de profundidade (Deixa o bloco parecendo saltado da tela) */
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+
+  /* 2. O BLOOM NEON PULSANTE (A luz que ilumina o site)
+     Colocamos múltiplas camadas de sombra para dar difusão:
+     a) Uma sombra ciano dura para a borda interna
+     b) Uma sombra ciano super desfocada para o bloom
+     c) Uma sombra azul profunda desfocada para a transição com o fundo */
+  animation: pulseNeonLED 4s ease-in-out infinite;
+}
+
+/* O pseudo-element ::before agora vira apenas um "borda de metal" fina */
 .showcase-wrapper::before {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  /* Usei a sua cor --accent-cyan (#57C5EA) */
-  background: conic-gradient(transparent,
-      transparent,
-      transparent,
-      #57C5EA);
-  animation: rotateGlow 4s linear infinite;
+  inset: -1px;
+  /* Fica 1px para fora para ser a bordinha */
+  background: var(--border-color);
+  /* Uma cor de borda fixa e fina */
+  border-radius: 21px;
   z-index: -2;
 }
 
-/* O fundo sólido do bloco que "tampa" o miolo da luz */
+/* O pseudo-element ::after vira o fundo sólido do quadro */
 .showcase-wrapper::after {
   content: "";
   position: absolute;
-  inset: 3px;
-  /* Mesmo valor do padding acima */
+  inset: 0;
+  /* Começa exatamente na borda */
   background-color: #0F2C58;
-  /* Fundo interno do bloco (azul escuro da sua paleta) */
-  border-radius: 18px;
+  /* Cor interna do quadro (azul escuro) */
+  border-radius: 20px;
   z-index: -1;
 }
+
+
 
 /* Conteúdo interno */
 .showcase-content {
@@ -1106,15 +1108,39 @@ body,
   /* Cor branca/gelo da sua paleta */
 }
 
-@keyframes rotateGlow {
+/* --------------------------------------
+   NOVA ANIMAÇÃO DO LED PULSANTE (PULSE NEON)
+   -------------------------------------- */
+/* Esta animação muda a cor e a difusão da box-shadow do .showcase-wrapper, 
+   fazendo a luz "crescer" e "diminuir" de forma suave e estática. */
+@keyframes pulseNeonLED {
   0% {
-    transform: rotate(0deg);
+    box-shadow: 
+      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
+      0 0 10px 1px rgba(87, 197, 234, 0.3), /* Borda neon ciano suave */
+      0 0 40px 5px rgba(87, 197, 234, 0.1), /* Bloom neon ciano suave */
+      0 0 60px 10px rgba(15, 44, 88, 0.1); /* Bloom azul suave */
   }
-
+  
+  50% {
+    box-shadow: 
+      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
+      0 0 15px 1px rgba(87, 197, 234, 0.6), /* Borda neon ciano mais intensa */
+      0 0 70px 15px rgba(87, 197, 234, 0.3), /* Bloom neon ciano mais intenso */
+      0 0 100px 30px rgba(15, 44, 88, 0.3); /* Bloom azul mais intenso */
+  }
+  
   100% {
-    transform: rotate(360deg);
+    box-shadow: 
+      0 40px 80px rgba(0, 0, 0, 0.6), /* Sombra de profundidade (fixa) */
+      0 0 10px 1px rgba(87, 197, 234, 0.3), /* Borda neon ciano suave */
+      0 0 40px 5px rgba(87, 197, 234, 0.1), /* Bloom neon ciano suave */
+      0 0 60px 10px rgba(15, 44, 88, 0.1); /* Bloom azul suave */
   }
 }
+
+/* Removemos a animação antiga de rotação para limpar o arquivo */
+@keyframes rotateGlow { display: none; }
 
 /* =========================================
    7. CONTROLE DA LOGO (TEMA CLARO / ESCURO)
