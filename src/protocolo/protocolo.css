@@ -279,55 +279,6 @@
   margin-right: 16px;
 }
 
-@media (max-width: 768px) {
-  .protocol-wrap {
-    padding: 16px;
-  }
-
-  .protocol-card {
-    padding: 18px;
-    border-radius: 16px;
-  }
-
-  .protocol-title {
-    font-size: 20px;
-  }
-
-  .protocol-subtitle {
-    font-size: 13px;
-    margin-bottom: 18px;
-  }
-
-  .grid-2 {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
-
-  .result-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .result-row .v {
-    text-align: left;
-  }
-
-  .mobile-menu-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
 /* =========================
    MODO CLARO
    ========================= */
@@ -484,7 +435,12 @@ body:not(.dark-mode) .sidebar {
 body:not(.dark-mode) .sidebar .logo-text,
 body:not(.dark-mode) .sidebar .nav-label,
 body:not(.dark-mode) .sidebar .menu-item,
-body:not(.dark-mode) .sidebar .sidebar-footer-item {
+body:not(.dark-mode) .sidebar .sidebar-footer-item,
+body:not(.dark-mode) .sidebar .user-email-text,
+body:not(.dark-mode) .sidebar .settings-dots,
+body:not(.dark-mode) .sidebar i,
+body:not(.dark-mode) .sidebar-footer i,
+body:not(.dark-mode) #user-email {
   color: var(--text-primary);
 }
 
@@ -538,4 +494,113 @@ body:not(.dark-mode) .dropdown-item.danger {
 
 body:not(.dark-mode) .dropdown-item.danger:hover {
   background-color: #fef2f2;
+}
+
+/* =========================
+   MODO ESCURO — TEXTO SIDEBAR
+   ========================= */
+body.dark-mode .sidebar,
+body.dark-mode .sidebar-footer {
+  color: #eefcff;
+}
+
+body.dark-mode .sidebar .logo-text,
+body.dark-mode .sidebar .nav-label,
+body.dark-mode .sidebar .menu-item,
+body.dark-mode .sidebar .sidebar-footer-item,
+body.dark-mode .sidebar .user-email-text,
+body.dark-mode .sidebar .settings-dots,
+body.dark-mode .sidebar i,
+body.dark-mode .sidebar-footer i,
+body.dark-mode #user-email {
+  color: #eefcff;
+}
+
+body.dark-mode .sidebar .menu-item,
+body.dark-mode .sidebar .sidebar-footer-item {
+  opacity: 0.96;
+}
+
+body.dark-mode .sidebar .menu-item:hover,
+body.dark-mode .sidebar .sidebar-footer-item:hover {
+  color: #ffffff;
+}
+
+body.dark-mode .sidebar .menu-item.active {
+  color: #ffffff;
+}
+
+body.dark-mode .assistant-details .name,
+body.dark-mode .assistant-details .status {
+  color: #eefcff;
+}
+
+body.dark-mode .settings-dots {
+  color: #eefcff;
+}
+
+body.dark-mode .settings-dropdown {
+  background: #18214a;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .dropdown-item {
+  color: #eefcff;
+}
+
+body.dark-mode .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .dropdown-item.danger {
+  color: #ffb4b4;
+}
+
+@media (max-width: 768px) {
+  .protocol-wrap {
+    padding: 16px;
+  }
+
+  .protocol-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .protocol-title {
+    font-size: 20px;
+  }
+
+  .protocol-subtitle {
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .result-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .result-row .v {
+    text-align: left;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
