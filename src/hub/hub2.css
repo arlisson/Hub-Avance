@@ -1140,7 +1140,7 @@ body.dark-mode .nav-link.active {
 /* ==========================================================
    PARTÍCULAS FLUTUANTES (BACKGROUND DO HERO)
    ========================================================== */
-#hero-particles {
+.hero-particles {
   position: absolute;
   top: 0;
   left: 0;
@@ -1154,9 +1154,4 @@ body.dark-mode .nav-link.active {
 .hero-content {
   position: relative;
   z-index: 2; 
-}
-
-.hero-section {
-  min-height: 100vh;
-  position: relative; /* ISSO AQUI É OBRIGATÓRIO PARA O CANVAS FUNCIONAR */
 }
