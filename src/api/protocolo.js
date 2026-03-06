@@ -13,59 +13,52 @@ export default async function handler(req, res) {
 
     const protocol = generateProtocol(phoneDigits);
 
-    // Se o usuário escolheu uma empresa no dropdown, atualiza direto
+    // Se o usuário escolheu manualmente no dropdown
     if (agendorPick) {
       const agendor = await updateByPick({ agendorPick, protocol });
+
       if (!agendor.sent) {
-        return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
-      }
-      let sheets = { ok: false };
-
-      try {
-        const r = await fetch(process.env.GOOGLE_SHEETS_WEBHOOK, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            protocol,
-            phone: phoneRaw || phoneDigits,
-            agent,
-            channel,
-            requestedBy,
-            recordType: agendor?.organizationId ? "empresa" : "pessoa",
-            agendorId: agendor?.organizationId || agendor?.personId || ""
-          }),
+        return res.status(502).json({
+          error: "Falha ao registrar no Agendor.",
+          protocol,
+          agendor,
         });
-
-        const result = await r.json().catch(() => ({}));
-        sheets = { ok: r.ok && result?.ok === true, ...result };
-      } catch (err) {
-        sheets = { ok: false, error: err.message };
       }
+
+      const sheets = await writeProtocolToSheets({
+        protocol,
+        phone: phoneRaw || phoneDigits,
+        agent,
+        channel,
+        requestedBy,
+        recordType: agendor.recordType || "",
+        agendorId: agendor.organizationId || agendor.personId || "",
+      });
+
       return res.status(200).json({
         protocol,
         agendor,
-        sheets
+        sheets,
       });
     }
 
-    // 1) Tenta empresa por telefone
+    // 1) Tenta encontrar empresa pelo telefone
     let found = await findOrganizationByPhoneExact(phoneDigits);
 
-    // 2) Se não achar empresa, tenta pessoa e resolve a empresa vinculada
+    // 2) Se não achar empresa, tenta pessoa
     if (found.status === "not_found") {
       const person = await findPersonByPhoneExact(phoneDigits);
 
       if (person.status === "single") {
         const org = await resolveOrganizationFromPerson(person.personId);
 
+        // Pessoa com empresa vinculada: grava na empresa
         if (org?.organizationId) {
           found = { status: "single", organizationId: org.organizationId };
         } else {
-          // Sem empresa vinculada: registra diretamente na pessoa
-          const agendor = await updateByPick({
-            agendorPick: `person:${person.personId}`,
+          // Pessoa sem empresa vinculada: grava direto na pessoa
+          const agendor = await updateAgendorPersonProtocol({
+            personId: person.personId,
             protocol,
           });
 
@@ -77,10 +70,20 @@ export default async function handler(req, res) {
             });
           }
 
+          const sheets = await writeProtocolToSheets({
+            protocol,
+            phone: phoneRaw || phoneDigits,
+            agent,
+            channel,
+            requestedBy,
+            recordType: "pessoa",
+            agendorId: agendor.personId || "",
+          });
+
           return res.status(200).json({
             protocol,
             agendor,
-            sheets: { ok: false, detail: "skip" },
+            sheets,
           });
         }
       } else if (person.status === "multiple") {
@@ -101,7 +104,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Se deu múltiplas empresas, pede seleção
+    // Múltiplas empresas
     if (found.status === "multiple") {
       return res.status(409).json({
         error: "Mais de uma empresa encontrada. Selecione uma.",
@@ -114,14 +117,35 @@ export default async function handler(req, res) {
       });
     }
 
-    // Single match: atualiza empresa
-    const agendor = await updateByPick({ agendorPick: `org:${found.organizationId}`, protocol });
+    // Empresa única encontrada
+    const agendor = await updateAgendorOrganizationProtocol({
+      organizationId: found.organizationId,
+      protocol,
+    });
 
     if (!agendor.sent) {
-      return res.status(502).json({ error: "Falha ao registrar no Agendor.", protocol, agendor });
+      return res.status(502).json({
+        error: "Falha ao registrar no Agendor.",
+        protocol,
+        agendor,
+      });
     }
 
-    return res.status(200).json({ protocol, agendor, sheets: { ok: false, detail: "skip" } });
+    const sheets = await writeProtocolToSheets({
+      protocol,
+      phone: phoneRaw || phoneDigits,
+      agent,
+      channel,
+      requestedBy,
+      recordType: "empresa",
+      agendorId: agendor.organizationId || "",
+    });
+
+    return res.status(200).json({
+      protocol,
+      agendor,
+      sheets,
+    });
   } catch (e) {
     return res.status(500).json({ error: e?.message || "Erro interno." });
   }
@@ -130,17 +154,71 @@ export default async function handler(req, res) {
 async function updateByPick({ agendorPick, protocol }) {
   const [kind, id] = String(agendorPick || "").split(":");
 
-  if (!kind || !id) return { sent: false, detail: "Seleção inválida." };
+  if (!kind || !id) {
+    return { sent: false, detail: "Seleção inválida." };
+  }
 
   if (kind === "org") {
-    return await updateAgendorOrganizationProtocol({ organizationId: id, protocol });
+    return await updateAgendorOrganizationProtocol({
+      organizationId: id,
+      protocol,
+    });
   }
 
   if (kind === "person") {
-    return await updateAgendorPersonProtocol({ personId: id, protocol });
+    return await updateAgendorPersonProtocol({
+      personId: id,
+      protocol,
+    });
   }
 
   return { sent: false, detail: "Tipo não suportado." };
+}
+
+async function writeProtocolToSheets({
+  protocol,
+  phone,
+  agent,
+  channel,
+  requestedBy,
+  recordType,
+  agendorId,
+}) {
+  try {
+    const webhook = process.env.GOOGLE_SHEETS_WEBHOOK;
+
+    if (!webhook) {
+      return { ok: false, detail: "GOOGLE_SHEETS_WEBHOOK não configurado." };
+    }
+
+    const r = await fetch(webhook, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        protocol,
+        phone,
+        agent,
+        channel,
+        requestedBy,
+        recordType,
+        agendorId,
+      }),
+    });
+
+    const result = await r.json().catch(() => ({}));
+
+    return {
+      ok: r.ok && result?.ok === true,
+      detail: result?.error || result?.message || (r.ok ? "ok" : `HTTP ${r.status}`),
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: err?.message || "Erro ao registrar na planilha.",
+    };
+  }
 }
 
 function digitsOnly(v) {
@@ -159,7 +237,7 @@ function generateProtocol(phoneDigits) {
     hour12: false,
   }).formatToParts(now);
 
-  const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+  const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
 
   const dd = map.day;
   const MM = map.month;
@@ -185,7 +263,6 @@ function unique(arr) {
   return [...new Set((arr || []).filter(Boolean))];
 }
 
-// Varre o objeto inteiro e coleta strings/números que “parecem telefone”
 function extractPhoneCandidatesDeep(obj) {
   const out = new Set();
 
@@ -196,7 +273,9 @@ function extractPhoneCandidatesDeep(obj) {
 
     if (t === "string" || t === "number") {
       const digits = normalizePhone(node);
-      if (digits.length >= 8 && digits.length <= 14) out.add(digits);
+      if (digits.length >= 8 && digits.length <= 14) {
+        out.add(digits);
+      }
       return;
     }
 
@@ -217,6 +296,7 @@ function extractPhoneCandidatesDeep(obj) {
 async function findOrganizationByPhoneExact(phoneDigits) {
   const token = process.env.AGENDOR_API_TOKEN;
   const base = "https://api.agendor.com.br/v3";
+
   if (!token) throw new Error("AGENDOR_API_TOKEN não configurado.");
 
   const termsToTry = unique([
@@ -235,13 +315,19 @@ async function findOrganizationByPhoneExact(phoneDigits) {
     });
 
     const j = await r.json().catch(() => ({}));
+
     if (!r.ok) {
-      const msg = (Array.isArray(j?.errors) && j.errors[0]) || j?.message || `HTTP ${r.status}`;
+      const msg =
+        (Array.isArray(j?.errors) && j.errors[0]) ||
+        j?.message ||
+        `HTTP ${r.status}`;
       throw new Error(`Falha ao buscar empresas no Agendor: ${msg}`);
     }
 
     const arr = Array.isArray(j?.data) ? j.data : [];
-    for (const o of arr) candidateMap.set(String(o.id), { id: String(o.id), name: o.name || "" });
+    for (const o of arr) {
+      candidateMap.set(String(o.id), { id: String(o.id), name: o.name || "" });
+    }
 
     if (candidateMap.size >= 10) break;
   }
@@ -271,7 +357,9 @@ async function findOrganizationByPhoneExact(phoneDigits) {
       phones.includes(stripBrazilCountryCode(want55)) ||
       phones.includes(stripBrazilCountryCode(want));
 
-    if (isExact) exact.push({ id: c.id, name: data?.name || c.name || "" });
+    if (isExact) {
+      exact.push({ id: c.id, name: data?.name || c.name || "" });
+    }
   }
 
   if (exact.length === 0) return { status: "not_found" };
@@ -282,6 +370,7 @@ async function findOrganizationByPhoneExact(phoneDigits) {
 async function findPersonByPhoneExact(phoneDigits) {
   const token = process.env.AGENDOR_API_TOKEN;
   const base = "https://api.agendor.com.br/v3";
+
   if (!token) throw new Error("AGENDOR_API_TOKEN não configurado.");
 
   const termsToTry = unique([
@@ -300,13 +389,19 @@ async function findPersonByPhoneExact(phoneDigits) {
     });
 
     const j = await r.json().catch(() => ({}));
+
     if (!r.ok) {
-      const msg = (Array.isArray(j?.errors) && j.errors[0]) || j?.message || `HTTP ${r.status}`;
+      const msg =
+        (Array.isArray(j?.errors) && j.errors[0]) ||
+        j?.message ||
+        `HTTP ${r.status}`;
       throw new Error(`Falha ao buscar pessoas no Agendor: ${msg}`);
     }
 
     const arr = Array.isArray(j?.data) ? j.data : [];
-    for (const p of arr) candidateMap.set(String(p.id), { id: String(p.id), name: p.name || "" });
+    for (const p of arr) {
+      candidateMap.set(String(p.id), { id: String(p.id), name: p.name || "" });
+    }
 
     if (candidateMap.size >= 10) break;
   }
@@ -336,12 +431,54 @@ async function findPersonByPhoneExact(phoneDigits) {
       phones.includes(stripBrazilCountryCode(want55)) ||
       phones.includes(stripBrazilCountryCode(want));
 
-    if (isExact) exact.push({ id: c.id, name: data?.name || c.name || "" });
+    if (isExact) {
+      exact.push({ id: c.id, name: data?.name || c.name || "" });
+    }
   }
 
   if (exact.length === 0) return { status: "not_found" };
   if (exact.length === 1) return { status: "single", personId: exact[0].id };
   return { status: "multiple", matches: exact };
+}
+
+async function updateAgendorOrganizationProtocol({ organizationId, protocol }) {
+  const token = process.env.AGENDOR_API_TOKEN;
+  const base = "https://api.agendor.com.br/v3";
+  const identifier = "protocolo_de_atendimento";
+
+  if (!token) return { sent: false, detail: "AGENDOR_API_TOKEN não configurado." };
+
+  const payload = {
+    customFields: {
+      [identifier]: protocol,
+    },
+  };
+
+  const r = await fetch(`${base}/organizations/${encodeURIComponent(organizationId)}`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Token ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await r.json().catch(() => ({}));
+
+  if (!r.ok) {
+    const msg =
+      (Array.isArray(data?.errors) && data.errors[0]) ||
+      data?.message ||
+      `HTTP ${r.status}`;
+    return { sent: false, detail: msg };
+  }
+
+  return {
+    sent: true,
+    detail: "ok",
+    recordType: "empresa",
+    organizationId,
+  };
 }
 
 async function updateAgendorPersonProtocol({ personId, protocol }) {
@@ -367,6 +504,7 @@ async function updateAgendorPersonProtocol({ personId, protocol }) {
   });
 
   const data = await r.json().catch(() => ({}));
+
   if (!r.ok) {
     const msg =
       (Array.isArray(data?.errors) && data.errors[0]) ||
@@ -375,40 +513,18 @@ async function updateAgendorPersonProtocol({ personId, protocol }) {
     return { sent: false, detail: msg };
   }
 
-  return { sent: true, detail: "ok", personId };
-}
-
-async function updateAgendorOrganizationProtocol({ organizationId, protocol }) {
-  const token = process.env.AGENDOR_API_TOKEN;
-  const base = "https://api.agendor.com.br/v3";
-  const identifier = "protocolo_de_atendimento";
-
-  if (!token) return { sent: false, detail: "AGENDOR_API_TOKEN não configurado." };
-
-  const payload = { customFields: { [identifier]: protocol } };
-
-  const r = await fetch(`${base}/organizations/${encodeURIComponent(organizationId)}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Token ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await r.json().catch(() => ({}));
-
-  if (!r.ok) {
-    const msg = (Array.isArray(data?.errors) && data.errors[0]) || data?.message || `HTTP ${r.status}`;
-    return { sent: false, detail: msg };
-  }
-
-  return { sent: true, detail: "ok", organizationId };
+  return {
+    sent: true,
+    detail: "ok",
+    recordType: "pessoa",
+    personId,
+  };
 }
 
 async function resolveOrganizationFromPerson(personId) {
   const token = process.env.AGENDOR_API_TOKEN;
   const base = "https://api.agendor.com.br/v3";
+
   if (!token) throw new Error("AGENDOR_API_TOKEN não configurado.");
 
   const r = await fetch(`${base}/people/${encodeURIComponent(personId)}`, {
@@ -421,7 +537,10 @@ async function resolveOrganizationFromPerson(personId) {
   const data = j?.data || j;
   const orgIds = extractOrganizationIdsDeep(data);
 
-  if (orgIds.length === 1) return { organizationId: orgIds[0] };
+  if (orgIds.length === 1) {
+    return { organizationId: orgIds[0] };
+  }
+
   return null;
 }
 
