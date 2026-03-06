@@ -10,6 +10,10 @@
   padding: 20px;
 }
 
+.app-loading-overlay[hidden] {
+  display: none !important;
+}
+
 .app-loading-card {
   width: min(92vw, 420px);
   border-radius: 18px;
@@ -70,3 +74,4 @@ body.dark-mode .app-loading-icon-wrap {
     transform: rotate(360deg);
   }
 }
+
