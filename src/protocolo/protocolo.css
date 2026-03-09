@@ -722,6 +722,19 @@ body.light-mode .logo-claro {
   display: block;
 }
 
+.logo-escuro,
+.logo-claro {
+  display: none;
+}
+
+body:not(.light-mode) .logo-escuro {
+  display: block;
+}
+
+body.light-mode .logo-claro {
+  display: block;
+}
+
 @media (max-width: 480px) {
   .company-logo {
     max-width: 160px;
