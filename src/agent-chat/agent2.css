@@ -1039,3 +1039,31 @@ body:not(.dark-mode) .logo-claro {
 .dropdown-item:hover {
   background-color: rgba(255, 77, 77, 0.1); /* Fundo avermelhado bem sutil no hover */
 }
+
+/* =========================================
+   7. CONTROLE DA LOGO (TEMA CLARO / ESCURO)
+   ========================================= */
+
+/* Garante que ambas as logos tenham o mesmo tamanho */
+.company-logo {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Quando o site está no MODO ESCURO (com a classe .dark-mode no body) */
+body.dark-mode .logo-escuro {
+  display: block;
+}
+
+body.dark-mode .logo-claro {
+  display: none;
+}
+
+/* Quando o site está no MODO CLARO (sem a classe .dark-mode no body) */
+body:not(.dark-mode) .logo-escuro {
+  display: none;
+}
+
+body:not(.dark-mode) .logo-claro {
+  display: block;
+}
