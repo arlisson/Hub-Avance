@@ -21,12 +21,12 @@ const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
 const APPS = [
   {
     id: "agent",
-    badge: "Consultora estratégica de vendas",
-    image: "../img/Ludmilla.png",
-    title: "Consultora estratégica de vendas",
+    badge: "Mentor estratégico de vendas",
+    image: "../img/Apolo.png",
+    title: "Mentor estratégico de vendas",
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
-      "Este é o agente consultor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+      "Este é o agente mentor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
     youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
     enabled: true,
     actions: [
