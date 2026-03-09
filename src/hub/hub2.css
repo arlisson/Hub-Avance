@@ -969,9 +969,14 @@ body.dark-mode .nav-link.active {
   z-index: 2;
 }
 
-/* Isso garante que nada bloqueie a sua animação de fundo do topo */
-body,
-.main-content {
+/* O body reassume o controle das cores (Claro/Escuro) */
+body {
+  background-color: var(--bg-main) !important;
+}
+
+/* Apenas as seções de conteúdo ficam transparentes para mostrar as estrelas */
+.main-content,
+.hero-section {
   background-color: transparent !important;
 }
 
