@@ -206,15 +206,20 @@ function initTheme(themeToggle) {
   const savedTheme = localStorage.getItem("theme");
   const isLight = savedTheme === "light";
 
+  // Aplica as classes iniciais
   document.body.classList.toggle("light-mode", isLight);
   document.body.classList.toggle("dark-mode", !isLight);
-  updateThemeIcon(themeToggle);
+  
+  // Chama a função passando se está escuro ou não
+  updateThemeIcon(themeToggle, !isLight);
 
   themeToggle.addEventListener("click", () => {
     const nowLight = document.body.classList.toggle("light-mode");
     document.body.classList.toggle("dark-mode", !nowLight);
     localStorage.setItem("theme", nowLight ? "light" : "dark");
-    updateThemeIcon(themeToggle);
+    
+    // Passa o estado atualizado para o botão (!nowLight = isDark)
+    updateThemeIcon(themeToggle, !nowLight);
   });
 }
 
@@ -223,25 +228,11 @@ function updateThemeIcon(btn, isDark) {
   const icon = btn.querySelector("i");
   const text = btn.querySelector("span");
   
-  // Pega a imagem da logo lá no topo da sidebar
-  const logo = document.querySelector(".company-logo"); 
-
-  // Atualiza o botão (Ícone e Texto)
+  // Atualiza apenas o botão (Ícone e Texto). 
+  // A logo agora é controlada 100% pelo seu CSS!
   if (icon && text) {
     icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
     text.textContent = isDark ? "Modo claro" : "Modo escuro";
-  }
-
-  // Atualiza a Logo da Avance
-  if (logo) {
-    // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
-    if (isDark) {
-      // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
-      logo.src = "../img/LogoEscuroSemFundo.png"; 
-    } else {
-      // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
-      logo.src = "../img/LogoClaraSemFundo.png"; 
-    }
   }
 }
 
