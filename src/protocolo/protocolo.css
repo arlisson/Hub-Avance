@@ -740,3 +740,17 @@ body.light-mode .logo-claro {
     max-width: 160px;
   }
 }
+
+.sidebar .logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.sidebar .logo-container .company-logo {
+  width: 200px !important;
+  max-width: 200px !important;
+  height: auto !important;
+  display: block;
+}
