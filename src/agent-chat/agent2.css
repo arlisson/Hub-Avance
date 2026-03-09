@@ -968,3 +968,74 @@ body:not(.dark-mode) .logo-escuro {
 body:not(.dark-mode) .logo-claro {
   display: block;
 }
+
+/* =========================================
+   MENU DO USUÁRIO E DROPDOWN (SAIR)
+   ========================================= */
+
+/* 1. Define o container pai como referência de posição (âncora) */
+.sidebar-footer-item {
+  position: relative;
+}
+
+/* 2. Faz o texto do e-mail ocupar o espaço disponível e adiciona "..." se for muito grande */
+.user-email-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 3. Estilo do botão de três pontinhos */
+.settings-dots {
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.settings-dots:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* 4. A caixa flutuante do Menu Dropdown */
+.settings-dropdown {
+  position: absolute;
+  right: 12px;
+  bottom: 100%; /* Faz o menu abrir para cima */
+  margin-bottom: 8px;
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  padding: 6px;
+  min-width: 140px;
+  z-index: 100;
+}
+
+/* Garante que o menu obedeça à função de ocultar do JavaScript (propriedade hidden) */
+.settings-dropdown[hidden] {
+  display: none !important;
+}
+
+/* 5. Estilo interno do botão "Sair" */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 77, 77, 0.1); /* Fundo avermelhado bem sutil no hover */
+}
