@@ -376,6 +376,7 @@ function initTheme(themeToggle) {
 function updateThemeIcon(btn) {
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector("span");
+  const logo = document.querySelector(".company-logo"); 
 
   if (!icon || !text) return;
 
@@ -387,5 +388,16 @@ function updateThemeIcon(btn) {
   } else {
     icon.className = "ph ph-sun";
     text.textContent = "Modo claro";
+  }
+
+  if (logo) {
+    // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
+    if (isDark) {
+      // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
+      logo.src = "../img/LogoEscuroSemFundo.png"; 
+    } else {
+      // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
+      logo.src = "../img/LogoClaraSemFundo.png"; 
+    }
   }
 }
