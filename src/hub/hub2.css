@@ -1023,10 +1023,11 @@ body {
   position: absolute;
   inset: 0;
   /* Começa exatamente na borda */
-  background-color: #0F2C58;
+  background-color: var(--bg-card);
   /* Cor interna do quadro (azul escuro) */
   border-radius: 20px;
   z-index: -1;
+  transition: background-color 0.3s ease;
 }
 
 /* Conteúdo interno */
@@ -1044,7 +1045,7 @@ body {
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 40px;
-  color: #FAFEFF;
+  color: var(--text-primary);
   /* Cor branca/gelo da sua paleta */
 }
 
