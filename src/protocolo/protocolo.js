@@ -362,12 +362,12 @@ function initTheme(themeToggle) {
   const isLight = savedTheme === "light";
 
   document.body.classList.toggle("light-mode", isLight);
-  document.body.classList.toggle("dark-mode", !isLight);
+  document.body.classList.remove("dark-mode");
   updateThemeIcon(themeToggle);
 
   themeToggle.addEventListener("click", () => {
     const nowLight = document.body.classList.toggle("light-mode");
-    document.body.classList.toggle("dark-mode", !nowLight);
+    document.body.classList.remove("dark-mode");
     localStorage.setItem("theme", nowLight ? "light" : "dark");
     updateThemeIcon(themeToggle);
   });
