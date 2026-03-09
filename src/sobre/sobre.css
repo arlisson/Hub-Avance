@@ -1,0 +1,109 @@
+/* ==========================================================
+   PÁGINA SOBRE E CONTATO
+   ========================================================== */
+
+/* Hero Section Menor para páginas internas */
+.about-hero {
+  min-height: 50vh; /* Não ocupa a tela toda, abrindo espaço para o texto subir */
+  margin-bottom: 20px;
+}
+
+/* Área de Texto Elegante dentro do Bloco LED */
+.about-content {
+  padding: 60px 40px;
+}
+
+.about-text-area {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.about-text-area p {
+  margin-bottom: 24px;
+}
+
+.about-text-area p:last-child {
+  margin-bottom: 0;
+}
+
+.about-text-area strong {
+  color: var(--brand-action);
+  font-weight: 700;
+}
+
+/* --------------------------------------
+   GRID DE CONTATOS (Cartões flutuantes)
+   -------------------------------------- */
+.contact-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 100px;
+}
+
+.contact-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 300px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body.dark-mode .contact-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.contact-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--brand-action);
+  box-shadow: 0 20px 40px rgba(87, 197, 234, 0.15);
+}
+
+.contact-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(87, 197, 234, 0.1);
+  color: var(--brand-action);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.contact-card:hover .contact-icon {
+  transform: scale(1.1);
+  background: var(--brand-action);
+  color: var(--bg-sidebar);
+}
+
+.contact-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.contact-card p {
+  margin: 0;
+  font-size: 15px;
+  opacity: 0.8;
+}
