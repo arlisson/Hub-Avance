@@ -985,8 +985,8 @@ body {
    ========================================= */
 .showcase-wrapper {
   position: relative;
-  width: 95%;
-  max-width: 1200px;
+  width: 98%;
+  max-width: 1600px;
   margin: 40px auto 100px auto;
   /* Afasta o bloco do topo e do rodapé */
   border-radius: 20px;
