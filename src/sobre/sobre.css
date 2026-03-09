@@ -147,13 +147,21 @@ body.dark-mode .theme-toggle-top {
 /* ==========================================================
    4. HERO SECTION (Cabeçalho da Página Sobre)
    ========================================================== */
+/* Hero Section Menor para páginas internas */
 .about-hero {
-  min-height: 40vh; /* Mais curto que o Hub, para o texto subir */
+  width: 100%; /* Garante que ocupe a tela toda de ponta a ponta */
+  min-height: 40vh; 
   display: flex;
-  align-items: flex-end; /* Joga o título mais para baixo */
-  justify-content: center;
-  text-align: center;
-  padding: 100px 20px 40px; /* Espaço para a navbar não cobrir */
+  flex-direction: column; /* Organiza em coluna (título em cima, subtítulo embaixo) */
+  align-items: center;    /* A MÁGICA: Centraliza horizontalmente */
+  justify-content: center; /* Centraliza verticalmente */
+  text-align: center;     /* Centraliza o texto dentro da caixa */
+  padding: 120px 20px 40px; 
+}
+
+/* Garante que o bloco de texto interno não tenha margens empurrando ele */
+.about-hero .hero-content {
+  margin: 0 auto;
 }
 
 .hero-title {
