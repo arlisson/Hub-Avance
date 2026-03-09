@@ -206,13 +206,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       AppLoading.show({
         title: "Gerando protocolo",
-        message: "Validando os dados informados..."
+        message: "Aguarde..."
       });
 
-      AppLoading.update({
-        title: "Consultando Agendor",
-        message: "Buscando empresa ou pessoa vinculada ao telefone..."
-      });
+     
 
       const { resp, data } = await callApi(payload);
 
@@ -236,11 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         throw new Error((data?.error || "Falha ao gerar protocolo.") + maybeProtocol);
       }
 
-      AppLoading.update({
-        title: "Finalizando",
-        message: "Preparando o retorno da operação..."
-      });
-
+     
       hideOrgPicker();
 
       const protocol = data?.protocol || "";
