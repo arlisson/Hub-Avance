@@ -1041,6 +1041,34 @@ body:not(.dark-mode) .logo-claro {
 }
 
 /* =========================================
+   ANIMAÇÃO DE ENTRADA DO DROPDOWN
+   ========================================= */
+
+/* Cria o movimento de surgir suavemente */
+@keyframes menuSurgir {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Aplica a animação apenas quando o menu estiver visível (sem o atributo hidden) */
+.settings-dropdown:not([hidden]) {
+  /* Duração de 0.2s com efeito ease-out (desacelera no final) */
+  animation: menuSurgir 0.2s ease-out forwards;
+  
+  /* Faz a animação "nascer" a partir do canto inferior direito, perto dos 3 pontinhos */
+  transform-origin: bottom right; 
+}
+
+
+
+
+/* =========================================
    7. CONTROLE DA LOGO (TEMA CLARO / ESCURO)
    ========================================= */
 
