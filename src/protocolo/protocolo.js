@@ -392,7 +392,7 @@ function updateThemeIcon(btn) {
 
   if (logo) {
     // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
-    if (isDark) {
+    if (!isLight) {
       // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
       logo.src = "../img/LogoEscuroSemFundo.png"; 
     } else {
