@@ -225,9 +225,12 @@ function updateThemeIcon(btn, isDark) {
   const logo = document.querySelector(".company-logo"); 
 
   // Atualiza o botão (Ícone e Texto)
-  if (icon && text) {
-    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
-    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  if (isLight) {
+    icon.className = "ph ph-moon";
+    text.textContent = "Modo escuro";
+  } else {
+    icon.className = "ph ph-sun";
+    text.textContent = "Modo claro";
   }
 
   // Atualiza a Logo da Avance
