@@ -59,7 +59,6 @@ export default async function handler(req, res) {
       Authorization: `Bearer ${SERVICE_ROLE}`,
     };
 
-    // 1) Incrementa contador global
     const globalRpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_access`, {
       method: "POST",
       headers,
@@ -68,10 +67,13 @@ export default async function handler(req, res) {
 
     if (!globalRpc.ok) {
       const t = await globalRpc.text();
-      console.warn("increment_access failed:", t);
+      console.error("increment_access failed:", {
+        status: globalRpc.status,
+        body: t,
+        app,
+      });
     }
 
-    // 2) Incrementa contador por usuário no profiles.app_usage
     const profileRpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_profile_app_metric`, {
       method: "POST",
       headers,
@@ -84,7 +86,15 @@ export default async function handler(req, res) {
 
     if (!profileRpc.ok) {
       const t = await profileRpc.text();
-      console.warn("increment_profile_app_metric failed:", t);
+      console.error("increment_profile_app_metric failed:", {
+        status: profileRpc.status,
+        body: t,
+        userId,
+        app,
+        metric,
+      });
+
+      return res.status(500).send("profile_metric_failed");
     }
 
     res.writeHead(302, { Location: target });
