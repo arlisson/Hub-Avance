@@ -8,12 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const supabase = window.supabaseClient;
-    if (!supabase) {
-      alert("Cliente Supabase não inicializado.");
+    let supabase;
+    try {
+      supabase = await window.getSupabaseClient();
+    } catch (err) {
+      alert(err?.message || "Cliente Supabase não inicializado.");
       return;
     }
-
     const newPassword = pass.value?.trim();
 
     if (!newPassword || newPassword.length < 6) {
