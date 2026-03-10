@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCopyProto = document.getElementById("btn-copy-proto");
   const btnCopyMsg = document.getElementById("btn-copy-msg");
 
+  const email = user?.email || "";
+
   const userEmailEl = document.getElementById("user-email");
   if (userEmailEl) {
     userEmailEl.textContent = email;
