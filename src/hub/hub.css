@@ -625,6 +625,12 @@ body.dark-mode .app-modal-close {
   box-shadow: 0 12px 25px rgba(87, 197, 234, 0.5);
 }
 
+/* Esconde as partículas e economiza 100% de processamento enquanto o modal está aberto */
+body.modal-open #global-particles,
+body.modal-open #hero-particles {
+  display: none !important;
+}
+
 /* ==========================================================
    RODAPÉ DO CONTEÚDO
    ========================================================== */
