@@ -1,5 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const HUB_URL = "/hub/hub.html";
+  let session;
 
   const btnGenerate = document.getElementById("btn-generate");
   const btnClear = document.getElementById("btn-clear");
@@ -12,6 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCopyProto = document.getElementById("btn-copy-proto");
   const btnCopyMsg = document.getElementById("btn-copy-msg");
 
+
+  try {
+    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+
+    if (sessionError || !sessionData?.session) {
+      window.location.href = LOGIN_URL;
+      return;
+    }
+
+    session = sessionData.session;
+  } catch {
+    window.location.href = LOGIN_URL;
+    return;
+  }
+
+  const user = session.user;
   const email = user?.email || "";
 
   const userEmailEl = document.getElementById("user-email");
