@@ -1,4 +1,20 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+
+  try {
+    const sb = await window.getSupabaseClient();
+    const { data } = await sb.auth.getSession();
+    
+    if (data?.session) {
+      const backLink = document.querySelector(".back-link");
+      if (backLink) {
+        backLink.href = "../hub/hub.html";
+        backLink.textContent = "Voltar para o Início";
+      }
+    }
+  } catch (err) {
+    console.warn("Não foi possível verificar a sessão no carregamento.", err);
+  }
+
   const form = document.getElementById("reset-form");
   const pass = document.getElementById("new-password");
   const btn = document.getElementById("save-btn");

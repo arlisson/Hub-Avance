@@ -871,7 +871,7 @@ body.dark-mode .nav-link.active {
   transform: rotate(45deg);
 }
 
-/* --- 4. O Botão Sair --- */
+/* --- Item padrão do menu --- */
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -880,19 +880,26 @@ body.dark-mode .nav-link.active {
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: #ef4444;
-  /* Vermelho Sair */
+  color: var(--text-primary); /* Cor padrão do texto */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   border-radius: 8px;
-
-  /* Mantém o botão DENTRO da caixa e por cima da setinha */
   position: relative;
   z-index: 2;
+  transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
+  background-color: var(--bg-hover);
+}
+
+/* --- Botão Sair (Danger) --- */
+.dropdown-item.danger {
+  color: #ef4444; 
+}
+
+.dropdown-item.danger:hover {
   background-color: rgba(239, 68, 68, 0.1);
 }
 
