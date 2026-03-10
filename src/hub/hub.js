@@ -440,9 +440,9 @@ function updateThemeIcon(btn, isDark) {
 
   if (logo) {
     if (isDark) {
-      logo.src = "./img/LogoEscuroSemFundo.png";
+      logo.src = "../img/LogoEscuroSemFundo.png";
     } else {
-      logo.src = "./img/LogoClaraSemFundo.png";
+      logo.src = "../img/LogoClaraSemFundo.png";
     }
   }
 }
