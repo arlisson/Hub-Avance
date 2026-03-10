@@ -367,8 +367,8 @@ body.light-mode .chat-item .icon {
   border: 1px solid var(--border-color);
   border-radius: 24px;
   display: flex;
-  padding: 6px 16px;
-  align-items: center;
+  padding: 8px 16px;
+  align-items: flex-end;
   transition: all 0.3s ease;
 }
 
@@ -381,17 +381,21 @@ body.light-mode .input-container:focus-within {
   box-shadow: 0 0 0 4px rgba(44, 169, 214, 0.12);
 }
 
-.input-container input {
+.input-container textarea { /* PAREI AQUI PORRA +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
   flex: 1;
   background: transparent;
   border: none;
   color: var(--text-primary);
   font-size: 15px;
-  padding: 12px;
+  padding: 10px 0;
   outline: none;
+  resize: none; /* Esconde aquela setinha feia de redimensionar do navegador */
+  overflow-y: auto; /* Cria barra de rolagem só se passar do limite máximo */
+  max-height: 150px; /* Limite de altura antes de começar a rolar por dentro */
+  line-height: 1.5;
 }
 
-.input-container input::placeholder {
+.input-container textarea::placeholder {
   color: var(--text-secondary);
 }
 
@@ -402,6 +406,7 @@ body.light-mode .input-container:focus-within {
   padding: 8px 20px;
   font-weight: 600;
   transition: 0.2s;
+  margin-bottom: 2px; /* Dá um respiro pro botão */
 }
 
 .send-btn:hover {
