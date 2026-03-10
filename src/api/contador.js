@@ -40,6 +40,7 @@ export default async function handler(req, res) {
      
       desktop: process.env.TARGET_DESKTOP_URL,     
       agent: process.env.TARGET_AGENT_URL,
+      protocol: process.env.TARGET_PROTOCOL_URL,
 
     };
 

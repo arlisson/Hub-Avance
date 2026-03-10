@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newPassword = pass.value?.trim();
 
     if (!newPassword || newPassword.length < 6) {
-      alert("A senha deve ter pelo menos 6 caracteres.");
+      alert("A senha deve ter pelo menos 8 caracteres.");
       return;
     }
 
@@ -35,4 +35,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (btn) btn.disabled = false;
     }
   });
+
+  const toggleBtn = document.getElementById("toggle-new-password");
+
+  if (toggleBtn && pass) {
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = pass.type === "password";
+      pass.type = isPassword ? "text" : "password";
+
+      toggleBtn.innerHTML = isPassword
+        ? '<i class="ph ph-eye-slash"></i>'
+        : '<i class="ph ph-eye"></i>';
+    });
+  }
 });
