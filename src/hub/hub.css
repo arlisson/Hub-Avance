@@ -460,12 +460,18 @@ body.dark-mode .hub-card {
 /* ==========================================================
    4. MODAL (Pop-up de Detalhes Premium)
    ========================================================== */
+/* Fundo padão (Modo Claro) */
 .app-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  /* Deixamos o fundo mais escuro (95% de opacidade) e removemos o Blur! */
-  background: rgba(11, 14, 35, 0.95); 
+  background: rgba(250, 254, 255, 0.95); /* Branco gelo com opacidade */
+  transition: background 0.3s ease;
+}
+
+/* Fundo quando ativar o Modo Escuro */
+body.dark-mode .app-modal-backdrop {
+  background: rgba(11, 14, 35, 0.95); /* Azul escuro com opacidade */
 }
 
 .app-modal {
