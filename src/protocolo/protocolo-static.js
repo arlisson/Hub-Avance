@@ -1,44 +1,50 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  
-  const LOGIN_URL = "/login/login.html";
-  const HUB_URL = "/hub/hub.html";
-  let sb;
-  let session;
-  
-  const btnGenerate = document.getElementById("btn-generate");
-  const btnClear = document.getElementById("btn-clear");
+    const LOGIN_URL = "/login/login.html";
+    const HUB_URL = "/hub/hub.html";
 
-  const resultBox = document.getElementById("result");
-  const errorBox = document.getElementById("errorBox");
-  const protoEl = document.getElementById("proto");
-  const msgEl = document.getElementById("msg");
+    let sb;
+    let session;
 
-  const btnCopyProto = document.getElementById("btn-copy-proto");
-  const btnCopyMsg = document.getElementById("btn-copy-msg");
+    const btnGenerate = document.getElementById("btn-generate");
+    const btnClear = document.getElementById("btn-clear");
 
+    const resultBox = document.getElementById("result");
+    const errorBox = document.getElementById("errorBox");
+    const protoEl = document.getElementById("proto");
+    const msgEl = document.getElementById("msg");
 
-  try {
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    const btnCopyProto = document.getElementById("btn-copy-proto");
+    const btnCopyMsg = document.getElementById("btn-copy-msg");
 
-    if (sessionError || !sessionData?.session) {
+    try {
+      sb = await window.getSupabaseClient();
+    } catch {
       window.location.href = LOGIN_URL;
       return;
     }
 
-    session = sessionData.session;
-  } catch {
-    window.location.href = LOGIN_URL;
-    return;
-  }
+    try {
+      const { data: sessionData, error: sessionError } = await sb.auth.getSession();
 
-  const user = session.user;
-  const email = user?.email || "";
+      if (sessionError || !sessionData?.session) {
+        window.location.href = LOGIN_URL;
+        return;
+      }
 
-  const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) {
-    userEmailEl.textContent = email;
-    userEmailEl.title = email;
-  }
+      session = sessionData.session;
+    } catch {
+      window.location.href = LOGIN_URL;
+      return;
+    }
+
+    const user = session.user;
+    const email = user?.email || "";
+
+    const userEmailEl = document.getElementById("user-email");
+    if (userEmailEl) {
+      userEmailEl.textContent = email;
+      userEmailEl.title = email;
+    }
 
 
   initSettingsMenu(
