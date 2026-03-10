@@ -46,10 +46,18 @@ body.light-mode {
   padding: 0;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
+/* Truque de ouro para a altura exata em celulares iOS e Android */
+html {
+  height: -webkit-fill-available;
+}
+
+html, body {
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Usa DVH se suportado */
+  min-height: -webkit-fill-available;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Trava a rolagem da tela inteira */
 }
 
 body {
@@ -57,11 +65,13 @@ body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   display: flex;
-  height: 100vh;
-  overflow: hidden;
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.main-content, .chat-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Removemos o fundo branco padrão dos botões do HTML */
@@ -811,7 +821,8 @@ body.light-mode .message-bot .message-bubble pre {
   }
 
   .input-wrapper {
-    padding: 16px 20px;
+    /* Adicionamos um padding-bottom dinâmico: 24px + a área segura do celular */
+    padding: 14px 16px calc(24px + env(safe-area-inset-bottom));
   }
 }
 
