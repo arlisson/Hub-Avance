@@ -1,24 +1,23 @@
 /**
- * hub.js — Hub AVANCE (cards dinâmicos + modal + menu de configurações no rodapé)
+ * hub.js — Hub AVANCE (cards dinâmicos + modal + menu de configurações)
  *
  * Atualizações:
- * - Remove referências a "logout-btn" e "theme-toggle" (agora ficam no menu dropdown)
- * - Suporta menu: botão (3 pontinhos) -> opções: Tema + Sair
- * - Cards: mantém apenas botão "Detalhes"
- * - Modal: continua preenchendo texto, vídeo e botões (Acessar/Baixar) no pop-up
+ * - Captura o user.id da sessão do Supabase
+ * - Gera URLs dinâmicas do contador com app, user_id e metric
+ * - Registra access para apps online e download para apps baixáveis
+ * - Mantém menu, tema, modal, permissões e animações
  */
 
 let LOGIN_URL = "/login/login.html";
-const COUNTER_AGENT_URL = "/api/contador?app=agent";
-const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
-const COUNTER_PROTOCOL_URL = "/api/contador?app=protocol";
-
+let CURRENT_USER_ID = "";
 
 /**
  * Defina seus cards aqui.
- * - youtubeId: apenas o ID do vídeo (não a URL inteira).
- * - actions: botões exibidos no modal.
- * - enabled: se false, o card fica “indisponível”.
+ * - youtubeId: apenas o ID do vídeo (não a URL inteira)
+ * - actions: botões exibidos no modal
+ * - enabled: se false, o card fica indisponível
+ * - app: nome do app para enviar ao contador
+ * - metric: "access" | "download"
  */
 const APPS = [
   {
@@ -29,13 +28,14 @@ const APPS = [
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
       "Este é o agente mentor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
-    youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
+    youtubeId: "CNFqPBAdglE",
     enabled: true,
     actions: [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        href: COUNTER_AGENT_URL,
+        app: "agent",
+        metric: "access",
         primary: true,
         targetBlank: false,
       },
@@ -50,13 +50,14 @@ const APPS = [
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
     longDesc:
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
-    youtubeId: "", // TROQUE pelo seu vídeo (ID)
+    youtubeId: "",
     enabled: true,
     actions: [
       {
         label: "Baixar",
         icon: "ph-download-simple",
-        href: COUNTER_DESKTOP_URL,
+        app: "desktop",
+        metric: "download",
         primary: false,
         targetBlank: true,
       },
@@ -75,7 +76,8 @@ const APPS = [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        href: "/protocolo/protocolo.html",
+        app: "protocol",
+        metric: "access",
         primary: true,
         targetBlank: false,
       },
@@ -87,14 +89,15 @@ const APPS = [
     image: "../img/Protocolo.png",
     title: "Gerador de Protocolo",
     shortDesc: "Gera novos protocolos.",
-    longDesc: "Ferramenta para geração de novos protocolos protocolos.",
+    longDesc: "Ferramenta para geração de novos protocolos.",
     youtubeId: "",
     enabled: true,
     actions: [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        href: COUNTER_PROTOCOL_URL,
+        app: "protocol",
+        metric: "access",
         primary: true,
         targetBlank: false,
       },
@@ -105,7 +108,6 @@ const APPS = [
 document.addEventListener("DOMContentLoaded", async () => {
   await loadPublicAgentConfig();
 
-  // Supabase session guard
   let sb;
   try {
     sb = await window.getSupabaseClient();
@@ -115,71 +117,78 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
+  try {
+    const { data: sessionData } = await sb.auth.getSession();
+
+    if (!sessionData?.session) {
+      window.location.href = normalizeLoginUrl(LOGIN_URL);
+      return;
+    }
+
+    CURRENT_USER_ID = sessionData.session.user.id;
+    const email = sessionData.session.user?.email || "";
+
+    const { data: profile, error } = await sb
+      .from("profiles")
+      .select("protocol")
+      .eq("id", CURRENT_USER_ID)
+      .single();
+
+    if (error) {
+      console.error("Erro ao buscar permissões:", error);
+    }
+
+    const canAccessProtocol = !!profile?.protocol;
+
+    const userEmailEl = document.getElementById("user-email");
+    if (userEmailEl) {
+      userEmailEl.textContent = email || "";
+      userEmailEl.title = email || "";
+      userEmailEl.style.cursor = "default";
+    }
+
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsMenu = document.getElementById("settings-menu");
+    const themeToggle = document.getElementById("theme-toggle");
+    const menuLogout = document.getElementById("menu-logout");
+
+    initSettingsMenu(settingsBtn, settingsMenu);
+    initTheme(themeToggle);
+
+    if (menuLogout) {
+      menuLogout.addEventListener("click", async () => {
+        try {
+          await sb.auth.signOut();
+        } finally {
+          clearAgentChatSessionStorage();
+          window.location.href = normalizeLoginUrl(LOGIN_URL);
+        }
+      });
+    }
+
+    initMobileSidebar();
+    initAppModal();
+    renderHubCards({ canAccessProtocol });
+  } catch (e) {
+    console.error("Erro ao inicializar Hub:", e);
     window.location.href = normalizeLoginUrl(LOGIN_URL);
-    return;
   }
-
-  const email = sessionData.session.user?.email || "";
-
-   const { data: profile, error } = await sb
-    .from("profiles")
-    .select("protocol")
-    .eq("id", sessionData.session.user.id)
-    .single();
-
-  if (error) {
-    console.error("Erro ao buscar permissões:", error);
-  }
-
-  const canAccessProtocol = !!profile?.protocol;
-
-  
-  // Mostra email no footer (com tooltip ao passar o mouse)
-  const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) {
-    userEmailEl.textContent = email || "";
-    userEmailEl.title = email || ""; // balão nativo do navegador no hover
-    userEmailEl.style.cursor = "default";
-  }
-
-
-
-  // Menu (3 pontinhos)
-  const settingsBtn = document.getElementById("settings-btn");
-  const settingsMenu = document.getElementById("settings-menu");
-  const themeToggle = document.getElementById("theme-toggle");
-  const menuLogout = document.getElementById("menu-logout");
-
-  initSettingsMenu(settingsBtn, settingsMenu);
-
-  // Tema (agora via item do menu)
-  initTheme(themeToggle);
-
-  // Logout (agora via item do menu)
-  if (menuLogout) {
-    menuLogout.addEventListener("click", async () => {
-      try {
-        await sb.auth.signOut();
-      } finally {
-        clearAgentChatSessionStorage();
-        window.location.href = normalizeLoginUrl(LOGIN_URL);
-      }
-    });
-  }
-
-  // Sidebar mobile
-  initMobileSidebar();
-
-  // Render cards dinâmicos
-  renderHubCards();
-
-  // Modal
-  initAppModal();
-
-  renderHubCards({ canAccessProtocol });
 });
+
+// -------------------------
+// URLs do contador
+// -------------------------
+function buildCounterUrl(app, metric = "access") {
+  if (!CURRENT_USER_ID || !app) return "#";
+
+  const params = new URLSearchParams({
+    app,
+    user_id: CURRENT_USER_ID,
+    metric,
+  });
+
+  return `/api/contador?${params.toString()}`;
+}
 
 // -------------------------
 // Renderização dos cards
@@ -190,7 +199,7 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
 
   grid.innerHTML = "";
 
-  const visibleApps = APPS.filter(app => {
+  const visibleApps = APPS.filter((app) => {
     if (app.id === "protocol" && !canAccessProtocol) return false;
     return true;
   });
@@ -233,12 +242,10 @@ function initAppModal() {
 
   closeBtn.addEventListener("click", closeAppModal);
 
-  // Fecha no ESC
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeAppModal();
   });
 
-  // Fecha clicando fora
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) closeAppModal();
   });
@@ -262,34 +269,37 @@ function openAppModal(appId) {
   if (titleEl) titleEl.textContent = app.title || "";
   if (descEl) descEl.textContent = app.longDesc || "";
 
-  // Botões (Acessar/Baixar) somente no modal
   if (actionsEl) {
     actionsEl.innerHTML = "";
+
     (app.actions || []).forEach((a) => {
-      const el = document.createElement(a.href ? "a" : "button");
+      const el = document.createElement("a");
       el.className = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
       el.innerHTML = `
         <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
         <span>${escapeHtml(a.label || "Abrir")}</span>
       `;
 
-      if (a.href) {
+      if (a.app) {
+        el.href = buildCounterUrl(a.app, a.metric || "access");
+      } else if (a.href) {
         el.href = a.href;
-        if (a.targetBlank) {
-          el.target = "_blank";
-          el.rel = "noopener noreferrer";
-        }
       } else {
-        el.type = "button";
+        el.href = "#";
+      }
+
+      if (a.targetBlank) {
+        el.target = "_blank";
+        el.rel = "noopener noreferrer";
       }
 
       actionsEl.appendChild(el);
     });
   }
 
-  // Vídeo
   if (videoEl) {
     videoEl.innerHTML = "";
+
     if (app.youtubeId) {
       const iframe = document.createElement("iframe");
       iframe.allow =
@@ -297,8 +307,6 @@ function openAppModal(appId) {
       iframe.allowFullscreen = true;
       iframe.loading = "lazy";
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
-
-      // Versão com menos rastreamento (pode reduzir ruído de logs em alguns cenários)
       iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
         app.youtubeId
       )}`;
@@ -317,7 +325,6 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
-  // foco (acessibilidade)
   modal.setAttribute("tabindex", "-1");
   modal.focus();
 }
@@ -327,7 +334,6 @@ function closeAppModal() {
   const modal = document.getElementById("app-modal");
   const videoEl = document.getElementById("app-modal-video");
 
-  // remove iframe para parar áudio
   if (videoEl) videoEl.innerHTML = "";
 
   if (modal) modal.hidden = true;
@@ -336,14 +342,23 @@ function closeAppModal() {
 }
 
 // -------------------------
-// Menu de configurações (rodapé)
+// Menu de configurações
 // -------------------------
 function initSettingsMenu(btn, menu) {
   if (!btn || !menu) return;
 
-  const close = () => (menu.hidden = true);
-  const open = () => (menu.hidden = false);
-  const toggle = () => (menu.hidden ? open() : close());
+  const close = () => {
+    menu.hidden = true;
+  };
+
+  const open = () => {
+    menu.hidden = false;
+  };
+
+  const toggle = () => {
+    if (menu.hidden) open();
+    else close();
+  };
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -351,9 +366,15 @@ function initSettingsMenu(btn, menu) {
   });
 
   document.addEventListener("click", (e) => {
-    const userbar = document.getElementById("sidebar-userbar");
-    if (!userbar) return close();
-    if (!userbar.contains(e.target)) close();
+    const container = document.querySelector(".user-menu-container");
+    if (!container) {
+      close();
+      return;
+    }
+
+    if (!container.contains(e.target)) {
+      close();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
@@ -362,12 +383,13 @@ function initSettingsMenu(btn, menu) {
 }
 
 // -------------------------
-// Config pública (opcional)
+// Config pública
 // -------------------------
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
     const j = await r.json().catch(() => null);
+
     if (r.ok && j?.ok) {
       if (j.loginUrl) LOGIN_URL = j.loginUrl;
     }
@@ -378,8 +400,9 @@ async function loadPublicAgentConfig() {
 
 function normalizeLoginUrl(url) {
   if (!url) return "/login/login.html";
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
     return url;
+  }
   return "/" + url.replace(/^\.?\//, "");
 }
 
@@ -393,6 +416,7 @@ function initTheme(themeToggle) {
     document.body.classList.add("dark-mode");
     updateThemeIcon(themeToggle, true);
   } else {
+    document.body.classList.remove("dark-mode");
     updateThemeIcon(themeToggle, false);
   }
 
@@ -405,50 +429,39 @@ function initTheme(themeToggle) {
 }
 
 function updateThemeIcon(btn, isDark) {
-  // Pega os elementos do botão de tema
-  const icon = btn.querySelector("i");
-  const text = btn.querySelector("span");
-  
-  // Pega a imagem da logo lá no topo da sidebar
-  const logo = document.querySelector(".company-logo"); 
+  const icon = btn?.querySelector("i");
+  const text = btn?.querySelector("span");
+  const logo = document.querySelector(".company-logo");
 
-  // Atualiza o botão (Ícone e Texto)
   if (icon && text) {
     icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
     text.textContent = isDark ? "Modo claro" : "Modo escuro";
   }
 
-  // Atualiza a Logo da Avance
   if (logo) {
-    // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
     if (isDark) {
-      // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
-      logo.src = "../img/LogoEscuroSemFundo.png"; 
+      logo.src = "./img/LogoEscuroSemFundo.png";
     } else {
-      // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
-      logo.src = "../img/LogoClaraSemFundo.png"; 
+      logo.src = "./img/LogoClaraSemFundo.png";
     }
   }
 }
 
 // -------------------------
-// Sidebar (Recolhível no Desktop / Gaveta no Mobile)
+// Sidebar
 // -------------------------
 function initMobileSidebar() {
   const mobileBtn = document.getElementById("mobile-menu-btn");
   const desktopBtn = document.getElementById("desktop-toggle-btn");
 
-  // Botão redondo do Desktop
   desktopBtn?.addEventListener("click", () => {
     document.body.classList.toggle("sidebar-collapsed");
   });
 
-  // Botão hambúrguer do Mobile
   mobileBtn?.addEventListener("click", () => {
     document.body.classList.toggle("sidebar-open");
   });
 
-  // Fecha a sidebar no mobile se clicar fora dela
   document.addEventListener("click", (e) => {
     if (window.innerWidth <= 900 && document.body.classList.contains("sidebar-open")) {
       const sidebar = document.querySelector(".sidebar");
@@ -488,91 +501,77 @@ function escapeHtml(s) {
 }
 
 // -------------------------
-// Efeito da Navbar (Scroll e Hover no Topo)
+// Efeito da Navbar
 // -------------------------
-document.addEventListener('DOMContentLoaded', () => {
-  const navbar = document.querySelector('.top-navbar');
-  
+document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.querySelector(".top-navbar");
+
   if (!navbar) {
     console.warn("Navbar não encontrada pelo script!");
     return;
   }
 
-  // 1. Efeito ao rolar a página (Scroll)
-  window.addEventListener('scroll', () => {
+  window.addEventListener("scroll", () => {
     if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
+      navbar.classList.add("scrolled");
     } else {
-      navbar.classList.remove('scrolled');
+      navbar.classList.remove("scrolled");
     }
   });
 
-  // 2. Efeito ao encostar o mouse no teto (Hover invisível)
-  document.addEventListener('mousemove', (e) => {
-    // Se o mouse subir até os primeiros 30 pixels da tela (área invisível de gatilho)
+  document.addEventListener("mousemove", (e) => {
     if (e.clientY <= 30) {
-      navbar.classList.add('hover-active');
+      navbar.classList.add("hover-active");
     } else {
-      // Se descer, o JS tira a classe, mas fique tranquilo: 
-      // o CSS ":hover" que adicionamos vai segurar a barra aberta 
-      // caso o mouse já esteja navegando nela ou no menu "Sair".
-      navbar.classList.remove('hover-active');
+      navbar.classList.remove("hover-active");
     }
   });
 });
 
-// Inicializa a função
-// initNavbarScroll();
+// ==========================================================
+// ANIMAÇÃO DE PARTÍCULAS
+// ==========================================================
+document.addEventListener("DOMContentLoaded", () => {
+  let canvas = document.getElementById("global-particles");
 
-// ==========================================================
-// ANIMAÇÃO DE PARTÍCULAS (FUNDO GLOBAL DA PÁGINA INTEIRA)
-// ==========================================================
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Cria o Canvas dinamicamente e joga direto no Body (para pegar a tela toda)
-  let canvas = document.getElementById('global-particles');
   if (!canvas) {
-    canvas = document.createElement('canvas');
-    canvas.id = 'global-particles';
-    
-    // Configura para ficar FIXO no fundo da tela
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.zIndex = '-10'; // Bem lá no fundo, atrás de tudo
-    canvas.style.pointerEvents = 'none'; // Ignora o mouse para não bugar cliques
-    
-    document.body.prepend(canvas); // Coloca logo no começo do body
+    canvas = document.createElement("canvas");
+    canvas.id = "global-particles";
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.zIndex = "-10";
+    canvas.style.pointerEvents = "none";
+    document.body.prepend(canvas);
   }
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   let particlesArray = [];
 
-  // 2. Ajusta o tamanho da tela baseado na Janela inteira do usuário
   function setCanvasSize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
-  setCanvasSize();
-  window.addEventListener('resize', setCanvasSize);
 
-  // 3. Criação das Partículas Azuis (Seu design original mantido)
+  setCanvasSize();
+  window.addEventListener("resize", setCanvasSize);
+
   class Particle {
     constructor() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 3 + 1.5; 
-      this.speedX = (Math.random() - 0.5) * 1.2; 
+      this.size = Math.random() * 3 + 1.5;
+      this.speedX = (Math.random() - 0.5) * 1.2;
       this.speedY = (Math.random() - 0.5) * 1.2;
-      this.opacity = Math.random() * 0.7 + 0.3; 
+      this.opacity = Math.random() * 0.7 + 0.3;
     }
 
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      // Quicam nas bordas da tela inteira agora
       if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
       if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
@@ -582,28 +581,28 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
       ctx.shadowBlur = 15;
-      ctx.shadowColor = 'rgba(87, 197, 234, 1)'; 
+      ctx.shadowColor = "rgba(87, 197, 234, 1)";
       ctx.fill();
     }
   }
 
-  // 4. Motor de Inicialização
   function init() {
     particlesArray = [];
-    // Densidade ajustada para a tela toda não ficar muito poluída
     const numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000);
+
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle());
     }
   }
 
-  // 5. Loop de Animação
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     for (let i = 0; i < particlesArray.length; i++) {
       particlesArray[i].update();
       particlesArray[i].draw();
     }
+
     requestAnimationFrame(animate);
   }
 
