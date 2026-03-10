@@ -119,7 +119,7 @@ input:focus-visible {
 .sidebar {
   width: 260px;
   background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
+  border-right: none;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
