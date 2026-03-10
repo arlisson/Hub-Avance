@@ -5,7 +5,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   // --- Elementos da Interface (CORRIGIDOS PARA O NOVO HTML) ---
   const chatMessages = document.getElementById("chat-messages");
-  const userInput = document.querySelector(".input-container input"); // Corrigido
+  const userInput = document.querySelector(".input-container textarea"); // Corrigido
   const sendBtn = document.querySelector(".send-btn"); // Corrigido
   const themeToggle = document.getElementById("theme-toggle");
   const newChatBtn = document.querySelector(".new-chat-btn"); // Corrigido
@@ -92,6 +92,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
       sendMessage();
     }
+  });
+  // Faz a caixa de texto crescer ou encolher automaticamente conforme a digitação
+  userInput.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = this.scrollHeight + "px";
   });
 
   newChatBtn.addEventListener("click", () => {
@@ -327,7 +332,7 @@ window.atualizarStatusAgente = function (isOnline) {
   const dot = document.getElementById("status-dot");
   const text = document.getElementById("status-text");
   const inputBtn = document.querySelector(".send-btn");
-  const inputBox = document.querySelector(".input-container input");
+  const inputBox = document.querySelector(".input-container textarea");
 
   if (!dot || !text) return;
 

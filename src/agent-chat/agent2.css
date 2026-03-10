@@ -381,7 +381,7 @@ body.light-mode .input-container:focus-within {
   box-shadow: 0 0 0 4px rgba(44, 169, 214, 0.12);
 }
 
-.input-container textarea { /* PAREI AQUI PORRA +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+.input-container textarea {
   flex: 1;
   background: transparent;
   border: none;
