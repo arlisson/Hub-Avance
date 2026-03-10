@@ -180,11 +180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // -------------------------
 function buildCounterUrl(app, metric = "access") {
   if (!CURRENT_USER_ID || !app) return "#";
-  console.log("contador params:", {
-    app,
-    user_id: CURRENT_USER_ID,
-    metric,
-  });
+  
   const params = new URLSearchParams({
     app,
     user_id: CURRENT_USER_ID,

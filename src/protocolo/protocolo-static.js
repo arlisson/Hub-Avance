@@ -1,52 +1,42 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const LOGIN_URL = "/login/login.html";
-    const HUB_URL = "/hub/hub.html";
+  const LOGIN_URL = "/login/login.html";
+  const HUB_URL = "/hub/hub.html";
 
-    let sb;
-    let session;
+  let sb;
+  let session;
 
-    const btnGenerate = document.getElementById("btn-generate");
-    const btnClear = document.getElementById("btn-clear");
+  // Supabase guard
+  try {
+    sb = await window.getSupabaseClient();
+  } catch {
+    window.location.href = LOGIN_URL;
+    return;
+  }
 
-    const resultBox = document.getElementById("result");
-    const errorBox = document.getElementById("errorBox");
-    const protoEl = document.getElementById("proto");
-    const msgEl = document.getElementById("msg");
+  try {
+    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
 
-    const btnCopyProto = document.getElementById("btn-copy-proto");
-    const btnCopyMsg = document.getElementById("btn-copy-msg");
-
-    try {
-      sb = await window.getSupabaseClient();
-    } catch {
+    if (sessionError || !sessionData?.session) {
       window.location.href = LOGIN_URL;
       return;
     }
 
-    try {
-      const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    session = sessionData.session;
+  } catch {
+    window.location.href = LOGIN_URL;
+    return;
+  }
 
-      if (sessionError || !sessionData?.session) {
-        window.location.href = LOGIN_URL;
-        return;
-      }
+  const user = session.user;
+  const email = user?.email || "";
 
-      session = sessionData.session;
-    } catch {
-      window.location.href = LOGIN_URL;
-      return;
-    }
+  const userEmailEl = document.getElementById("user-email");
+  if (userEmailEl) {
+    userEmailEl.textContent = email;
+    userEmailEl.title = email;
+  }
 
-    const user = session.user;
-    const email = user?.email || "";
-
-    const userEmailEl = document.getElementById("user-email");
-    if (userEmailEl) {
-      userEmailEl.textContent = email;
-      userEmailEl.title = email;
-    }
-
-
+  // Menus e tema
   initSettingsMenu(
     document.getElementById("settings-btn"),
     document.getElementById("settings-menu")
@@ -54,13 +44,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
 
-  const menuBackHub = document.getElementById("menu-back-hub");
-  if (menuBackHub) {
-    menuBackHub.addEventListener("click", () => {
-      window.location.href = HUB_URL;
+  // Logout
+  const menuLogout = document.getElementById("menu-logout");
+  if (menuLogout) {
+    menuLogout.addEventListener("click", async () => {
+      try {
+        await sb.auth.signOut();
+      } finally {
+        window.location.href = LOGIN_URL;
+      }
     });
   }
 
+  const btnGenerate = document.getElementById("btn-generate");
+  const btnClear = document.getElementById("btn-clear");
+
+  const resultBox = document.getElementById("result");
+  const errorBox = document.getElementById("errorBox");
+  const protoEl = document.getElementById("proto");
+  const msgEl = document.getElementById("msg");
+
+  const btnCopyProto = document.getElementById("btn-copy-proto");
+  const btnCopyMsg = document.getElementById("btn-copy-msg");
 
   function clearFeedback() {
     if (resultBox) resultBox.hidden = true;
@@ -251,8 +256,10 @@ function updateThemeIcon(btn) {
   }
 
   if (logo) {
-    logo.src = !isLight
-      ? "../img/LogoEscuroSemFundo.png"
-      : "../img/LogoClaraSemFundo.png";
+    if (!isLight) {
+      logo.src = "../img/LogoEscuroSemFundo.png";
+    } else {
+      logo.src = "../img/LogoClaraSemFundo.png";
+    }
   }
 }
