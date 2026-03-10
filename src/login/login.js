@@ -220,6 +220,6 @@ if (forgotLink) {
       return;
     }
 
-    alert("Se esse e-mail existir, enviaremos um link para redefinir a senha.");
+    alert("Se esse e-mail existir e estiver cadastrado no sistema, enviaremos um link para redefinir a senha.");
   });
 }
