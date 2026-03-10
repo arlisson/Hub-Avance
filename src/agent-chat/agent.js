@@ -343,7 +343,7 @@ window.atualizarStatusAgente = function (isOnline) {
   if (inputBtn) inputBtn.disabled = !isOnline;
   if (inputBox) {
     inputBox.disabled = !isOnline;
-    inputBox.placeholder = isOnline ? "Digite sua mensagem para a Sofia..." : "IA offline. Conecte sua Chave API na barra lateral.";
+    inputBox.placeholder = isOnline ? "Digite sua mensagem para o Apolo..." : "IA offline. Conecte sua Chave API na barra lateral.";
   }
 }
 
