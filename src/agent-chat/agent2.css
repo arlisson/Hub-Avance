@@ -51,13 +51,17 @@ html {
   height: -webkit-fill-available;
 }
 
-html, body {
-  height: 100vh; /* Fallback */
-  height: 100dvh; /* Usa DVH se suportado */
+html,
+body {
+  height: 100vh;
+  /* Fallback */
+  height: 100dvh;
+  /* Usa DVH se suportado */
   min-height: -webkit-fill-available;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Trava a rolagem da tela inteira */
+  overflow: hidden;
+  /* Trava a rolagem da tela inteira */
 }
 
 body {
@@ -68,7 +72,8 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-.main-content, .chat-wrapper {
+.main-content,
+.chat-wrapper {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -619,6 +624,7 @@ body.light-mode .btn-salvar:hover {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -712,7 +718,7 @@ body.light-mode .message-bot .message-bubble strong {
   margin-bottom: 12px;
 }
 
-.message-bot .message-bubble li + li {
+.message-bot .message-bubble li+li {
   margin-top: 6px;
 }
 
@@ -798,10 +804,14 @@ body.light-mode .message-bot .message-bubble pre {
 }
 
 @keyframes typingPulse {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0.3;
   }
+
   40% {
     transform: scale(1);
     opacity: 1;
@@ -841,8 +851,28 @@ body.light-mode .message-bot .message-bubble pre {
     box-shadow: var(--shadow-strong);
   }
 
-  .sidebar.active {
+  /* =========================================
+     COMPORTAMENTO DA SIDEBAR NO MOBILE
+     ========================================= */
+  /* Quando o JS adicionar a classe no body, a sidebar entra na tela */
+  body.sidebar-open .sidebar {
     left: 0;
+  }
+
+  /* Cria aquele fundo escuro por cima do chat quando o menu abre */
+  body.sidebar-open::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 44, 88, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1100;
+    /* Fica acima do chat, mas abaixo da sidebar (que tem 1200) */
+  }
+
+  /* Impede que o usuário role a tela do chat enquanto o menu está aberto */
+  body.sidebar-open {
+    overflow: hidden;
   }
 
   .mobile-menu-btn {
@@ -968,6 +998,7 @@ body.light-mode .message-bot .message-bubble pre {
 body.dark-mode .logo-escuro {
   display: block;
 }
+
 body.dark-mode .logo-claro {
   display: none;
 }
@@ -976,6 +1007,7 @@ body.dark-mode .logo-claro {
 body:not(.dark-mode) .logo-escuro {
   display: none;
 }
+
 body:not(.dark-mode) .logo-claro {
   display: block;
 }
@@ -1017,7 +1049,8 @@ body:not(.dark-mode) .logo-claro {
 .settings-dropdown {
   position: absolute;
   right: 12px;
-  bottom: 100%; /* Faz o menu abrir para cima */
+  bottom: 100%;
+  /* Faz o menu abrir para cima */
   margin-bottom: 8px;
   background-color: var(--bg-sidebar);
   border: 1px solid var(--border-color);
@@ -1048,7 +1081,8 @@ body:not(.dark-mode) .logo-claro {
 }
 
 .dropdown-item:hover {
-  background-color: rgba(255, 77, 77, 0.1); /* Fundo avermelhado bem sutil no hover */
+  background-color: rgba(255, 77, 77, 0.1);
+  /* Fundo avermelhado bem sutil no hover */
 }
 
 /* =========================================
@@ -1061,6 +1095,7 @@ body:not(.dark-mode) .logo-claro {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1071,9 +1106,9 @@ body:not(.dark-mode) .logo-claro {
 .settings-dropdown:not([hidden]) {
   /* Duração de 0.2s com efeito ease-out (desacelera no final) */
   animation: menuSurgir 0.2s ease-out forwards;
-  
+
   /* Faz a animação "nascer" a partir do canto inferior direito, perto dos 3 pontinhos */
-  transform-origin: bottom right; 
+  transform-origin: bottom right;
 }
 
 
