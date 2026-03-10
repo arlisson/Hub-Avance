@@ -967,12 +967,12 @@ body {
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
   z-index: 10;
 
-  /* 2. O BLOOM NEON PULSANTE (A luz que ilumina o site)
-     Colocamos múltiplas camadas de sombra para dar difusão:
-     a) Uma sombra ciano dura para a borda interna
-     b) Uma sombra ciano super desfocada para o bloom
-     c) Uma sombra azul profunda desfocada para a transição com o fundo */
+  /* 2. O BLOOM NEON PULSANTE */
   animation: pulseNeonLED 4s ease-in-out infinite;
+  
+  /* ADICIONADO: Aceleração de Hardware para não travar o site */
+  will-change: box-shadow;
+  transform: translateZ(0);
 }
 
 /* O pseudo-element ::before agora vira apenas um "borda de metal" fina */
@@ -1088,4 +1088,16 @@ body:not(.dark-mode) .logo-escuro {
 
 body:not(.dark-mode) .logo-claro {
   display: block;
+}
+
+/* =========================================
+   OTIMIZAÇÃO DE PERFORMANCE PARA MOBILE
+   ========================================= */
+@media (max-width: 900px) {
+  /* Reduz o cálculo do efeito vidro em celulares para não travar a rolagem */
+  body.dark-mode .hub-card,
+  .top-navbar,
+  .app-modal-backdrop {
+    backdrop-filter: blur(4px) !important;
+  }
 }
