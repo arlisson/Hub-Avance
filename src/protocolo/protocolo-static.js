@@ -12,6 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCopyProto = document.getElementById("btn-copy-proto");
   const btnCopyMsg = document.getElementById("btn-copy-msg");
 
+  const userEmailEl = document.getElementById("user-email");
+  if (userEmailEl) {
+    userEmailEl.textContent = email;
+    userEmailEl.title = email;
+  }
+
+
   initSettingsMenu(
     document.getElementById("settings-btn"),
     document.getElementById("settings-menu")
@@ -26,12 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const userEmailEl = document.getElementById("user-email");
-    if (userEmailEl) {
-      userEmailEl.textContent = email || "";
-      userEmailEl.title = email || "";
-      userEmailEl.style.cursor = "default";
-    }
 
   function clearFeedback() {
     if (resultBox) resultBox.hidden = true;
