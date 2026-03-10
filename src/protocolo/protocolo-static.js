@@ -26,6 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const userEmailEl = document.getElementById("user-email");
+    if (userEmailEl) {
+      userEmailEl.textContent = email || "";
+      userEmailEl.title = email || "";
+      userEmailEl.style.cursor = "default";
+    }
+
   function clearFeedback() {
     if (resultBox) resultBox.hidden = true;
     if (errorBox) {
