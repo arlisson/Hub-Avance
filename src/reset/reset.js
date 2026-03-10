@@ -2,11 +2,88 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("reset-form");
   const pass = document.getElementById("new-password");
   const btn = document.getElementById("save-btn");
+  const rulesBox = document.getElementById("password-rules");
+  const toggleBtn = document.getElementById("toggle-new-password");
 
   if (!form || !pass) return;
 
+  function passwordChecks(pw) {
+    const value = String(pw || "");
+    return {
+      len: value.length >= 8,
+      digit: /\d/.test(value),
+    };
+  }
+
+  function updatePasswordRulesUI(checks) {
+    if (!rulesBox) return;
+
+    Object.entries(checks).forEach(([key, ok]) => {
+      const el = rulesBox.querySelector(`[data-rule="${key}"]`);
+      if (!el) return;
+
+      el.classList.toggle("ok", !!ok);
+      el.classList.toggle("bad", !ok);
+    });
+  }
+
+  function clearPasswordRulesUI() {
+    if (!rulesBox) return;
+    rulesBox.querySelectorAll(".rule").forEach((el) => {
+      el.classList.remove("ok", "bad");
+    });
+  }
+
+  function getPasswordErrorMessage(checks) {
+    const missing = [];
+
+    if (!checks.len) missing.push("mínimo de 8 caracteres");
+    if (!checks.digit) missing.push("pelo menos 1 número");
+
+    if (!missing.length) return "";
+    return `A senha precisa ter ${missing.join(" e ")}.`;
+  }
+
+  function validatePassword(showAlert = false) {
+    const value = pass.value || "";
+
+    if (!value) {
+      clearPasswordRulesUI();
+      if (showAlert) {
+        alert("Digite a nova senha.");
+      }
+      return false;
+    }
+
+    const checks = passwordChecks(value);
+    updatePasswordRulesUI(checks);
+
+    const message = getPasswordErrorMessage(checks);
+    if (message) {
+      if (showAlert) {
+        alert(message);
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  pass.addEventListener("input", () => {
+    const value = pass.value || "";
+    if (!value) {
+      clearPasswordRulesUI();
+      return;
+    }
+    validatePassword(false);
+  });
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!validatePassword(true)) {
+      return;
+    }
 
     let supabase;
     try {
@@ -15,17 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(err?.message || "Cliente Supabase não inicializado.");
       return;
     }
-    const newPassword = pass.value?.trim();
-
-    if (!newPassword || newPassword.length < 6) {
-      alert("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
 
     if (btn) btn.disabled = true;
 
     try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      const { error } = await supabase.auth.updateUser({
+        password: pass.value,
+      });
+
       if (error) throw error;
 
       alert("Senha atualizada com sucesso. Faça login novamente.");
@@ -37,9 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const toggleBtn = document.getElementById("toggle-new-password");
-
-  if (toggleBtn && pass) {
+  if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const isPassword = pass.type === "password";
       pass.type = isPassword ? "text" : "password";
