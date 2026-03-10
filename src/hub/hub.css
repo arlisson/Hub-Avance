@@ -458,15 +458,14 @@ body.dark-mode .hub-card {
 }
 
 /* ==========================================================
-   4. MODAL (Integrado com a nova paleta)
+   4. MODAL (Pop-up de Detalhes Premium)
    ========================================================== */
 .app-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: rgba(19, 23, 57, 0.6);
-  /* --brand-deep com opacidade */
-  backdrop-filter: blur(4px);
+  background: rgba(11, 14, 35, 0.8); /* Fundo mais escuro e imersivo */
+  backdrop-filter: blur(8px); /* Efeito vidro no fundo do site */
 }
 
 .app-modal {
@@ -475,105 +474,108 @@ body.dark-mode .hub-card {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9999;
-  width: min(1100px, 92vw);
-  height: min(760px, 88vh);
+  width: min(1000px, 92vw);
+  max-height: 90vh; /* Evita que o modal passe do tamanho da tela */
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
-  box-shadow: 0 20px 50px var(--shadow-color);
+  
+  /* Sombra 3D com um leve brilho ciano */
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(87, 197, 234, 0.1);
   background: var(--bg-card);
   color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
 }
 
+/* --- Cabeçalho do Modal --- */
 .app-modal-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 20px 24px;
+  padding: 30px 40px 20px 40px;
   border-bottom: 1px solid var(--border-subtle);
-  background: linear-gradient(to bottom, rgba(173, 229, 242, 0.1), transparent);
 }
 
 .app-modal-titlewrap {
   min-width: 0;
 }
 
+/* Tag/Badge lá em cima (Ex: "Consultora estratégica") */
 .app-modal-badge {
   display: inline-block;
   font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 6px 14px;
+  border-radius: 50px; /* Mais arredondado */
   background: rgba(87, 197, 234, 0.15);
   color: var(--brand-action);
+  border: 1px solid rgba(87, 197, 234, 0.3);
   font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
 }
 
 .app-modal-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1.2;
+  color: var(--brand-primary);
 }
 
+body.dark-mode .app-modal-title {
+  color: #FAFEFF;
+}
+
+/* Botão de Fechar (X) */
 .app-modal-close {
   border: 0;
   background: rgba(19, 56, 104, 0.06);
   cursor: pointer;
   padding: 10px;
   border-radius: 12px;
-  opacity: 0.8;
   flex: 0 0 auto;
   color: var(--text-primary);
   transition: all 0.2s;
 }
 
+body.dark-mode .app-modal-close {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .app-modal-close:hover {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
-  opacity: 1;
+  transform: scale(1.05);
 }
 
-.app-modal-close i {
-  font-size: 20px;
-}
-
+/* --- Corpo do Modal --- */
 .app-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px 24px;
-  height: calc(100% - 85px);
-  /* Ajustado para o novo padding do header */
-  box-sizing: border-box;
-  overflow: auto;
+  gap: 24px;
+  padding: 30px 40px;
+  overflow-y: auto; /* Cria barra de rolagem interna se a tela for pequena */
 }
 
 .app-modal-desc {
   margin: 0;
-  opacity: 0.9;
-  font-size: 15px;
-  line-height: 1.6;
-  text-align: justify;
+  opacity: 0.85;
+  font-size: 16px;
+  line-height: 1.7;
 }
 
-.app-modal-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  flex: 0 0 auto;
-  padding-bottom: 20px;
-}
-
+/* Área do Vídeo */
 .app-modal-video {
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.05);
+  background: #000;
   border: 1px solid var(--border-subtle);
-  height: min(400px, 45vh);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  height: min(450px, 50vh);
   flex: 0 0 auto;
 }
 
@@ -583,76 +585,44 @@ body.dark-mode .hub-card {
   border: 0;
 }
 
-body.modal-open {
-  overflow: hidden;
-}
-
-.user-info-item {
-  cursor: default;
-}
-
-.user-email-text {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  opacity: 0.9;
-}
-
-.settings-dots {
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
+/* --- Botão Principal (Acessar / Baixar) --- */
+.app-modal-actions {
   display: flex;
+  justify-content: flex-end; /* Joga o botão para a direita */
+  padding-top: 10px;
+}
+
+/* Remove a largura 100% que deixava o botão esticado e feio */
+.hub-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-}
-
-.settings-dots:hover {
-  background-color: rgba(19, 56, 104, 0.1);
-}
-
-body.dark-mode .settings-dots:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.settings-dropdown {
-  position: absolute;
-  right: 12px;
-  bottom: 100%;
-  margin-bottom: 8px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px var(--shadow-color);
-  padding: 6px;
-  min-width: 140px;
-  z-index: 10;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
   gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  text-align: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  color: #ef4444;
+  padding: 14px 30px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
   font-weight: 600;
-  transition: all 0.2s;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dropdown-item:hover {
-  background-color: rgba(239, 68, 68, 0.1);
+/* O Botão de Destaque (Acessar) com cor Ciano/Neon */
+.hub-btn-primary {
+  background-color: var(--brand-action);
+  color: #131739;
+  border: none;
+  box-shadow: 0 8px 20px rgba(87, 197, 234, 0.2);
+}
+
+.hub-btn-primary:hover {
+  background-color: var(--brand-accent);
+  color: #131739;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(87, 197, 234, 0.5);
 }
 
 /* ==========================================================
