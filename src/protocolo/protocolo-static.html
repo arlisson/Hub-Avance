@@ -13,94 +13,108 @@
   <aside class="sidebar">
     <div class="logo-container">
       <a href="/hub/hub.html">
-        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" />
-        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-clara" />
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo" />
       </a>
     </div>
 
-    <nav>
-      <ul>
-        <li>
-          <a href="/hub/hub.html">
-            <i class="ph ph-house"></i>
-            <span>Hub</span>
-          </a>
-        </li>
-        <li class="active">
-          <a href="#">
-            <i class="ph ph-file-text"></i>
-            <span>Protocolo</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <div class="chat-list" style="margin-top: 20px;">
+      <div class="chat-item active">
+        <i class="ph ph-receipt"></i>
+        <div class="chat-info">
+          <div class="chat-title">Gerador de Protocolo</div>
+          <div class="chat-date">Geração local</div>
+        </div>
+      </div>
+    </div>
 
-    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Alternar tema">
-      <i class="ph ph-moon"></i>
-    </button>
+    <div class="sidebar-footer">
+      <!-- <div class="sidebar-footer-item user-info-item" id="sidebar-userbar">
+        <i class="ph ph-gear"></i>
+        <span class="user-email-text">Opções</span>
+
+        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
+          <i class="ph ph-dots-three-vertical"></i>
+        </button>
+
+        <div class="settings-dropdown" id="settings-menu" hidden>
+          <button type="button" class="dropdown-item" id="menu-back-hub">
+            <i class="ph ph-house"></i>
+            <span>Voltar ao Hub</span>
+          </button>
+        </div>
+      </div> -->
+
+      <button class="sidebar-footer-item" id="theme-toggle" type="button">
+        <i class="ph ph-moon"></i>
+        <span>Modo escuro</span>
+      </button>
+    </div>
   </aside>
 
-  <div class="main-content">
-    <header class="mobile-header">
-      <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Abrir menu">
+  <main class="main-content">
+    <header class="chat-header">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
         <i class="ph ph-list"></i>
       </button>
 
-      <div class="mobile-logo">
-        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="logo-escuro" />
-        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="logo-clara" />
+      <div class="assistant-info">
+        <div class="assistant-avatar">
+          <i class="ph ph-receipt"></i>
+        </div>
+        <div class="assistant-details">
+          <span class="name">Gerador de Protocolo</span>
+          <span class="status">Gera o protocolo e prepara a mensagem</span>
+        </div>
       </div>
     </header>
 
-    <main class="protocolo-container">
-      <section class="protocolo-head">
-        <h1 class="protocolo-title">Gerador de Protocolo</h1>
-        <p class="protocolo-subtitle">
-          Gere um protocolo local no padrão DDMMYYhhmmss e copie a mensagem pronta.
-        </p>
-      </section>
+    <section class="protocol-wrap">
+      <div class="protocol-card">
+        <h1 class="protocol-title">Novo protocolo</h1>
+        <p class="protocol-subtitle">Clique em “Gerar” para criar um protocolo local.</p>
 
-      <section class="protocolo-card">
-        <form id="protocol-form" class="protocolo-form">
+        <div class="protocol-form">
           <div class="actions">
-            <button type="submit" class="btn-primary" id="btn-generate">
-              <i class="ph ph-magic-wand"></i>
-              Gerar protocolo
+            <button id="btn-generate" class="btn-primary" type="button">
+              <i class="ph ph-seal-check"></i>
+              <span>Gerar</span>
+            </button>
+
+            <button id="btn-clear" class="btn-secondary" type="button">
+              <i class="ph ph-eraser"></i>
+              <span>Limpar</span>
             </button>
           </div>
-        </form>
-      </section>
 
-      <section id="result-box" class="result-card" hidden>
-        <div class="result-header">
-          <h2>Protocolo gerado</h2>
-          <p>Copie o número ou a mensagem completa.</p>
-        </div>
+          <div id="result" class="result" hidden>
+            <div class="result-row">
+              <span class="k">Protocolo</span>
+              <span class="v" id="proto"></span>
+            </div>
 
-        <div class="result-block">
-          <label for="protocol-output">Número do protocolo</label>
-          <div class="copy-row">
-            <input type="text" id="protocol-output" readonly />
-            <button type="button" class="btn-copy" id="btn-copy-protocol">
-              <i class="ph ph-copy"></i>
-              Copiar número
-            </button>
+            <div class="field" style="margin-top: 12px;">
+              <label for="msg">Mensagem pronta</label>
+              <textarea id="msg" class="input-dark-lite" rows="4" readonly></textarea>
+            </div>
+
+            <div class="actions">
+              <button id="btn-copy-proto" class="btn-secondary" type="button">
+                <i class="ph ph-copy"></i>
+                <span>Copiar protocolo</span>
+              </button>
+
+              <button id="btn-copy-msg" class="btn-secondary" type="button">
+                <i class="ph ph-copy"></i>
+                <span>Copiar mensagem</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="result-block">
-          <label for="message-output">Mensagem pronta</label>
-          <textarea id="message-output" rows="6" readonly></textarea>
-          <div class="result-actions">
-            <button type="button" class="btn-copy" id="btn-copy-message">
-              <i class="ph ph-copy"></i>
-              Copiar mensagem
-            </button>
-          </div>
+          <div id="errorBox" class="error" hidden></div>
         </div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </section>
+  </main>
 
   <script src="./protocolo-static.js"></script>
 </body>

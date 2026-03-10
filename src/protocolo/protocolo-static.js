@@ -1,146 +1,222 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const body = document.body;
-  const themeToggle = document.getElementById("theme-toggle");
-  const menuToggle = document.getElementById("menu-toggle");
-  const sidebar = document.querySelector(".sidebar");
+  const HUB_URL = "/hub/hub.html";
 
-  const form = document.getElementById("protocol-form");
-  const resultBox = document.getElementById("result-box");
-  const protocolOutput = document.getElementById("protocol-output");
-  const messageOutput = document.getElementById("message-output");
-  const btnCopyProtocol = document.getElementById("btn-copy-protocol");
-  const btnCopyMessage = document.getElementById("btn-copy-message");
+  const btnGenerate = document.getElementById("btn-generate");
+  const btnClear = document.getElementById("btn-clear");
 
-  initTheme();
-  initMobileMenu();
+  const resultBox = document.getElementById("result");
+  const errorBox = document.getElementById("errorBox");
+  const protoEl = document.getElementById("proto");
+  const msgEl = document.getElementById("msg");
 
-  form?.addEventListener("submit", (e) => {
+  const btnCopyProto = document.getElementById("btn-copy-proto");
+  const btnCopyMsg = document.getElementById("btn-copy-msg");
+
+  initSettingsMenu(
+    document.getElementById("settings-btn"),
+    document.getElementById("settings-menu")
+  );
+  initMobileSidebar(document.getElementById("mobile-menu-btn"));
+  initTheme(document.getElementById("theme-toggle"));
+
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
+    });
+  }
+
+  function clearFeedback() {
+    if (resultBox) resultBox.hidden = true;
+    if (errorBox) {
+      errorBox.hidden = true;
+      errorBox.textContent = "";
+    }
+  }
+
+  function clearResultFields() {
+    if (protoEl) protoEl.textContent = "";
+    if (msgEl) msgEl.value = "";
+  }
+
+  btnClear?.addEventListener("click", () => {
+    clearResultFields();
+    clearFeedback();
+  });
+
+  btnGenerate?.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const protocolo = gerarProtocolo();
-    const mensagem = montarMensagem(protocolo);
-
-    if (protocolOutput) protocolOutput.value = protocolo;
-    if (messageOutput) messageOutput.value = mensagem;
-
-    if (resultBox) {
-      resultBox.hidden = false;
-      resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-
-  btnCopyProtocol?.addEventListener("click", async () => {
-    const value = protocolOutput?.value || "";
-    if (!value) {
-      alert("Nenhum protocolo foi gerado ainda.");
-      return;
-    }
-
-    const ok = await copyToClipboard(value);
-    alert(ok ? "Número do protocolo copiado." : "Não foi possível copiar o protocolo.");
-  });
-
-  btnCopyMessage?.addEventListener("click", async () => {
-    const value = messageOutput?.value || "";
-    if (!value) {
-      alert("Nenhuma mensagem foi gerada ainda.");
-      return;
-    }
-
-    const ok = await copyToClipboard(value);
-    alert(ok ? "Mensagem copiada." : "Não foi possível copiar a mensagem.");
-  });
-
-  function gerarProtocolo() {
-    const now = new Date();
-
-    const dd = pad2(now.getDate());
-    const mm = pad2(now.getMonth() + 1);
-    const yy = String(now.getFullYear()).slice(-2);
-    const hh = pad2(now.getHours());
-    const mi = pad2(now.getMinutes());
-    const ss = pad2(now.getSeconds());
-
-    return `${dd}${mm}${yy}${hh}${mi}${ss}`;
-  }
-
-  function pad2(value) {
-    return String(value).padStart(2, "0");
-  }
-
-  function montarMensagem(protocolo) {
-    return [
-      "Olá.",
-      "",
-      `Seu atendimento foi registrado com o protocolo: ${protocolo}.`,
-      "Guarde este número para acompanhamento, se necessário.",
-      "",
-      "Atenciosamente,",
-      "Equipe AVANCE",
-    ].join("\n");
-  }
-
-  async function copyToClipboard(text) {
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-        return true;
+      clearFeedback();
+      clearResultFields();
+
+      const protocol = generateProtocol();
+
+      if (protoEl) {
+        protoEl.textContent = protocol;
       }
 
-      const temp = document.createElement("textarea");
-      temp.value = text;
-      temp.style.position = "fixed";
-      temp.style.left = "-9999px";
-      document.body.appendChild(temp);
-      temp.focus();
-      temp.select();
+      if (msgEl) {
+        msgEl.value = buildMessage(protocol);
+      }
 
-      const success = document.execCommand("copy");
-      document.body.removeChild(temp);
+      if (resultBox) {
+        resultBox.hidden = false;
+      }
+    } catch (e) {
+      if (errorBox) {
+        errorBox.textContent = e?.message || "Erro ao gerar protocolo.";
+        errorBox.hidden = false;
+      }
+    }
+  });
 
-      return success;
+  btnCopyProto?.addEventListener("click", async () => {
+    const text = protoEl?.textContent || "";
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
     } catch {
-      return false;
+      fallbackCopy(text);
     }
-  }
+  });
 
-  function initTheme() {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      body.classList.add("dark-mode");
-      updateThemeIcon(true);
-    } else {
-      updateThemeIcon(false);
+  btnCopyMsg?.addEventListener("click", async () => {
+    const text = msgEl?.value || "";
+    if (!text) return;
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      fallbackCopy(text);
     }
-
-    themeToggle?.addEventListener("click", () => {
-      const isDark = body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      updateThemeIcon(isDark);
-    });
-  }
-
-  function updateThemeIcon(isDark) {
-    if (!themeToggle) return;
-    themeToggle.innerHTML = isDark
-      ? '<i class="ph ph-sun"></i>'
-      : '<i class="ph ph-moon"></i>';
-  }
-
-  function initMobileMenu() {
-    menuToggle?.addEventListener("click", () => {
-      sidebar?.classList.toggle("open");
-    });
-
-    document.addEventListener("click", (event) => {
-      if (!sidebar || !menuToggle) return;
-
-      const clickedInsideSidebar = sidebar.contains(event.target);
-      const clickedMenuButton = menuToggle.contains(event.target);
-
-      if (!clickedInsideSidebar && !clickedMenuButton) {
-        sidebar.classList.remove("open");
-      }
-    });
-  }
+  });
 });
+
+function generateProtocol() {
+  const now = new Date();
+
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yy = String(now.getFullYear()).slice(-2);
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mi = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  return `${dd}${mm}${yy}${hh}${mi}${ss}`;
+}
+
+function buildMessage(protocol) {
+  return `Seu atendimento foi registrado sob o protocolo ${protocol}. Guarde este número para confirmar a autenticidade em novos contatos.`;
+}
+
+function fallbackCopy(text) {
+  const temp = document.createElement("textarea");
+  temp.value = text;
+  temp.style.position = "fixed";
+  temp.style.left = "-9999px";
+  document.body.appendChild(temp);
+  temp.focus();
+  temp.select();
+  document.execCommand("copy");
+  document.body.removeChild(temp);
+}
+
+// -------------------------
+// Padrões do Hub/Agente
+// -------------------------
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => {
+    menu.hidden = true;
+  };
+
+  const open = () => {
+    menu.hidden = false;
+  };
+
+  const toggle = () => {
+    if (menu.hidden) open();
+    else close();
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar?.contains(e.target)) {
+      close();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      close();
+    }
+  });
+}
+
+function initMobileSidebar(menuBtn) {
+  if (!menuBtn) return;
+
+  menuBtn.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
+
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+}
+
+function initTheme(themeToggle) {
+  if (!themeToggle) return;
+
+  const savedTheme = localStorage.getItem("theme");
+  const isLight = savedTheme === "light";
+
+  document.body.classList.toggle("light-mode", isLight);
+  document.body.classList.remove("dark-mode");
+  updateThemeIcon(themeToggle);
+
+  themeToggle.addEventListener("click", () => {
+    const nowLight = document.body.classList.toggle("light-mode");
+    document.body.classList.remove("dark-mode");
+    localStorage.setItem("theme", nowLight ? "light" : "dark");
+    updateThemeIcon(themeToggle);
+  });
+}
+
+function updateThemeIcon(btn) {
+  const icon = btn?.querySelector("i");
+  const text = btn?.querySelector("span");
+  const logo = document.querySelector(".company-logo");
+
+  if (!icon || !text) return;
+
+  const isLight = document.body.classList.contains("light-mode");
+
+  if (isLight) {
+    icon.className = "ph ph-moon";
+    text.textContent = "Modo escuro";
+  } else {
+    icon.className = "ph ph-sun";
+    text.textContent = "Modo claro";
+  }
+
+  if (logo) {
+    logo.src = !isLight
+      ? "../img/LogoEscuroSemFundo.png"
+      : "../img/LogoClaraSemFundo.png";
+  }
+}
