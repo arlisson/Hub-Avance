@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  
+  const LOGIN_URL = "/login/login.html";
   const HUB_URL = "/hub/hub.html";
+  let sb;
   let session;
-
+  
   const btnGenerate = document.getElementById("btn-generate");
   const btnClear = document.getElementById("btn-clear");
 
