@@ -464,8 +464,8 @@ body.dark-mode .hub-card {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: rgba(11, 14, 35, 0.8); /* Fundo mais escuro e imersivo */
-  backdrop-filter: blur(8px); /* Efeito vidro no fundo do site */
+  /* Deixamos o fundo mais escuro (95% de opacidade) e removemos o Blur! */
+  background: rgba(11, 14, 35, 0.95); 
 }
 
 .app-modal {
