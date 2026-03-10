@@ -11,6 +11,8 @@
 let LOGIN_URL = "/login/login.html";
 const COUNTER_AGENT_URL = "/api/contador?app=agent";
 const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
+const COUNTER_PROTOCOL_URL = "/api/contador?app=protocol";
+
 
 /**
  * Defina seus cards aqui.
@@ -62,9 +64,9 @@ const APPS = [
   },
   {
     id: "protocol",
-    badge: "Gerador de Protocolo",
+    badge: "Gerador de Protocolo Agendor",
     image: "../img/Protocolo.png",
-    title: "Gerador de Protocolo",
+    title: "Gerador de Protocolo Agendor",
     shortDesc: "Gera e registra protocolos.",
     longDesc: "Ferramenta para geração, registro e envio de protocolos.",
     youtubeId: "",
@@ -80,16 +82,23 @@ const APPS = [
     ],
   },
   {
-    id: "novo-produto",
-    badge: "Em breve",
-    image: "",
-    title: "Novo Produto",
-    shortDesc: "Espaço reservado para próximos aplicativos do hub.",
-    longDesc:
-      "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
+    id: "static-protocol",
+    badge: "Gerador de Protocolo",
+    image: "../img/Protocolo.png",
+    title: "Gerador de Protocolo",
+    shortDesc: "Gera novos protocolos.",
+    longDesc: "Ferramenta para geração de novos protocolos protocolos.",
     youtubeId: "",
-    enabled: false,
-    actions: [],
+    enabled: true,
+    actions: [
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href: COUNTER_PROTOCOL_URL,
+        primary: true,
+        targetBlank: false,
+      },
+    ],
   },
 ];
 

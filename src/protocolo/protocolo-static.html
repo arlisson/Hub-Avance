@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Protocolo | AVANCE</title>
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="./protocolo.css" />
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="logo-container">
+      <a href="/hub/hub.html">
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" />
+        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-clara" />
+      </a>
+    </div>
+
+    <nav>
+      <ul>
+        <li>
+          <a href="/hub/hub.html">
+            <i class="ph ph-house"></i>
+            <span>Hub</span>
+          </a>
+        </li>
+        <li class="active">
+          <a href="#">
+            <i class="ph ph-file-text"></i>
+            <span>Protocolo</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Alternar tema">
+      <i class="ph ph-moon"></i>
+    </button>
+  </aside>
+
+  <div class="main-content">
+    <header class="mobile-header">
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Abrir menu">
+        <i class="ph ph-list"></i>
+      </button>
+
+      <div class="mobile-logo">
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="logo-escuro" />
+        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="logo-clara" />
+      </div>
+    </header>
+
+    <main class="protocolo-container">
+      <section class="protocolo-head">
+        <h1 class="protocolo-title">Gerador de Protocolo</h1>
+        <p class="protocolo-subtitle">
+          Gere um protocolo local no padrão DDMMYYhhmmss e copie a mensagem pronta.
+        </p>
+      </section>
+
+      <section class="protocolo-card">
+        <form id="protocol-form" class="protocolo-form">
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="btn-generate">
+              <i class="ph ph-magic-wand"></i>
+              Gerar protocolo
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section id="result-box" class="result-card" hidden>
+        <div class="result-header">
+          <h2>Protocolo gerado</h2>
+          <p>Copie o número ou a mensagem completa.</p>
+        </div>
+
+        <div class="result-block">
+          <label for="protocol-output">Número do protocolo</label>
+          <div class="copy-row">
+            <input type="text" id="protocol-output" readonly />
+            <button type="button" class="btn-copy" id="btn-copy-protocol">
+              <i class="ph ph-copy"></i>
+              Copiar número
+            </button>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <label for="message-output">Mensagem pronta</label>
+          <textarea id="message-output" rows="6" readonly></textarea>
+          <div class="result-actions">
+            <button type="button" class="btn-copy" id="btn-copy-message">
+              <i class="ph ph-copy"></i>
+              Copiar mensagem
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./protocolo-static.js"></script>
+</body>
+</html>
