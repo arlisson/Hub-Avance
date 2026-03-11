@@ -138,58 +138,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadUsers(session.access_token);
 });
 
-  const searchEl = document.getElementById("search");
-  searchEl?.addEventListener("input", () => {
-    applyFilterAndRender();
-  });
-
-  function applyFilterAndRender() {
-    const term = (searchEl?.value || "").trim().toLowerCase();
-
-    const filtered = allUsers.filter((u) => {
-      return (
-        String(u.name || "").toLowerCase().includes(term) ||
-        String(u.email || "").toLowerCase().includes(term) ||
-        String(u.cpf || "").toLowerCase().includes(term) ||
-        String(u.whatsapp || "").toLowerCase().includes(term)
-      );
-    });
-
-    renderUsers(filtered);
-  }
-
-  async function loadUsers(token) {
-    const errorBox = document.getElementById("errorBox");
-
-    try {
-      if (errorBox) {
-        errorBox.hidden = true;
-        errorBox.textContent = "";
-      }
-
-      const resp = await fetch("/api/admin/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        throw new Error(data?.error || "Falha ao carregar usuários.");
-      }
-
-      allUsers = Array.isArray(data?.users) ? data.users : [];
-      applyFilterAndRender();
-    } catch (e) {
-      if (errorBox) {
-        errorBox.textContent = e?.message || "Erro ao carregar usuários.";
-        errorBox.hidden = false;
-      }
-    }
-  }
-
 const APP_USAGE_META = {
   agent: {
     label: "Agente de IA",
@@ -204,7 +152,7 @@ const APP_USAGE_META = {
       { key: "access", label: "Acessos" },
       { key: "download", label: "Downloads" },
     ],
-  }, 
+  },
   protocol_static: {
     label: "Gerador de Protocolo Estático",
     metrics: [
@@ -212,7 +160,20 @@ const APP_USAGE_META = {
       { key: "download", label: "Downloads" },
     ],
   },
-  
+  protocol: {
+    label: "Gerador de Protocolo",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol_agendor: {
+    label: "Gerador de Protocolo Agendor",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
 };
 
 function renderUsers(users) {
