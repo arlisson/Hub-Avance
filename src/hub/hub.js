@@ -76,8 +76,7 @@ const APPS = [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        app: "protocol",
-        metric: "access",
+        href:"../protocolo/protocolo.html",
         primary: true,
         targetBlank: false,
       },
