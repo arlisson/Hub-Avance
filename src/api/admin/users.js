@@ -13,20 +13,15 @@ export default async function handler(req, res) {
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-    if (!SUPABASE_URL || !SERVICE_ROLE) {
+    if (!SUPABASE_URL || !SERVICE_ROLE || !ANON_KEY) {
       return res.status(500).json({ error: "missing_env" });
     }
 
-    const adminHeaders = {
-      "Content-Type": "application/json",
-      apikey: SERVICE_ROLE,
-      Authorization: `Bearer ${SERVICE_ROLE}`,
-    };
-
     const userResp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
-        apikey: process.env.SUPABASE_ANON_KEY,
+        apikey: ANON_KEY,
         Authorization: `Bearer ${token}`,
       },
     });
@@ -36,6 +31,12 @@ export default async function handler(req, res) {
     if (!userResp.ok || !authUser?.id) {
       return res.status(401).json({ error: "invalid_token" });
     }
+
+    const adminHeaders = {
+      "Content-Type": "application/json",
+      apikey: SERVICE_ROLE,
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+    };
 
     const profileResp = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${authUser.id}&select=protocol`,
@@ -50,18 +51,22 @@ export default async function handler(req, res) {
     }
 
     const usersResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?select=id,email,cpf,name,whatsapp,protocol,cliente_avance,app_usage,created_at&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/profiles?select=id,email,cpf,name,whatsapp,protocol,cliente_avance,has_mobile_service,contract_type,operator,active_lines,app_usage,created_at&order=created_at.desc`,
       { headers: adminHeaders }
     );
 
     const users = await usersResp.json();
 
     if (!usersResp.ok) {
-      return res.status(500).json({ error: "failed_to_load_users", detail: users });
+      return res.status(500).json({
+        error: "failed_to_load_users",
+        detail: users,
+      });
     }
 
     return res.status(200).json({ users });
   } catch (e) {
+    console.error("admin users error:", e);
     return res.status(500).json({ error: "server_error" });
   }
 }

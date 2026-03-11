@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     session = sessionData.session;
+    window.__USER_ACCESS_TOKEN__ = session.access_token;
   } catch {
     window.location.href = LOGIN_URL;
     return;
@@ -46,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (err) {
     console.error("Erro ao validar acesso:", err);
+    alert("Não foi possível validar sua permissão de acesso.");
     window.location.href = HUB_URL;
     return;
   }
@@ -63,103 +65,252 @@ document.addEventListener("DOMContentLoaded", async () => {
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
 
-  document.getElementById("menu-back-hub")?.addEventListener("click", () => {
-    window.location.href = HUB_URL;
-  });
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
+    });
+  }
 
-  document.getElementById("menu-logout")?.addEventListener("click", async () => {
-    try {
-      await sb.auth.signOut();
-    } finally {
-      window.location.href = LOGIN_URL;
-    }
-  });
+  const menuLogout = document.getElementById("menu-logout");
+  if (menuLogout) {
+    menuLogout.addEventListener("click", async () => {
+      try {
+        await sb.auth.signOut();
+      } finally {
+        window.location.href = LOGIN_URL;
+      }
+    });
+  }
 
   await loadUsers(session.access_token);
 
-  document.getElementById("search")?.addEventListener("input", (e) => {
-    const term = (e.target.value || "").trim().toLowerCase();
+  const searchEl = document.getElementById("search");
+  searchEl?.addEventListener("input", () => {
+    applyFilterAndRender();
+  });
+
+  function applyFilterAndRender() {
+    const term = (searchEl?.value || "").trim().toLowerCase();
 
     const filtered = allUsers.filter((u) => {
       return (
-        (u.name || "").toLowerCase().includes(term) ||
-        (u.email || "").toLowerCase().includes(term) ||
-        (u.cpf || "").toLowerCase().includes(term)
+        String(u.name || "").toLowerCase().includes(term) ||
+        String(u.email || "").toLowerCase().includes(term) ||
+        String(u.cpf || "").toLowerCase().includes(term) ||
+        String(u.whatsapp || "").toLowerCase().includes(term)
       );
     });
 
     renderUsers(filtered);
-  });
-});
+  }
 
-async function loadUsers(token) {
-  const errorBox = document.getElementById("errorBox");
+  async function loadUsers(token) {
+    const errorBox = document.getElementById("errorBox");
 
-  try {
-    const resp = await fetch("/api/admin/users", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (errorBox) {
+        errorBox.hidden = true;
+        errorBox.textContent = "";
+      }
 
-    const data = await resp.json();
+      const resp = await fetch("/api/admin/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!resp.ok) {
-      throw new Error(data?.error || "Falha ao carregar usuários.");
-    }
+      const data = await resp.json();
 
-    allUsers = Array.isArray(data?.users) ? data.users : [];
-    renderUsers(allUsers);
-  } catch (e) {
-    if (errorBox) {
-      errorBox.textContent = e.message || "Erro ao carregar usuários.";
-      errorBox.hidden = false;
+      if (!resp.ok) {
+        throw new Error(data?.error || "Falha ao carregar usuários.");
+      }
+
+      allUsers = Array.isArray(data?.users) ? data.users : [];
+      applyFilterAndRender();
+    } catch (e) {
+      if (errorBox) {
+        errorBox.textContent = e?.message || "Erro ao carregar usuários.";
+        errorBox.hidden = false;
+      }
     }
   }
-}
+});
+
+const APP_USAGE_META = {
+  agent: {
+    label: "Agente de IA",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  desktop: {
+    label: "Preenche Fácil",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol: {
+    label: "Gerador de Protocolo",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol_static: {
+    label: "Gerador de Protocolo Estático",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol_agendor: {
+    label: "Gerador de Protocolo Agendor",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+};
 
 function renderUsers(users) {
-  const container = document.getElementById("users-container");
-  if (!container) return;
+  const tbody = document.getElementById("users-table-body");
+  if (!tbody) return;
 
-  container.innerHTML = "";
+  tbody.innerHTML = "";
 
   if (!users.length) {
-    container.innerHTML = `<div class="result-row"><span class="k">Nenhum usuário encontrado.</span></div>`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td colspan="6" style="text-align:center; color: var(--muted); padding: 24px;">
+        Nenhum usuário encontrado.
+      </td>
+    `;
+    tbody.appendChild(tr);
     return;
   }
 
   users.forEach((u) => {
-    const card = document.createElement("div");
-    card.className = "result";
-    card.style.marginBottom = "16px";
-    card.hidden = false;
+    const summaryRow = document.createElement("tr");
+    summaryRow.className = "user-summary-row";
+    summaryRow.setAttribute("data-user-id", u.id);
 
-    card.innerHTML = `
-      <div class="result-row"><span class="k">Nome</span><span class="v">${escapeHtml(u.name || "")}</span></div>
-      <div class="result-row"><span class="k">E-mail</span><span class="v">${escapeHtml(u.email || "")}</span></div>
-      <div class="result-row"><span class="k">CPF</span><span class="v">${escapeHtml(u.cpf || "")}</span></div>
-      <div class="result-row"><span class="k">WhatsApp</span><span class="v">${escapeHtml(u.whatsapp || "")}</span></div>
-      <div class="result-row"><span class="k">Protocol</span><span class="v">${u.protocol ? "Sim" : "Não"}</span></div>
-      <div class="result-row"><span class="k">Cliente Avance</span><span class="v">${u.cliente_avance ? "Sim" : "Não"}</span></div>
-
-      <div class="field" style="margin-top:12px;">
-        <label>Permissões</label>
-        <div style="display:flex; gap:16px; flex-wrap:wrap;">
-          <label><input type="checkbox" class="edit-protocol" ${u.protocol ? "checked" : ""}> Protocol</label>
-          <label><input type="checkbox" class="edit-cliente-avance" ${u.cliente_avance ? "checked" : ""}> Cliente Avance</label>
-        </div>
-      </div>
-
-      <div class="actions" style="margin-top:12px;">
-        <button class="btn-primary btn-save-user" type="button">Salvar</button>
-      </div>
+    summaryRow.innerHTML = `
+      <td>${escapeHtml(u.name || "")}</td>
+      <td>${escapeHtml(u.email || "")}</td>
+      <td>${escapeHtml(u.cpf || "")}</td>
+      <td>${escapeHtml(u.whatsapp || "")}</td>
+      <td>
+        <span class="badge ${u.protocol ? "success" : "muted"}">
+          ${u.protocol ? "Sim" : "Não"}
+        </span>
+      </td>
+      <td>
+        <span class="badge ${u.cliente_avance ? "success" : "muted"}">
+          ${u.cliente_avance ? "Sim" : "Não"}
+        </span>
+      </td>
     `;
 
-    const btnSave = card.querySelector(".btn-save-user");
-    const protocolEl = card.querySelector(".edit-protocol");
-    const clienteEl = card.querySelector(".edit-cliente-avance");
+    const detailsRow = document.createElement("tr");
+    detailsRow.className = "user-details-row";
+    detailsRow.hidden = true;
+
+    detailsRow.innerHTML = `
+      <td colspan="6">
+        <div class="user-expanded-box">
+          <div class="expand-section-title">Dados do cliente</div>
+
+          <div class="user-card-grid">
+            <div class="field">
+              <label>Nome</label>
+              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" />
+            </div>
+
+            <div class="field">
+              <label>E-mail</label>
+              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" />
+            </div>
+
+            <div class="field">
+              <label>CPF</label>
+              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" />
+            </div>
+
+            <div class="field">
+              <label>WhatsApp</label>
+              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" />
+            </div>
+
+            <div class="field">
+              <label>Tipo de contrato</label>
+              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" />
+            </div>
+
+            <div class="field">
+              <label>Operadora</label>
+              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" />
+            </div>
+
+            <div class="field">
+              <label>Linhas ativas</label>
+              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" />
+            </div>
+          </div>
+
+          <div class="expand-section-title" style="margin-top: 18px;">Permissões</div>
+
+          <div class="field">
+            <div class="inline-checks">
+              <label>
+                <input type="checkbox" class="edit-protocol" ${u.protocol ? "checked" : ""}>
+                Protocol
+              </label>
+
+              <label>
+                <input type="checkbox" class="edit-cliente-avance" ${u.cliente_avance ? "checked" : ""}>
+                Cliente Avance
+              </label>
+
+              <label>
+                <input type="checkbox" class="edit-has-mobile-service" ${u.has_mobile_service ? "checked" : ""}>
+                Mobile Service
+              </label>
+            </div>
+          </div>
+
+          <div class="expand-section-title" style="margin-top: 18px;">Uso dos aplicativos</div>
+          ${renderAppUsageBlock(u.app_usage)}
+
+          <div class="actions">
+            <button class="btn-primary btn-save-user" type="button">Salvar alterações</button>
+          </div>
+        </div>
+      </td>
+    `;
+
+    summaryRow.addEventListener("click", (e) => {
+      const clickedFormElement = e.target.closest("button, input, textarea, select, label");
+      if (clickedFormElement) return;
+
+      detailsRow.hidden = !detailsRow.hidden;
+      summaryRow.classList.toggle("expanded", !detailsRow.hidden);
+    });
+
+    const btnSave = detailsRow.querySelector(".btn-save-user");
+    const protocolEl = detailsRow.querySelector(".edit-protocol");
+    const clienteEl = detailsRow.querySelector(".edit-cliente-avance");
+    const mobileEl = detailsRow.querySelector(".edit-has-mobile-service");
+    const nameEl = detailsRow.querySelector(".edit-name");
+    const emailEl = detailsRow.querySelector(".edit-email");
+    const cpfEl = detailsRow.querySelector(".edit-cpf");
+    const whatsappEl = detailsRow.querySelector(".edit-whatsapp");
+    const contractTypeEl = detailsRow.querySelector(".edit-contract-type");
+    const operatorEl = detailsRow.querySelector(".edit-operator");
+    const activeLinesEl = detailsRow.querySelector(".edit-active-lines");
 
     btnSave?.addEventListener("click", async () => {
       btnSave.disabled = true;
@@ -169,11 +320,20 @@ function renderUsers(users) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}`,
           },
           body: JSON.stringify({
             id: u.id,
+            name: (nameEl?.value || "").trim(),
+            email: (emailEl?.value || "").trim(),
+            cpf: (cpfEl?.value || "").trim(),
+            whatsapp: (whatsappEl?.value || "").trim(),
+            contract_type: (contractTypeEl?.value || "").trim(),
+            operator: (operatorEl?.value || "").trim(),
+            active_lines: activeLinesEl?.value === "" ? null : Number(activeLinesEl.value),
             protocol: !!protocolEl?.checked,
             cliente_avance: !!clienteEl?.checked,
+            has_mobile_service: !!mobileEl?.checked,
           }),
         });
 
@@ -183,17 +343,82 @@ function renderUsers(users) {
           throw new Error(data?.error || "Falha ao salvar.");
         }
 
+        u.name = (nameEl?.value || "").trim();
+        u.email = (emailEl?.value || "").trim();
+        u.cpf = (cpfEl?.value || "").trim();
+        u.whatsapp = (whatsappEl?.value || "").trim();
+        u.contract_type = (contractTypeEl?.value || "").trim();
+        u.operator = (operatorEl?.value || "").trim();
+        u.active_lines = activeLinesEl?.value === "" ? null : Number(activeLinesEl.value);
         u.protocol = !!protocolEl?.checked;
         u.cliente_avance = !!clienteEl?.checked;
+        u.has_mobile_service = !!mobileEl?.checked;
+
+        renderUsers(users);
       } catch (e) {
-        alert(e.message || "Erro ao salvar usuário.");
+        alert(e?.message || "Erro ao salvar usuário.");
       } finally {
         btnSave.disabled = false;
       }
     });
 
-    container.appendChild(card);
+    tbody.appendChild(summaryRow);
+    tbody.appendChild(detailsRow);
   });
+}
+
+function renderAppUsageBlock(appUsage) {
+  const usage = appUsage && typeof appUsage === "object" ? appUsage : {};
+  const knownKeys = Object.keys(APP_USAGE_META);
+  const unknownKeys = Object.keys(usage).filter((key) => !knownKeys.includes(key));
+  const orderedKeys = [...knownKeys.filter((key) => usage[key]), ...unknownKeys];
+
+  if (!orderedKeys.length) {
+    return `
+      <div class="app-usage-box">
+        <div class="hint">Nenhum uso registrado.</div>
+      </div>
+    `;
+  }
+
+  const rows = orderedKeys.map((appKey) => {
+    const meta = APP_USAGE_META[appKey] || {
+      label: appKey,
+      metrics: [
+        { key: "access", label: "Acessos" },
+        { key: "download", label: "Downloads" },
+      ],
+    };
+
+    const appData = usage[appKey] || {};
+
+    const metricsHtml = meta.metrics
+      .map((metric) => {
+        const value = Number(appData?.[metric.key] || 0);
+        return `
+          <div class="usage-metric">
+            <span class="usage-metric-label">${escapeHtml(metric.label)}</span>
+            <span class="usage-metric-value">${value}</span>
+          </div>
+        `;
+      })
+      .join("");
+
+    return `
+      <div class="usage-product-row">
+        <div class="usage-product-name">${escapeHtml(meta.label)}</div>
+        <div class="usage-metrics-grid">
+          ${metricsHtml}
+        </div>
+      </div>
+    `;
+  });
+
+  return `
+    <div class="app-usage-box">
+      ${rows.join("")}
+    </div>
+  `;
 }
 
 function escapeHtml(s) {
@@ -205,12 +430,29 @@ function escapeHtml(s) {
     .replaceAll("'", "&#039;");
 }
 
+function escapeAttr(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 function initSettingsMenu(btn, menu) {
   if (!btn || !menu) return;
 
-  const close = () => { menu.hidden = true; };
-  const open = () => { menu.hidden = false; };
-  const toggle = () => { menu.hidden ? open() : close(); };
+  const close = () => {
+    menu.hidden = true;
+  };
+
+  const open = () => {
+    menu.hidden = false;
+  };
+
+  const toggle = () => {
+    if (menu.hidden) open();
+    else close();
+  };
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -219,11 +461,15 @@ function initSettingsMenu(btn, menu) {
 
   document.addEventListener("click", (e) => {
     const userbar = document.getElementById("sidebar-userbar");
-    if (!userbar?.contains(e.target)) close();
+    if (!userbar?.contains(e.target)) {
+      close();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") {
+      close();
+    }
   });
 }
 
@@ -236,6 +482,7 @@ function initMobileSidebar(menuBtn) {
 
   document.addEventListener("click", (e) => {
     if (!document.body.classList.contains("sidebar-open")) return;
+
     const sidebar = document.querySelector(".sidebar");
     if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
       document.body.classList.remove("sidebar-open");
