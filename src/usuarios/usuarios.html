@@ -18,10 +18,10 @@
 
     <div class="chat-list" style="margin-top: 20px;">
       <div class="chat-item active">
-        <i class="ph ph-users"></i>
+        <i class="ph ph-users-three"></i>
         <div class="chat-info">
-          <div class="chat-title">Usuários</div>
-          <div class="chat-date">Gestão do sistema</div>
+          <div class="chat-title">Usuários do sistema</div>
+          <div class="chat-date">Gestão e permissões</div>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
         <i class="ph ph-envelope-simple"></i>
         <span class="user-email-text" id="user-email"></span>
 
-        <button class="settings-dots" id="settings-btn" type="button">
+        <button class="settings-dots" id="settings-btn" type="button" aria-label="Configurações">
           <i class="ph ph-dots-three-vertical"></i>
         </button>
 
@@ -57,17 +57,17 @@
 
   <main class="main-content">
     <header class="chat-header">
-      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Abrir menu">
         <i class="ph ph-list"></i>
       </button>
 
       <div class="assistant-info">
         <div class="assistant-avatar">
-          <i class="ph ph-users"></i>
+          <i class="ph ph-users-three"></i>
         </div>
         <div class="assistant-details">
-          <span class="name">Usuários do sistema</span>
-          <span class="status">Visualização e edição</span>
+          <span class="name">Usuários cadastrados</span>
+          <span class="status">Permissões, dados e uso dos aplicativos</span>
         </div>
       </div>
     </header>
@@ -79,12 +79,32 @@
 
         <div id="errorBox" class="error" hidden></div>
 
-        <div class="field" style="margin-bottom: 16px;">
+        <div class="field" style="margin-bottom: 18px;">
           <label for="search">Buscar</label>
-          <input id="search" class="input-dark-lite" placeholder="Nome, e-mail ou CPF" />
+          <input
+            id="search"
+            class="input-dark-lite"
+            type="text"
+            placeholder="Nome, e-mail ou CPF"
+            autocomplete="off"
+          />
         </div>
 
-        <div id="users-container"></div>
+        <div class="table-wrap">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>CPF</th>
+                <th>WhatsApp</th>
+                <th>Protocol</th>
+                <th>Cliente Avance</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body"></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
