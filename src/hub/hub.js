@@ -58,7 +58,7 @@ const APPS = [
         icon: "ph-download-simple",
         app: "desktop",
         metric: "download",
-        primary: false,
+        primary: true,
         targetBlank: true,
       },
     ],
