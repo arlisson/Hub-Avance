@@ -51,7 +51,7 @@ export default async function handler(req, res) {
     }
 
     const usersResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?select=id,email,cpf,name,whatsapp,protocol,cliente_avance,has_mobile_service,contract_type,operator,active_lines,app_usage,created_at&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/profiles?select=id,email,cpf,name,whatsapp,cep,regiao,protocol,cliente_avance,has_mobile_service,contract_type,operator,active_lines,app_usage,created_at&order=created_at.desc`,
       { headers: adminHeaders }
     );
 

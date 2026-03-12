@@ -189,7 +189,7 @@ function renderUsers(users) {
   if (!users.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td colspan="9" style="text-align:center; color: var(--muted); padding: 24px;">
+      <td colspan="8" style="text-align:center; color: var(--muted); padding: 24px;">
         Nenhum usuário encontrado.
       </td>
     `;
@@ -198,7 +198,18 @@ function renderUsers(users) {
   }
 
   users.forEach((u) => {
-    const regiao = u.regiao && typeof u.regiao === "object" ? u.regiao : {};
+    let regiao = {};
+
+    if (u.regiao && typeof u.regiao === "object") {
+      regiao = u.regiao;
+    } else if (typeof u.regiao === "string") {
+      try {
+        regiao = JSON.parse(u.regiao);
+      } catch {
+        regiao = {};
+      }
+    }
+
     const cep = regiao.cep || u.cep || "";
     const cidade = regiao.cidade || "";
     const estado = regiao.estado || "";
@@ -211,7 +222,7 @@ function renderUsers(users) {
       <td>${escapeHtml(u.name || "")}</td>
       <td>${escapeHtml(u.email || "")}</td>
       <td>${escapeHtml(u.cpf || "")}</td>
-      <td>${escapeHtml(u.whatsapp || "")}</td>      
+      <td>${escapeHtml(u.whatsapp || "")}</td>
       <td>${escapeHtml(cidade)}</td>
       <td>${escapeHtml(estado)}</td>
       <td>
@@ -231,7 +242,7 @@ function renderUsers(users) {
     detailsRow.hidden = true;
 
     detailsRow.innerHTML = `
-      <td colspan="9">
+      <td colspan="8">
         <div class="user-expanded-box">
           <div class="expand-section-title">Dados do cliente</div>
 
@@ -289,7 +300,7 @@ function renderUsers(users) {
             <div class="field">
               <label>Linhas ativas</label>
               <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" />
-            </div>            
+            </div>
           </div>
 
           <div class="expand-section-title" style="margin-top: 18px;">Permissões</div>
