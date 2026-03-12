@@ -94,7 +94,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         String(u.name || "").toLowerCase().includes(term) ||
         String(u.email || "").toLowerCase().includes(term) ||
         String(u.cpf || "").toLowerCase().includes(term) ||
-        String(u.whatsapp || "").toLowerCase().includes(term)
+        String(u.whatsapp || "").toLowerCase().includes(term)||
+        String(u.cep || "").toLowerCase().includes(term) ||
+        String(regiao.cep || "").toLowerCase().includes(term) ||
+        String(regiao.cidade || "").toLowerCase().includes(term) ||
+        String(regiao.estado || "").toLowerCase().includes(term)
       );
     });
 
@@ -185,7 +189,7 @@ function renderUsers(users) {
   if (!users.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td colspan="6" style="text-align:center; color: var(--muted); padding: 24px;">
+      <td colspan="9" style="text-align:center; color: var(--muted); padding: 24px;">
         Nenhum usuário encontrado.
       </td>
     `;
@@ -194,6 +198,11 @@ function renderUsers(users) {
   }
 
   users.forEach((u) => {
+    const regiao = u.regiao && typeof u.regiao === "object" ? u.regiao : {};
+    const cep = regiao.cep || u.cep || "";
+    const cidade = regiao.cidade || "";
+    const estado = regiao.estado || "";
+
     const summaryRow = document.createElement("tr");
     summaryRow.className = "user-summary-row";
     summaryRow.setAttribute("data-user-id", u.id);
@@ -203,6 +212,9 @@ function renderUsers(users) {
       <td>${escapeHtml(u.email || "")}</td>
       <td>${escapeHtml(u.cpf || "")}</td>
       <td>${escapeHtml(u.whatsapp || "")}</td>
+      <td>${escapeHtml(cep)}</td>
+      <td>${escapeHtml(cidade)}</td>
+      <td>${escapeHtml(estado)}</td>
       <td>
         <span class="badge ${u.protocol ? "success" : "muted"}">
           ${u.protocol ? "Sim" : "Não"}
@@ -220,7 +232,7 @@ function renderUsers(users) {
     detailsRow.hidden = true;
 
     detailsRow.innerHTML = `
-      <td colspan="6">
+      <td colspan="9">
         <div class="user-expanded-box">
           <div class="expand-section-title">Dados do cliente</div>
 
@@ -243,6 +255,21 @@ function renderUsers(users) {
             <div class="field">
               <label>WhatsApp</label>
               <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" />
+            </div>
+
+            <div class="field">
+              <label>CEP</label>
+              <input class="input-dark-lite edit-cep" value="${escapeAttr(cep)}" readonly />
+            </div>
+
+            <div class="field">
+              <label>Cidade</label>
+              <input class="input-dark-lite edit-cidade" value="${escapeAttr(cidade)}" readonly />
+            </div>
+
+            <div class="field">
+              <label>Estado</label>
+              <input class="input-dark-lite edit-estado" value="${escapeAttr(estado)}" readonly />
             </div>
 
             <div class="field">
