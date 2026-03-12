@@ -236,7 +236,7 @@ function renderUsers(users) {
             </div>
 
             <div class="field">
-              <label>CPF</label>
+              <label>CPF/CNPJ</label>
               <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" />
             </div>
 
