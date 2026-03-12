@@ -6,7 +6,7 @@
  * 1. Validates the request method (POST only)
  * 2. Checks for duplicate CPF in the database
  * 3. Creates a new user account via Supabase Auth
- * 4. Updates the user profile with additional information (including new mobile questions)
+ * 4. Updates the user profile with additional information (including mobile questions and região from CEP)
  * 5. Registers a license in Google Sheets
  *
  * @async
@@ -15,34 +15,29 @@
  * @param {Object} req.body - Request body
  * @param {string} req.body.email - User email (required)
  * @param {string} req.body.password - User password (required)
- * @param {string} req.body.cpf - User CPF/ID number (required)
+ * @param {string} req.body.cpf - User CPF/CNPJ number (required)
  * @param {string} [req.body.name] - User full name (optional)
  * @param {string} [req.body.whatsapp] - User WhatsApp number (optional)
+ * @param {string} req.body.cep - CEP (required)
+ * @param {Object} req.body.regiao - Região object to persist in jsonb (required)
+ * @param {string} req.body.regiao.cep - CEP normalized
+ * @param {string} req.body.regiao.cidade - Cidade from CEP lookup
+ * @param {string} req.body.regiao.estado - UF from CEP lookup
  *
- * @param {boolean} [req.body.has_mobile_service] - Whether company has active mobile service (optional)
- * @param {string} [req.body.contract_type] - "CPF" | "CNPJ" (optional)
- * @param {string} [req.body.operator] - Current operator (optional)
- * @param {number} [req.body.active_lines] - Active mobile lines (optional)
+ * @param {boolean} [req.body.has_mobile_service] - Whether company has active mobile service
+ * @param {string} [req.body.contract_type] - "CPF" | "CNPJ"
+ * @param {string} [req.body.operator] - Current operator
+ * @param {number} [req.body.active_lines] - Active mobile lines
  *
  * @param {Object} res - Express response object
  *
  * @returns {Promise<void>} JSON response with status
- * @returns {Object} res.json - Response object
- * @returns {boolean} res.json.ok - Success flag
- * @returns {boolean} [res.json.needs_email_confirmation] - Indicates email confirmation required (on success)
- * @returns {string} [res.json.error] - Error code if failed
- * @returns {string} [res.json.detail] - Error detail message if failed
- *
- * @throws {Error} Returns 400 if required fields are missing
- * @throws {Error} Returns 405 if request method is not POST
- * @throws {Error} Returns 409 if CPF already exists
- * @throws {Error} Returns 500 if environment variables are missing
- * @throws {Error} Returns 502 if Google Sheets integration fails
  */
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
+
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "method_not_allowed" });
   }
@@ -55,21 +50,48 @@ export default async function handler(req, res) {
       cpf,
       whatsapp,
 
-      // novos campos
+      // telefonia
       has_mobile_service,
       contract_type,
       operator,
       active_lines,
+
+      // CEP / região
+      cep,
+      regiao,
     } = req.body || {};
 
-    if (!email || !password || !cpf) {
+    if (!email || !password || !cpf || !cep || !regiao) {
       return res.status(400).json({ ok: false, error: "missing_fields" });
     }
 
-    // Normalizações simples (evita gravar lixo)
+    // --- NORMALIZAÇÕES BÁSICAS ---
+    const emailClean = String(email || "").trim().toLowerCase();
+    const nameClean = name ? String(name).trim().slice(0, 200) : null;
     const cpfClean = String(cpf || "").replace(/\D/g, "");
     const whatsappClean = whatsapp ? String(whatsapp).replace(/\D/g, "") : null;
+    const cepClean = String(cep || "").replace(/\D/g, "");
 
+    // --- VALIDAÇÃO BÁSICA DE CEP / REGIÃO ---
+    const regiaoCep = String(regiao?.cep || "").replace(/\D/g, "");
+    const regiaoCidade = regiao?.cidade ? String(regiao.cidade).trim().slice(0, 120) : "";
+    const regiaoEstado = regiao?.estado ? String(regiao.estado).trim().toUpperCase().slice(0, 2) : "";
+
+    if (cepClean.length !== 8) {
+      return res.status(400).json({ ok: false, error: "invalid_cep" });
+    }
+
+    if (!regiaoCidade || !regiaoEstado || regiaoEstado.length !== 2) {
+      return res.status(400).json({ ok: false, error: "invalid_regiao" });
+    }
+
+    const regiaoFinal = {
+      cep: regiaoCep || cepClean,
+      cidade: regiaoCidade,
+      estado: regiaoEstado,
+    };
+
+    // --- NORMALIZAÇÃO TELEFONIA ---
     const hasMobile =
       typeof has_mobile_service === "boolean"
         ? has_mobile_service
@@ -92,10 +114,15 @@ export default async function handler(req, res) {
     if (activeLines !== null && activeLines < 0) activeLines = null;
 
     // Regras coerentes:
-    // - Se não tem telefonia móvel (false), ignora operator/active_lines.
-    // - Se tem telefonia móvel (true), permite operator/active_lines (frontend valida "hard").
+    // - Se não tem telefonia móvel, ignora contract/operator/active_lines
+    // - Se tem telefonia móvel, contract_type é obrigatório
+    const finalContractType = hasMobile === true ? contractType : null;
     const finalOperator = hasMobile === true ? operatorClean : null;
     const finalActiveLines = hasMobile === true ? activeLines : null;
+
+    if (hasMobile === true && !finalContractType) {
+      return res.status(400).json({ ok: false, error: "missing_contract_type" });
+    }
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -123,7 +150,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 1) checa CPF duplicado (service role)
+    // 1) checa CPF/CNPJ duplicado (service role)
     const cpfCheck = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?select=id&cpf=eq.${encodeURIComponent(cpfClean)}&limit=1`,
       {
@@ -149,15 +176,17 @@ export default async function handler(req, res) {
         apikey: ANON_KEY,
       },
       body: JSON.stringify({
-        email,
+        email: emailClean,
         password,
         data: {
-          name: name || null,
+          name: nameClean,
           cpf: cpfClean,
           whatsapp: whatsappClean,
-          // você pode opcionalmente espelhar os novos campos também no user_metadata
+          cep: cepClean,
+          regiao: regiaoFinal,
+
           has_mobile_service: hasMobile,
-          contract_type: contractType,
+          contract_type: finalContractType,
           operator: finalOperator,
           active_lines: finalActiveLines,
         },
@@ -181,7 +210,19 @@ export default async function handler(req, res) {
     }
 
     // 3) atualiza profile (linha criada por trigger)
-    //    IMPORTANTE: aqui é onde seus campos novos serão persistidos nas colunas da tabela.
+    const profilePayload = {
+      name: nameClean,
+      cpf: cpfClean,
+      whatsapp: whatsappClean,
+      cep: cepClean,
+      regiao: regiaoFinal,
+
+      has_mobile_service: hasMobile,
+      contract_type: finalContractType,
+      operator: finalOperator,
+      active_lines: finalActiveLines,
+    };
+
     const upd = await fetch(
       `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`,
       {
@@ -192,22 +233,11 @@ export default async function handler(req, res) {
           Authorization: `Bearer ${SERVICE_ROLE}`,
           Prefer: "return=minimal",
         },
-        body: JSON.stringify({
-          name: name || null,
-          cpf: cpfClean,
-          whatsapp: whatsappClean,
-
-          // NOVOS CAMPOS
-          has_mobile_service: hasMobile,
-          contract_type: contractType,
-          operator: finalOperator,
-          active_lines: finalActiveLines,
-        }),
+        body: JSON.stringify(profilePayload),
       }
     );
 
     if (!upd.ok) {
-      // rollback: remove usuário criado
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -224,7 +254,7 @@ export default async function handler(req, res) {
     const sheetsPayload = {
       action: "upsert_license",
       secret: HUB_SECRET,
-      email,
+      email: emailClean,
       status: "ACTIVE",
       max_devices: 1,
       created_at: new Date().toISOString(),
@@ -238,9 +268,7 @@ export default async function handler(req, res) {
 
     const sheetsData = await sheetsResp.json().catch(() => null);
 
-    // Se você NÃO quiser bloquear o cadastro por falha no Sheets, remova o rollback e apenas faça log.
     if (!sheetsResp.ok || !sheetsData?.ok) {
-      // rollback: remove usuário criado
       await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
         method: "DELETE",
         headers: {
@@ -258,7 +286,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Retorne um indicador pro frontend mostrar "confirme seu e-mail"
     return res.status(200).json({ ok: true, needs_email_confirmation: true });
   } catch (e) {
     return res.status(500).json({ ok: false, error: "server_error", detail: String(e) });
