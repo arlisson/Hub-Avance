@@ -249,22 +249,22 @@ function renderUsers(users) {
           <div class="user-card-grid">
             <div class="field">
               <label>Nome</label>
-              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" />
+              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" readonly/>
             </div>
 
             <div class="field">
               <label>E-mail</label>
-              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" />
+              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" readonly/>
             </div>
 
             <div class="field">
               <label>CPF/CNPJ</label>
-              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" />
+              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" readonly/>
             </div>
 
             <div class="field">
               <label>WhatsApp</label>
-              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" />
+              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" readonly/>
             </div>
 
             <div class="field">
@@ -289,17 +289,17 @@ function renderUsers(users) {
 
             <div class="field">
               <label>Tipo de contrato</label>
-              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" />
+              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" readonly/>
             </div>
 
             <div class="field">
               <label>Operadora</label>
-              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" />
+              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" readonly/>
             </div>
 
             <div class="field">
               <label>Linhas ativas</label>
-              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" />
+              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" readonly/>
             </div>
           </div>
 
