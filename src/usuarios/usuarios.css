@@ -591,9 +591,9 @@ body.light-mode .error {
 .table-wrap {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border-color);
   border-radius: 18px;
-  background: var(--panel-2);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 body.light-mode .table-wrap {
