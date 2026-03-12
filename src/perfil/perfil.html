@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil | AVANCE</title>
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="./perfil.css" />
+</head>
+<body>
+  <header class="top-navbar">
+    <div class="logo-container">
+      <a href="/hub/hub.html">
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" />
+        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-claro" />
+      </a>
+    </div>
+
+    <nav class="navbar-links">
+      <a href="/hub/hub.html" class="nav-link">Início</a>
+      <a href="/hub/hub.html#hub-grid" class="nav-link">Aplicações</a>
+      <a href="../sobre/sobre.html" class="nav-link">Sobre</a>
+      <a href="#" class="nav-link active">Perfil</a>
+    </nav>
+
+    <div class="navbar-right">
+      <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Alternar tema">
+        <i class="ph ph-moon"></i>
+        <span style="display: none;">Modo escuro</span>
+      </button>
+
+      <div class="user-menu-container">
+        <button class="user-profile-btn" id="settings-btn" type="button">
+          <i class="ph ph-user-circle"></i>
+          <span id="user-email" class="nav-user-email">Carregando...</span>
+          <i class="ph ph-caret-down" style="font-size: 14px;"></i>
+        </button>
+
+        <div class="settings-dropdown" id="settings-menu" hidden>
+          <a
+            href="../usuarios/usuarios.html"
+            class="dropdown-item reset-action"
+            id="menu-users"
+            style="text-decoration: none;"
+            hidden
+          >
+            <i class="ph ph-user"></i>
+            <span>Usuários</span>
+          </a>
+
+          <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action" style="text-decoration: none;">
+            <i class="ph ph-lock-key"></i>
+            <span>Alterar Senha</span>
+          </a>
+
+          <button type="button" class="dropdown-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="perfil-section">
+      <div class="perfil-card">
+        <div class="perfil-header">
+          <div>
+            <p class="perfil-kicker">Minha conta</p>
+            <h1 class="perfil-title">Perfil do usuário</h1>
+            <p class="perfil-subtitle">
+              Atualize seus dados pessoais. Alguns campos são somente leitura por segurança.
+            </p>
+          </div>
+
+          <a href="/hub/hub.html" class="back-btn">
+            <i class="ph ph-arrow-left"></i>
+            <span>Voltar ao hub</span>
+          </a>
+        </div>
+
+        <div id="errorBox" class="error-box" hidden></div>
+
+        <form id="perfil-form" class="perfil-form" novalidate>
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="name">Nome</label>
+              <div class="input-wrapper">
+                <i class="ph ph-user input-icon"></i>
+                <input id="name" type="text" placeholder="Seu nome" />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="email">E-mail</label>
+              <div class="input-wrapper">
+                <i class="ph ph-envelope input-icon"></i>
+                <input id="email" type="email" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="cpf">CPF/CNPJ</label>
+              <div class="input-wrapper">
+                <i class="ph ph-identification-card input-icon"></i>
+                <input id="cpf" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="whatsapp">WhatsApp</label>
+              <div class="input-wrapper">
+                <i class="ph ph-phone input-icon"></i>
+                <input id="whatsapp" type="text" placeholder="(00) 00000-0000" />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="cep">CEP</label>
+              <div class="input-wrapper">
+                <i class="ph ph-map-pin input-icon"></i>
+                <input id="cep" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="cidade">Cidade</label>
+              <div class="input-wrapper">
+                <i class="ph ph-buildings input-icon"></i>
+                <input id="cidade" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="estado">Estado</label>
+              <div class="input-wrapper">
+                <i class="ph ph-map-trifold input-icon"></i>
+                <input id="estado" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="has-mobile">Telefonia ativa</label>
+              <div class="input-wrapper">
+                <i class="ph ph-device-mobile input-icon"></i>
+                <input id="has-mobile" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="contract-type">Tipo de contrato</label>
+              <div class="input-wrapper">
+                <i class="ph ph-file-text input-icon"></i>
+                <input id="contract-type" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="operator">Operadora</label>
+              <div class="input-wrapper">
+                <i class="ph ph-broadcast input-icon"></i>
+                <input id="operator" type="text" readonly />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="active-lines">Linhas ativas</label>
+              <div class="input-wrapper">
+                <i class="ph ph-sim-card input-icon"></i>
+                <input id="active-lines" type="text" readonly />
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="save-btn" type="submit" class="btn-primary">
+              <i class="ph ph-floppy-disk"></i>
+              <span>Salvar alterações</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabaseClient.js"></script>
+  <script src="./perfil.js" defer></script>
+</body>
+</html>
