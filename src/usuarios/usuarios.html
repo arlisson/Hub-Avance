@@ -16,7 +16,7 @@
       </a>
     </div>
 
-    <div class="chat-list" style="margin-top: 20px;">
+    <div class="chat-list">
       <div class="chat-item active">
         <i class="ph ph-users-three"></i>
         <div class="chat-info">
@@ -72,22 +72,42 @@
       </div>
     </header>
 
+    <section class="hero-panel">
+      <div class="hero-content">
+        <span class="hero-kicker">Painel administrativo</span>
+        <h1 class="hero-title">Gerencie usuários com a mesma identidade premium do Hub.</h1>
+        <p class="hero-subtitle">
+          Consulte dados, permissões e uso dos aplicativos em uma interface mais refinada,
+          tecnológica e consistente com a experiência visual da plataforma AVANCE.
+        </p>
+      </div>
+    </section>
+
     <section class="protocol-wrap">
       <div class="protocol-card">
-        <h1 class="protocol-title">Usuários cadastrados</h1>
-        <p class="protocol-subtitle">Gerencie permissões e dados do sistema.</p>
+        <div class="protocol-head">
+          <div>
+            <h2 class="protocol-title">Usuários cadastrados</h2>
+            <p class="protocol-subtitle">Gerencie permissões e dados do sistema.</p>
+          </div>
+        </div>
 
         <div id="errorBox" class="error" hidden></div>
 
-        <div class="field" style="margin-bottom: 18px;">
-          <label for="search">Buscar</label>
-          <input
-            id="search"
-            class="input-dark-lite"
-            type="text"
-            placeholder="Nome, e-mail ou CPF"
-            autocomplete="off"
-          />
+        <div class="toolbar-row">
+          <div class="field search-field">
+            <label for="search">Buscar</label>
+            <div class="search-input-wrap">
+              <i class="ph ph-magnifying-glass"></i>
+              <input
+                id="search"
+                class="input-dark-lite"
+                type="text"
+                placeholder="Nome, e-mail ou CPF"
+                autocomplete="off"
+              />
+            </div>
+          </div>
         </div>
 
         <div class="table-wrap">
