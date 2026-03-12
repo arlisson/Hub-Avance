@@ -139,6 +139,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const canAccessProtocol = !!profile?.protocol;
 
+    const menuUsers = document.getElementById("menu-users");
+    if (menuUsers) {
+      menuUsers.hidden = !canAccessProtocol;
+    }
+
     const userEmailEl = document.getElementById("user-email");
     if (userEmailEl) {
       userEmailEl.textContent = email || "";
