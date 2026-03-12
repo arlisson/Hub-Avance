@@ -246,6 +246,11 @@ function renderUsers(users) {
             </div>
 
             <div class="field">
+              <label>Telefonia ativa</label>
+              <input class="input-dark-lite" value="${u.has_mobile_service ? "Sim" : "Não"}" readonly />
+            </div>
+
+            <div class="field">
               <label>Tipo de contrato</label>
               <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" />
             </div>
@@ -258,12 +263,7 @@ function renderUsers(users) {
             <div class="field">
               <label>Linhas ativas</label>
               <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" />
-            </div>
-
-            <div class="field">
-              <label>Mobile Service</label>
-              <input class="input-dark-lite" value="${u.has_mobile_service ? "Sim" : "Não"}" readonly />
-            </div>
+            </div>            
           </div>
 
           <div class="expand-section-title" style="margin-top: 18px;">Permissões</div>
