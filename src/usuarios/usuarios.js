@@ -211,8 +211,7 @@ function renderUsers(users) {
       <td>${escapeHtml(u.name || "")}</td>
       <td>${escapeHtml(u.email || "")}</td>
       <td>${escapeHtml(u.cpf || "")}</td>
-      <td>${escapeHtml(u.whatsapp || "")}</td>
-      <td>${escapeHtml(cep)}</td>
+      <td>${escapeHtml(u.whatsapp || "")}</td>      
       <td>${escapeHtml(cidade)}</td>
       <td>${escapeHtml(estado)}</td>
       <td>
