@@ -108,12 +108,16 @@ a {
 .sidebar {
   width: 260px;
   min-width: 260px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  overflow: hidden;
   transition: background-color 0.25s ease, border-color 0.25s ease, left 0.3s ease;
 }
 
@@ -196,10 +200,7 @@ body.light-mode .chat-item.active {
 
 /* Footer sidebar */
 .sidebar-footer {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 20px;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -837,18 +838,22 @@ body.light-mode .usage-metric {
   }
 
   .sidebar {
-    width: 260px;
-    min-width: 260px;
-    background-color: var(--bg-sidebar);
-    border-right: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: -100%;
+    z-index: 1200;
+    width: 280px;
+    min-width: 280px;
+    height: 100vh;
     padding: 20px 16px;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    position: relative;
-    padding-bottom: 140px; /* espaço reservado para o footer fixo */
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    box-shadow: var(--shadow-strong);
     transition: background-color 0.25s ease, border-color 0.25s ease, left 0.3s ease;
   }
+
 
   body.sidebar-open .sidebar {
     left: 0;
