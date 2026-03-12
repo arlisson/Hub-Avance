@@ -247,6 +247,11 @@ function renderUsers(users) {
 
             <div class="field">
               <label>Tipo de contrato</label>
+              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.has_mobile_service  || "")}" />
+            </div>
+
+            <div class="field">
+              <label>Tipo de contrato</label>
               <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" />
             </div>
 
