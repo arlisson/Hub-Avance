@@ -1136,3 +1136,7 @@ body:not(.dark-mode) .logo-claro {
     backdrop-filter: blur(4px) !important;
   }
 }
+
+[hidden] {
+  display: none !important;
+}
