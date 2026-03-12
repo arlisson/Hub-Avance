@@ -335,6 +335,7 @@ function renderUsers(users) {
 
           <div class="actions">
             <button class="btn-primary btn-save-user" type="button">Salvar alterações</button>
+            <button class="btn-danger btn-delete-user" type="button">Excluir</button>
           </div>
         </div>
       </td>
@@ -349,6 +350,7 @@ function renderUsers(users) {
     });
 
     const btnSave = detailsRow.querySelector(".btn-save-user");
+    const btnDelete = detailsRow.querySelector(".btn-delete-user");
     const protocolEl = detailsRow.querySelector(".edit-protocol");
     const clienteEl = detailsRow.querySelector(".edit-cliente-avance");
     const nameEl = detailsRow.querySelector(".edit-name");
@@ -404,6 +406,44 @@ function renderUsers(users) {
         alert(e?.message || "Erro ao salvar usuário.");
       } finally {
         btnSave.disabled = false;
+      }
+    });
+
+    btnDelete?.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        `Tem certeza que deseja excluir o usuário "${u.name || u.email || u.id}"?\n\nEssa ação não pode ser desfeita.`
+      );
+
+      if (!confirmed) return;
+
+      btnDelete.disabled = true;
+      if (btnSave) btnSave.disabled = true;
+
+      try {
+        const resp = await fetch("/api/admin/delete-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}`,
+          },
+          body: JSON.stringify({
+            id: u.id,
+          }),
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data?.error || "Falha ao excluir usuário.");
+        }
+
+        allUsers = allUsers.filter((item) => item.id !== u.id);
+        renderUsers(allUsers);
+      } catch (e) {
+        alert(e?.message || "Erro ao excluir usuário.");
+      } finally {
+        btnDelete.disabled = false;
+        if (btnSave) btnSave.disabled = false;
       }
     });
 

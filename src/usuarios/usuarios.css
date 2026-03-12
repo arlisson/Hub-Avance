@@ -937,3 +937,17 @@ body.light-mode .usage-metric {
     width: 100%;
   }
 }
+
+.btn-danger {
+  background: #b42318;
+  color: #fff;
+  border: 1px solid #d92d20;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background: #d92d20;
+}
