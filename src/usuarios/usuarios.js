@@ -90,6 +90,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const term = (searchEl?.value || "").trim().toLowerCase();
 
     const filtered = allUsers.filter((u) => {
+      let regiao = {};
+
+      if (u.regiao && typeof u.regiao === "object") {
+        regiao = u.regiao;
+      } else if (typeof u.regiao === "string") {
+        try {
+          regiao = JSON.parse(u.regiao);
+        } catch {
+          regiao = {};
+        }
+      }
       return (
         String(u.name || "").toLowerCase().includes(term) ||
         String(u.email || "").toLowerCase().includes(term) ||
