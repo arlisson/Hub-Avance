@@ -438,7 +438,7 @@ function renderUsers(users) {
         });
 
         const data = await resp.json();
-        console.log("delete-user response:", data);
+        
 
         if (!resp.ok) {
           throw new Error(data?.detail || data?.error || "Falha ao excluir usuário.");
@@ -446,6 +446,7 @@ function renderUsers(users) {
 
         allUsers = allUsers.filter((item) => item.id !== u.id);
         applyFilterAndRender();
+        showFeedback("Usuário excluído com sucesso.", "success");
       } catch (e) {
         alert(e?.message || "Erro ao excluir usuário.");
       } finally {
