@@ -432,9 +432,11 @@ function renderUsers(users) {
         });
 
         const data = await resp.json();
+        
+        console.log("delete-user response:", data);
 
         if (!resp.ok) {
-          throw new Error(data?.error || "Falha ao excluir usuário.");
+          throw new Error(data?.detail || data?.error || "Falha ao excluir usuário.");
         }
 
         allUsers = allUsers.filter((item) => item.id !== u.id);
