@@ -53,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (userEmailEl) {
     userEmailEl.textContent = email;
     userEmailEl.title = email;
-    userEmailEl.style.cursor = "default";
   }
 
   try {
@@ -102,7 +101,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("settings-btn"),
     document.getElementById("settings-menu")
   );
+  initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
+
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
+    });
+  }
 
   const menuLogout = document.getElementById("menu-logout");
   if (menuLogout) {
@@ -165,7 +172,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         CURRENT_PROFILE.whatsapp = whatsappValue;
       }
 
-      alert("Perfil atualizado com sucesso.");
+      if (typeof showFeedback === "function") {
+        showFeedback("Perfil atualizado com sucesso.", "success");
+      }
     } catch (err) {
       console.error("Erro ao salvar perfil:", err);
       showError(errorBox, "Não foi possível salvar as alterações.");
@@ -253,54 +262,74 @@ function initSettingsMenu(btn, menu) {
   });
 
   document.addEventListener("click", (e) => {
-    const container = document.querySelector(".user-menu-container");
-    if (!container) {
-      close();
-      return;
-    }
-
-    if (!container.contains(e.target)) {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar?.contains(e.target)) {
       close();
     }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") {
+      close();
+    }
+  });
+}
+
+function initMobileSidebar(menuBtn) {
+  if (!menuBtn) return;
+
+  menuBtn.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
+
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
+      document.body.classList.remove("sidebar-open");
+    }
   });
 }
 
 function initTheme(themeToggle) {
   if (!themeToggle) return;
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    updateThemeIcon(themeToggle, true);
-  } else {
-    document.body.classList.remove("dark-mode");
-    updateThemeIcon(themeToggle, false);
-  }
+  const savedTheme = localStorage.getItem("theme");
+  const isLight = savedTheme === "light";
+
+  document.body.classList.toggle("light-mode", isLight);
+  document.body.classList.remove("dark-mode");
+  updateThemeIcon(themeToggle);
 
   themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, isDark);
+    const nowLight = document.body.classList.toggle("light-mode");
+    document.body.classList.remove("dark-mode");
+    localStorage.setItem("theme", nowLight ? "light" : "dark");
+    updateThemeIcon(themeToggle);
   });
 }
 
-function updateThemeIcon(btn, isDark) {
+function updateThemeIcon(btn) {
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector("span");
-  const logoEscuro = document.querySelector(".logo-escuro");
-  const logoClaro = document.querySelector(".logo-claro");
+  const logo = document.querySelector(".company-logo");
 
-  if (icon && text) {
-    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
-    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  if (!icon || !text) return;
+
+  const isLight = document.body.classList.contains("light-mode");
+
+  if (isLight) {
+    icon.className = "ph ph-moon";
+    text.textContent = "Modo escuro";
+  } else {
+    icon.className = "ph ph-sun";
+    text.textContent = "Modo claro";
   }
 
-  if (logoEscuro && logoClaro) {
-    logoEscuro.style.display = isDark ? "block" : "none";
-    logoClaro.style.display = isDark ? "none" : "block";
+  if (logo) {
+    logo.src = !isLight
+      ? "../img/LogoEscuroSemFundo.png"
+      : "../img/LogoClaraSemFundo.png";
   }
 }
