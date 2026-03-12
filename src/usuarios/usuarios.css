@@ -140,6 +140,7 @@ a {
 .chat-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .chat-item {
@@ -195,13 +196,16 @@ body.light-mode .chat-item.active {
 
 /* Footer sidebar */
 .sidebar-footer {
-  margin-top: auto;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   border-top: 1px solid var(--border-color);
   padding-top: 16px;
-  position: relative;
+  background-color: var(--bg-sidebar);
 }
 
 .sidebar-footer-item,
@@ -585,11 +589,7 @@ body.light-mode .error {
 /* Tabela */
 .table-wrap {
   width: 100%;
-  height: calc(100vh - 280px);
-  min-height: 420px;
-  max-height: 620px;
   overflow-x: auto;
-  overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--panel-2);
@@ -837,13 +837,17 @@ body.light-mode .usage-metric {
   }
 
   .sidebar {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    z-index: 1200;
-    width: 280px;
-    min-width: 280px;
-    box-shadow: var(--shadow-strong);
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 140px; /* espaço reservado para o footer fixo */
+    transition: background-color 0.25s ease, border-color 0.25s ease, left 0.3s ease;
   }
 
   body.sidebar-open .sidebar {
