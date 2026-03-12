@@ -247,11 +247,6 @@ function renderUsers(users) {
 
             <div class="field">
               <label>Tipo de contrato</label>
-              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.has_mobile_service  || "")}" />
-            </div>
-
-            <div class="field">
-              <label>Tipo de contrato</label>
               <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" />
             </div>
 
@@ -263,6 +258,11 @@ function renderUsers(users) {
             <div class="field">
               <label>Linhas ativas</label>
               <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" />
+            </div>
+
+            <div class="field">
+              <label>Mobile Service</label>
+              <input class="input-dark-lite" value="${u.has_mobile_service ? "Sim" : "Não"}" readonly />
             </div>
           </div>
 
@@ -278,11 +278,6 @@ function renderUsers(users) {
               <label>
                 <input type="checkbox" class="edit-cliente-avance" ${u.cliente_avance ? "checked" : ""}>
                 Cliente Avance
-              </label>
-
-              <label>
-                <input type="checkbox" class="edit-has-mobile-service" ${u.has_mobile_service ? "checked" : ""}>
-                Mobile Service
               </label>
             </div>
           </div>
@@ -308,7 +303,6 @@ function renderUsers(users) {
     const btnSave = detailsRow.querySelector(".btn-save-user");
     const protocolEl = detailsRow.querySelector(".edit-protocol");
     const clienteEl = detailsRow.querySelector(".edit-cliente-avance");
-    const mobileEl = detailsRow.querySelector(".edit-has-mobile-service");
     const nameEl = detailsRow.querySelector(".edit-name");
     const emailEl = detailsRow.querySelector(".edit-email");
     const cpfEl = detailsRow.querySelector(".edit-cpf");
@@ -338,7 +332,6 @@ function renderUsers(users) {
             active_lines: activeLinesEl?.value === "" ? null : Number(activeLinesEl.value),
             protocol: !!protocolEl?.checked,
             cliente_avance: !!clienteEl?.checked,
-            has_mobile_service: !!mobileEl?.checked,
           }),
         });
 
@@ -357,7 +350,6 @@ function renderUsers(users) {
         u.active_lines = activeLinesEl?.value === "" ? null : Number(activeLinesEl.value);
         u.protocol = !!protocolEl?.checked;
         u.cliente_avance = !!clienteEl?.checked;
-        u.has_mobile_service = !!mobileEl?.checked;
 
         renderUsers(users);
       } catch (e) {

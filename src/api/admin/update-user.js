@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       active_lines,
       protocol,
       cliente_avance,
-      has_mobile_service,
+    
     } = req.body || {};
 
     if (!id) {
@@ -86,8 +86,7 @@ export default async function handler(req, res) {
             ? null
             : Number(active_lines),
         protocol: !!protocol,
-        cliente_avance: !!cliente_avance,
-        has_mobile_service: !!has_mobile_service,
+        cliente_avance: !!cliente_avance,        
       }),
     });
 
