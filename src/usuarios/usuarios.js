@@ -432,7 +432,6 @@ function renderUsers(users) {
         });
 
         const data = await resp.json();
-        
         console.log("delete-user response:", data);
 
         if (!resp.ok) {
@@ -440,7 +439,7 @@ function renderUsers(users) {
         }
 
         allUsers = allUsers.filter((item) => item.id !== u.id);
-        renderUsers(allUsers);
+        applyFilterAndRender();
       } catch (e) {
         alert(e?.message || "Erro ao excluir usuário.");
       } finally {
