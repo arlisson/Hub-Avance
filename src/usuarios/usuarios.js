@@ -1,13 +1,47 @@
+let allUsers = [];
+let searchEl = null;
+let errorBox = null;
+
+function applyFilterAndRender() {
+  const term = (searchEl?.value || "").trim().toLowerCase();
+
+  const filtered = allUsers.filter((u) => {
+    let regiao = {};
+
+    if (u.regiao && typeof u.regiao === "object") {
+      regiao = u.regiao;
+    } else if (typeof u.regiao === "string") {
+      try {
+        regiao = JSON.parse(u.regiao);
+      } catch {
+        regiao = {};
+      }
+    }
+
+    return (
+      String(u.name || "").toLowerCase().includes(term) ||
+      String(u.email || "").toLowerCase().includes(term) ||
+      String(u.cpf || "").toLowerCase().includes(term) ||
+      String(u.whatsapp || "").toLowerCase().includes(term) ||
+      String(u.cep || "").toLowerCase().includes(term) ||
+      String(regiao.cep || "").toLowerCase().includes(term) ||
+      String(regiao.cidade || "").toLowerCase().includes(term) ||
+      String(regiao.estado || "").toLowerCase().includes(term)
+    );
+  });
+
+  renderUsers(filtered);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
   const HUB_URL = "/hub/hub.html";
 
   let sb;
   let session;
-  let allUsers = [];
 
-  const searchEl = document.getElementById("search");
-  const errorBox = document.getElementById("errorBox");
+  searchEl = document.getElementById("search");
+  errorBox = document.getElementById("errorBox");
 
   try {
     sb = await window.getSupabaseClient();
@@ -84,36 +118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = LOGIN_URL;
       }
     });
-  }
-
-  function applyFilterAndRender() {
-    const term = (searchEl?.value || "").trim().toLowerCase();
-
-    const filtered = allUsers.filter((u) => {
-      let regiao = {};
-
-      if (u.regiao && typeof u.regiao === "object") {
-        regiao = u.regiao;
-      } else if (typeof u.regiao === "string") {
-        try {
-          regiao = JSON.parse(u.regiao);
-        } catch {
-          regiao = {};
-        }
-      }
-      return (
-        String(u.name || "").toLowerCase().includes(term) ||
-        String(u.email || "").toLowerCase().includes(term) ||
-        String(u.cpf || "").toLowerCase().includes(term) ||
-        String(u.whatsapp || "").toLowerCase().includes(term)||
-        String(u.cep || "").toLowerCase().includes(term) ||
-        String(regiao.cep || "").toLowerCase().includes(term) ||
-        String(regiao.cidade || "").toLowerCase().includes(term) ||
-        String(regiao.estado || "").toLowerCase().includes(term)
-      );
-    });
-
-    renderUsers(filtered);
   }
 
   async function loadUsers(token) {
@@ -260,22 +264,22 @@ function renderUsers(users) {
           <div class="user-card-grid">
             <div class="field">
               <label>Nome</label>
-              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" readonly/>
+              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" readonly />
             </div>
 
             <div class="field">
               <label>E-mail</label>
-              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" readonly/>
+              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" readonly />
             </div>
 
             <div class="field">
               <label>CPF/CNPJ</label>
-              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" readonly/>
+              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" readonly />
             </div>
 
             <div class="field">
               <label>WhatsApp</label>
-              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" readonly/>
+              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" readonly />
             </div>
 
             <div class="field">
@@ -300,17 +304,17 @@ function renderUsers(users) {
 
             <div class="field">
               <label>Tipo de contrato</label>
-              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" readonly/>
+              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" readonly />
             </div>
 
             <div class="field">
               <label>Operadora</label>
-              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" readonly/>
+              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" readonly />
             </div>
 
             <div class="field">
               <label>Linhas ativas</label>
-              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" readonly/>
+              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" readonly />
             </div>
           </div>
 
@@ -363,6 +367,7 @@ function renderUsers(users) {
 
     btnSave?.addEventListener("click", async () => {
       btnSave.disabled = true;
+      if (btnDelete) btnDelete.disabled = true;
 
       try {
         const resp = await fetch("/api/admin/update-user", {
@@ -401,11 +406,12 @@ function renderUsers(users) {
         u.protocol = !!protocolEl?.checked;
         u.cliente_avance = !!clienteEl?.checked;
 
-        renderUsers(users);
+        applyFilterAndRender();
       } catch (e) {
         alert(e?.message || "Erro ao salvar usuário.");
       } finally {
         btnSave.disabled = false;
+        if (btnDelete) btnDelete.disabled = false;
       }
     });
 
