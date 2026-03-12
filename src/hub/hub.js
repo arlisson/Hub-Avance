@@ -140,8 +140,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const canAccessProtocol = !!profile?.protocol;
 
     const menuUsers = document.getElementById("menu-users");
-    console.log("menuUsers encontrado?", !!menuUsers);
-    
+    //console.log("menuUsers encontrado?", !!menuUsers);
+
     if (menuUsers) {
       menuUsers.hidden = !canAccessProtocol;
     }
