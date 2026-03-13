@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputApiKey = document.getElementById('apiKey');
   const btnMostrarSenha = document.getElementById('btnMostrarSenha');
   const mensagemApi = document.getElementById('mensagemApi');
-  const userEmail = document.getElementById("user-email");
 
   // Função para abrir o modal
   if (btnAbrirModal) {
@@ -57,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const apiKey = inputApiKey.value.trim();
+
+      const userEmail = document.getElementById('user-email')?.textContent || '';
 
       if (apiKey.length < 10) {
         mensagemApi.textContent = 'Por favor, insira uma chave de API válida.';
