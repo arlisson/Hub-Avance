@@ -1,31 +1,46 @@
-// agent.js — chat responsivo + guarda de sessão + logout (padrão hub)
+/**
+ * agent.js — Chat responsivo + Menus padrão Hub + Gestão de Sessão
+ */
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // --- Elementos da Interface (CORRIGIDOS PARA O NOVO HTML) ---
   const chatMessages = document.getElementById("chat-messages");
-  const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
+  const userInput = document.querySelector(".input-container textarea"); // Corrigido
+  const sendBtn = document.querySelector(".send-btn"); // Corrigido
   const themeToggle = document.getElementById("theme-toggle");
-  const newChatBtn = document.getElementById("new-chat-btn");
-  const logoutBtn = document.getElementById("logout-btn");
+  const newChatBtn = document.querySelector(".new-chat-btn"); // Corrigido
   const userEmailEl = document.getElementById("user-email");
+
+  // Elementos de Navegação (Padrão Hub)
   const menuBtn = document.getElementById("mobile-menu-btn");
+  const settingsBtn = document.getElementById("settings-btn");
+  const settingsMenu = document.getElementById("settings-menu");
+  const menuLogout = document.getElementById("menu-logout");
 
-  if (!chatMessages || !userInput || !sendBtn || !newChatBtn) return;
+  // --- Inicialização de Menus ---
+  initSettingsMenu(settingsBtn, settingsMenu);
+  initMobileSidebar(menuBtn);
 
+  // Trava de segurança: se faltar algum elemento crucial da interface de chat, para aqui.
+  if (!chatMessages || !userInput || !sendBtn || !newChatBtn) {
+      console.warn("Elementos do chat não encontrados na tela.");
+      return;
+  }
+
+  // --- Configurações Iniciais ---
   const cfg = await loadAgentConfig().catch(() => null);
   const LOGIN_URL = cfg?.loginUrl || "/login/login.html";
-  const HUB_URL = cfg?.hubUrl || "/hub/hub.html";
   const AGENT_PROXY_URL = cfg?.agentProxyUrl || "/api/agent";
 
-  // Supabase (sessão)
+  // --- Supabase (Segurança e Sessão) ---
   let sb;
   try {
     if (typeof window.getSupabaseClient !== "function") {
-      throw new Error("getSupabaseClient não existe. Verifique /supabaseClient.js e supabase-js.");
+      throw new Error("getSupabaseClient não encontrado.");
     }
     sb = await window.getSupabaseClient();
   } catch (e) {
-    console.error("Supabase client não carregado:", e);
+    console.error("Erro ao carregar Supabase:", e);
     window.location.href = LOGIN_URL;
     return;
   }
@@ -37,16 +52,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const emailUser = s1.session.user?.email || "";
-  if (!emailUser) {
-    window.location.href = LOGIN_URL;
-    return;
+  if (userEmailEl) {
+    userEmailEl.textContent = emailUser;
+    userEmailEl.title = emailUser; // tooltip (balão) no hover
   }
 
-  if (userEmailEl) userEmailEl.textContent = emailUser;
+  // --- Verificação de Status (Luz Online/Offline) ---
+  checkAgentApiStatus(sb, emailUser);
 
-  // Logout (igual hub)
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
+  // --- Logout (Integrado ao menu Dropdown) ---
+  if (menuLogout) {
+    menuLogout.addEventListener("click", async () => {
       try {
         await sb.auth.signOut();
       } finally {
@@ -56,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Estado por sessão (aba)
+  // --- Estado do Chat (Persistência por aba) ---
   const storageKey = `agente_chat_state:${emailUser}`;
   const chatState = loadState(storageKey);
   if (!chatState.sessionId) chatState.sessionId = newSessionId();
@@ -65,44 +81,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   renderHistory(chatMessages, chatState.messages);
 
-  // Tema
+  // --- Inicialização do Tema ---
   initTheme(themeToggle);
 
-  // Menu mobile (padrão hub: sidebar-open no body)
-  if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-      document.body.classList.toggle("sidebar-open");
-    });
-  }
-
-  // Fecha ao clicar fora da sidebar
-  document.addEventListener("click", (e) => {
-    if (!document.body.classList.contains("sidebar-open")) return;
-
-    const sidebar = document.querySelector(".sidebar");
-    const clickedInsideSidebar = sidebar?.contains(e.target);
-    const clickedMenuBtn = menuBtn?.contains(e.target);
-
-    if (!clickedInsideSidebar && !clickedMenuBtn) {
-      document.body.classList.remove("sidebar-open");
-    }
-  });
-
-  // Fecha com ESC
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") document.body.classList.remove("sidebar-open");
-  });
-
-  // Enviar mensagem
+  // --- Eventos do Chat ---
   sendBtn.addEventListener("click", () => sendMessage());
+
   userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
+  // Faz a caixa de texto crescer ou encolher automaticamente conforme a digitação
+  userInput.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = this.scrollHeight + "px";
+  });
 
-  // Reset conversa
   newChatBtn.addEventListener("click", () => {
     chatState.sessionId = newSessionId();
     chatState.messages = [];
@@ -110,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     chatMessages.innerHTML = "";
   });
 
+  // --- Lógica de Envio ---
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
@@ -131,26 +128,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
 
-      let resp;
-      try {
-        resp = await fetch(AGENT_PROXY_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            chatInput: text,
-            sessionId: chatState.sessionId,
-          }),
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timeoutId);
-      }
+      const resp = await fetch(AGENT_PROXY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          chatInput: text,
+          sessionId: chatState.sessionId,
+        }),
+        signal: controller.signal,
+      });
 
+      clearTimeout(timeoutId);
       const raw = await resp.text();
       removeLoading();
 
@@ -159,45 +152,99 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      if (!raw) throw new Error("Resposta vazia");
-
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        data = { output: raw };
-      }
-
-      if (data && data.ok === false) {
-        appendMessage(chatMessages, chatState, storageKey, "bot", formatAgentApiJsonError(data));
-        return;
-      }
+      try { data = JSON.parse(raw); } catch { data = { output: raw }; }
 
       appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
     } catch (err) {
-      console.error(err);
       removeLoading();
-
-      if (err?.name === "AbortError") {
-        appendMessage(chatMessages, chatState, storageKey, "bot", "Tempo limite ao contatar o servidor. Tente novamente.");
-        return;
-      }
-
-      appendMessage(chatMessages, chatState, storageKey, "bot", "Erro de conexão com o servidor. Tente novamente.");
+      console.error(err);
+      const errorMsg = err.name === "AbortError" ? "Tempo limite excedido." : "Erro de conexão.";
+      appendMessage(chatMessages, chatState, storageKey, "bot", errorMsg);
     }
   }
 });
 
-// -------- config --------
-async function loadAgentConfig() {
-  // Mantém compatível se você já tiver /api/public-agent-config
-  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-  const j = await r.json().catch(() => null);
-  if (!r.ok || !j?.ok) return null;
-  return j;
+// ---------------------------------------------------------
+// FUNÇÕES DE NAVEGAÇÃO E VISUAL (PADRÃO HUB)
+// ---------------------------------------------------------
+
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+  const close = () => (menu.hidden = true);
+  const open = () => (menu.hidden = false);
+  const toggle = () => (menu.hidden ? open() : close());
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const userbar = document.getElementById("sidebar-userbar");
+    if (!userbar?.contains(e.target)) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
 }
 
-// -------- state --------
+function initMobileSidebar(menuBtn) {
+  if (!menuBtn) return;
+  menuBtn.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("sidebar-open")) return;
+    const sidebar = document.querySelector(".sidebar");
+    if (!sidebar?.contains(e.target) && !menuBtn.contains(e.target)) {
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+}
+
+function initTheme(themeToggle) {
+  if (!themeToggle) return;
+
+  const savedTheme = localStorage.getItem("theme");
+  const isLight = savedTheme === "light";
+
+  // Aplica as classes iniciais
+  document.body.classList.toggle("light-mode", isLight);
+  document.body.classList.toggle("dark-mode", !isLight);
+  
+  // Chama a função passando se está escuro ou não
+  updateThemeIcon(themeToggle, !isLight);
+
+  themeToggle.addEventListener("click", () => {
+    const nowLight = document.body.classList.toggle("light-mode");
+    document.body.classList.toggle("dark-mode", !nowLight);
+    localStorage.setItem("theme", nowLight ? "light" : "dark");
+    
+    // Passa o estado atualizado para o botão (!nowLight = isDark)
+    updateThemeIcon(themeToggle, !nowLight);
+  });
+}
+
+function updateThemeIcon(btn, isDark) {
+  // Pega os elementos do botão de tema
+  const icon = btn.querySelector("i");
+  const text = btn.querySelector("span");
+  
+  // Atualiza apenas o botão (Ícone e Texto). 
+  // A logo agora é controlada 100% pelo seu CSS!
+  if (icon && text) {
+    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
+    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  }
+}
+
+// ---------------------------------------------------------
+// GESTÃO DE ESTADO E CHAT
+// ---------------------------------------------------------
+
 function newSessionId() {
   return "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 11);
 }
@@ -206,58 +253,36 @@ function loadState(key) {
   try {
     const raw = sessionStorage.getItem(key);
     return raw ? JSON.parse(raw) : { sessionId: null, messages: [] };
-  } catch {
-    return { sessionId: null, messages: [] };
-  }
+  } catch { return { sessionId: null, messages: [] }; }
 }
 
 function saveState(key, state) {
   sessionStorage.setItem(key, JSON.stringify(state));
 }
 
-function clearAgentChatSessionStorage() {
-  try {
-    Object.keys(sessionStorage)
-      .filter((k) => k.startsWith("agente_chat_state:"))
-      .forEach((k) => sessionStorage.removeItem(k));
-  } catch {
-    // ignora
-  }
-}
-
-// -------- UI --------
 function renderHistory(chatMessages, messages) {
   chatMessages.innerHTML = "";
-  for (const msg of messages) {
-    appendMessage(chatMessages, { messages }, null, msg.role, msg.text, { persist: false });
-  }
+  messages.forEach(msg => appendMessage(chatMessages, null, null, msg.role, msg.text, { persist: false }));
 }
 
 function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {}) {
   const persist = opts.persist !== false;
-
   const messageDiv = document.createElement("div");
-  messageDiv.className = `message ${role}`;
+  
+  messageDiv.className = `message ${role === "user" ? "message-user" : "message-bot"}`;
 
-  let avatarHTML = "";
-  if (role === "bot") {
-    avatarHTML = `<div class="message-avatar"><span>AI</span></div>`;
-  }
+  const contentHTML = role === "bot"
+    ? (window.marked ? marked.parse(text) : `<div class="text-content">${escapeHtml(text)}</div>`)
+    : `<div class="text-content">${escapeHtml(text)}</div>`;
 
-  const contentHTML =
-    role === "bot"
-      ? (typeof marked !== "undefined" && marked?.parse
-          ? marked.parse(text)
-          : `<pre>${escapeHtml(text)}</pre>`)
-      : escapeHtml(text);
-
-  messageDiv.innerHTML = `
-    ${avatarHTML}
-    <div class="message-bubble">${contentHTML}</div>
-  `;
-
+  // Removemos a variável do avatarHTML, deixando apenas a bolha de mensagem
+  messageDiv.innerHTML = `<div class="message-bubble">${contentHTML}</div>`;
   chatMessages.appendChild(messageDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  chatMessages.scrollTo({
+    top: chatMessages.scrollHeight,
+    behavior: "smooth"
+  });
 
   if (persist && chatState && storageKey) {
     chatState.messages.push({ role, text });
@@ -267,16 +292,18 @@ function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {
 
 function showLoading(chatMessages) {
   if (document.getElementById("loading-indicator")) return;
-
   const loadingDiv = document.createElement("div");
-  loadingDiv.className = "message bot";
+  loadingDiv.className = "message message-bot";
   loadingDiv.id = "loading-indicator";
+  
+  // Removemos a div do message-avatar daqui também
   loadingDiv.innerHTML = `
-    <div class="message-avatar"><span>AI</span></div>
-    <div class="message-bubble">Digitando...</div>
+    <div class="message-bubble typing-indicator">
+      <span></span><span></span><span></span>
+    </div>
   `;
   chatMessages.appendChild(loadingDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: "smooth" });
 }
 
 function removeLoading() {
@@ -284,82 +311,58 @@ function removeLoading() {
   if (loader) loader.remove();
 }
 
-// -------- theme --------
-function initTheme(themeToggle) {
-  if (!themeToggle) return;
+// ---------------------------------------------------------
+// HELPERS E STATUS
+// ---------------------------------------------------------
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    updateThemeIcon(themeToggle, true);
-  } else {
-    updateThemeIcon(themeToggle, false);
-  }
-
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, isDark);
-  });
-}
-
-function updateThemeIcon(themeToggle, isDark) {
-  const icon = themeToggle?.querySelector("i");
-  const text = themeToggle?.querySelector("span");
-  if (!icon || !text) return;
-
-  if (isDark) {
-    icon.classList.replace("ph-moon", "ph-sun");
-    text.textContent = "Modo claro";
-  } else {
-    icon.classList.replace("ph-sun", "ph-moon");
-    text.textContent = "Modo escuro";
+async function checkAgentApiStatus(sb, email) {
+  try {
+    // Checa primeiro no banco de dados
+    const { data } = await sb.from('profiles').select('chave_api').eq('email', email).single();
+    // Checa também se há uma chave salva localmente pelo script de cadastro
+    const localKey = localStorage.getItem('gemini_api_key');
+    
+    window.atualizarStatusAgente(!!(data?.chave_api || localKey));
+  } catch {
+    window.atualizarStatusAgente(false);
   }
 }
 
-// -------- error helpers --------
+window.atualizarStatusAgente = function (isOnline) {
+  const dot = document.getElementById("status-dot");
+  const text = document.getElementById("status-text");
+  const inputBtn = document.querySelector(".send-btn");
+  const inputBox = document.querySelector(".input-container textarea");
+
+  if (!dot || !text) return;
+
+  dot.className = isOnline ? "status-dot online" : "status-dot offline";
+  text.className = isOnline ? "status-text online" : "status-text offline";
+  text.textContent = isOnline ? "Online" : "Offline";
+
+  if (inputBtn) inputBtn.disabled = !isOnline;
+  if (inputBox) {
+    inputBox.disabled = !isOnline;
+    inputBox.placeholder = isOnline ? "Digite sua mensagem para o Apolo..." : "IA offline. Conecte sua Chave API na barra lateral.";
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#039;" }[m]));
+}
+
+async function loadAgentConfig() {
+  const r = await fetch("/api/public-agent-config", { cache: "no-store" });
+  return r.json().then(j => j.ok ? j : null);
+}
+
 function formatBackendError(status, raw) {
-  const base = `Erro no servidor (${status}).`;
-  if (!raw) return `${base} Resposta vazia.`;
-
   try {
     const j = JSON.parse(raw);
-    return formatAgentApiJsonError(j, status);
-  } catch {
-    const t = raw.length > 600 ? raw.slice(0, 600) + "…" : raw;
-    return `${base}\n\nDetalhes:\n${t}`;
-  }
+    return `Erro (${status}): ${j.message || j.error || "Erro desconhecido"}`;
+  } catch { return `Erro no servidor (${status}).`; }
 }
 
-function formatAgentApiJsonError(j, statusOverride) {
-  if (!j || typeof j !== "object") return "Erro no servidor.";
-
-  const status = statusOverride ? ` (${statusOverride})` : "";
-  const code = j.error ? `Código: ${j.error}` : "Erro no servidor.";
-  const msg = j.message ? `\nMensagem: ${j.message}` : "";
-  const details = j.details ? `\nDetalhes: ${String(j.details)}` : "";
-
-  if (j.error === "missing_env" && j.missing && typeof j.missing === "object") {
-    const missingKeys = Object.entries(j.missing)
-      .filter(([, v]) => !!v)
-      .map(([k]) => k);
-    const m = missingKeys.length ? `\nFaltando ENV: ${missingKeys.join(", ")}` : "";
-    return `${code}${status}${m}${msg}${details}`;
-  }
-
-  return `${code}${status}${msg}${details}`;
-}
-
-// -------- misc --------
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (m) => {
-    switch (m) {
-      case "&": return "&amp;";
-      case "<": return "&lt;";
-      case ">": return "&gt;";
-      case '"': return "&quot;";
-      case "'": return "&#039;";
-      default: return m;
-    }
-  });
+function clearAgentChatSessionStorage() {
+  Object.keys(sessionStorage).filter(k => k.startsWith("agente_chat_state:")).forEach(k => sessionStorage.removeItem(k));
 }

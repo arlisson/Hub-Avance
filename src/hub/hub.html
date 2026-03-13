@@ -1,134 +1,143 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hub | AVANCE</title>
 
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hub | AVANCE</title>
 
-    <link rel="stylesheet" href="../../style.css" />
-    <link rel="stylesheet" href="./hub.css" />
-  </head>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-  <body>
-    <aside class="sidebar">
-      <div class="logo-container">
-        <img src="../../img/avanceVip.png" alt="Logo AVANCE" class="company-logo" />
-      </div>
+  <!-- <link rel="stylesheet" href="../../style.css" /> -->
+  <link rel="stylesheet" href="./hub.css" />
+</head>
 
-      <div class="sidebar-header" style="gap: 10px; display: flex; flex-direction: column;">
-        <div style="width: 100%;">
-          <div style="font-size: 12px; opacity: 0.8;">Logado como</div>
-          <div id="user-email" style="font-weight: 600; word-break: break-word;"></div>
-        </div>
+<body>
+  <header class="top-navbar">
+    <div class="logo-container">
+      <a href="/hub/hub.html">
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" />
 
-        <button class="new-chat-btn" id="logout-btn" type="button">
-          <i class="ph ph-sign-out"></i>
-          <span>Sair</span>
-        </button>
-      </div>
+        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-claro" />
+      </a>
+    </div>
 
-      <div class="chat-list">
-        <div class="chat-item active">
-          <i class="ph ph-squares-four"></i>
-          <div class="chat-info">
-            <div class="chat-title">Hub de Aplicações</div>
-            <div class="chat-date">Produtos disponíveis</div>
-          </div>
-        </div>
-      </div>
+    <nav class="navbar-links">
+      <a href="#" class="nav-link active">Início</a>
+      <a href="#hub-grid" class="nav-link">Aplicações</a>
+      <a href="../sobre/sobre.html" class="nav-link">Sobre</a>
+    </nav>
 
-      <div class="sidebar-footer">
-        <button class="theme-toggle" id="theme-toggle" type="button">
-          <i class="ph ph-moon"></i>
-          <span>Modo escuro</span>
-        </button>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <header class="chat-header">
-        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button">
-          <i class="ph ph-list"></i>
+    <div class="navbar-right">
+      <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Alternar tema">
+        <i class="ph ph-moon"></i>
+        <span style="display: none;">Modo escuro</span> </button>
+      <div class="user-menu-container">
+        <button class="user-profile-btn" id="settings-btn" type="button">
+          <i class="ph ph-user-circle"></i>
+          <span id="user-email" class="nav-user-email">Carregando...</span>
+          <i class="ph ph-caret-down" style="font-size: 14px;"></i>
         </button>
 
-        <!-- <div class="assistant-info">
-          <div class="assistant-avatar">
-            <img src="../../img/icone.jpg" alt="Avatar" />
-          </div>
-          <div class="assistant-details">
-            <span class="name">Hub AVANCE</span>
-            <span class="status">Acesso controlado por login</span>
-          </div>
-        </div> -->
-      </header>
+       <div class="settings-dropdown" id="settings-menu" hidden>
 
-      <section class="hub-container">
-        <div class="hub-head">
-          <h1 class="hub-title">Aplicações</h1>
-          <p class="hub-subtitle">Selecione um produto para acessar.</p>
+          <a
+            href="../perfil/perfil.html"
+            class="dropdown-item reset-action"
+            id="perfil-user"
+            style="text-decoration: none;"            
+          >
+            <i class="ph ph-user"></i>
+            <span>Perfil</span>
+          </a>
+
+          <a
+            href="../usuarios/usuarios.html"
+            class="dropdown-item reset-action"
+            id="menu-users"
+            style="text-decoration: none;"
+            hidden
+          >
+            <i class="ph ph-users-three"></i>
+            <span>Usuários</span>
+          </a>
+
+          <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action" style="text-decoration: none;">
+            <i class="ph ph-lock-key"></i>
+            <span>Alterar Senha</span>
+          </a>
+
+          <button type="button" class="dropdown-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
+          </button>
         </div>
+      </div>
+    </div>
+  </header>
 
-        <!-- Grid agora é dinâmico: o JS preenche -->
+  <main class="main-content">
+
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Avance Vip</h1>
+        <h1 class="hero-title">O próximo nível da sua<br>operação começa agora.</h1>
+        <p class="hero-subtitle">Você tomou a decisão certa. Reunimos tecnologia, automação e estratégia em um só lugar.
+          Acesse nossas aplicações abaixo e deixe o trabalho pesado com a gente.</p>
+
+        <button class="hero-btn" onclick="document.getElementById('hub-grid').scrollIntoView({behavior: 'smooth'})"
+          type="button">
+          Começar agora <i class="ph ph-arrow-up-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <div class="showcase-wrapper">
+      <div class="showcase-content">
+
+        <div class="hub-section-title">
+          <h2>Nossas Aplicações</h2>
+        </div>
         <div class="hub-grid" id="hub-grid"></div>
-      </section>
-
-      <footer class="hub-footer">
-        <span>AVANCE • Hub de Distribuição</span>
-      </footer>
-    </main>
-
-    <!-- Modal (pop-up) de detalhes -->
-    <div id="app-modal-backdrop" class="app-modal-backdrop" hidden>
-      <div id="app-modal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="app-modal-title" hidden>
-        <div class="app-modal-header">
-          <div class="app-modal-titlewrap">
-            <div class="app-modal-badge" id="app-modal-badge"></div>
-            <h2 class="app-modal-title" id="app-modal-title"></h2>
-          </div>
-
-          <button type="button" class="app-modal-close" id="app-modal-close" aria-label="Fechar">
-            <i class="ph ph-x"></i>
-          </button>
-        </div>
-
-        <div class="app-modal-body">
-          <p class="app-modal-desc" id="app-modal-desc"></p>
-
-          <div class="app-modal-video" id="app-modal-video">
-            <!-- iframe inserido via JS -->
-          </div>
-
-          <div class="app-modal-actions app-modal-actions-bottom" id="app-modal-actions">
-            <!-- botões inseridos via JS -->
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Toast (mantido: boas-vindas) -->
-    <div id="toast-backdrop" class="toast-backdrop" hidden>
-      <div id="welcome-toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
-        <div class="toast-content">
-          <div class="toast-icon">
-            <img id="welcome-toast-image" src="../img/icone.jpg" alt="Boas-vindas" />
-          </div>
+    <footer class="hub-footer">
+      <span>AVANCE • Hub de Distribuição</span>
+    </footer>
+  </main>
 
-          <div class="toast-text">
-            <div class="toast-title" id="welcome-toast-title">Bem-vindo!</div>
-            <div class="toast-message" id="welcome-toast-message"></div>
-          </div>
+  <!-- Modal (pop-up) de detalhes -->
+  <div id="app-modal-backdrop" class="app-modal-backdrop" hidden>
+    <div id="app-modal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="app-modal-title" hidden>
+      <div class="app-modal-header">
+        <div class="app-modal-titlewrap">
+          <div class="app-modal-badge" id="app-modal-badge"></div>
+          <h2 class="app-modal-title" id="app-modal-title"></h2>
+        </div>
 
-          <button type="button" class="toast-close" id="welcome-toast-close" aria-label="Fechar mensagem">
-            <i class="ph ph-x"></i>
-          </button>
+        <button type="button" class="app-modal-close" id="app-modal-close" aria-label="Fechar">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+
+      <div class="app-modal-body">
+        <p class="app-modal-desc" id="app-modal-desc"></p>
+
+        <div class="app-modal-video" id="app-modal-video">
+          <!-- iframe inserido via JS -->
+        </div>
+
+        <div class="app-modal-actions app-modal-actions-bottom" id="app-modal-actions">
+          <!-- botões inseridos via JS -->
         </div>
       </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabaseClient.js"></script>
-    <script src="./hub.js" defer></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabaseClient.js"></script>
+  <script src="./hub.js" defer></script>
+</body>
+
 </html>

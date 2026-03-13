@@ -1,76 +1,77 @@
-// Captura os elementos do Modal
-const modal = document.getElementById('modalApi');
-const btnAbrir = document.getElementById('btnAbrirModalApi');
-const btnFechar = document.getElementById('btnFecharModal');
+document.addEventListener('DOMContentLoaded', () => {
 
-// Abre o pop-up ao clicar no botão
-btnAbrir.addEventListener('click', () => {
-    modal.classList.remove('modal-oculto');
-    modal.classList.add('modal-visivel');
-});
+  const modalApi = document.getElementById('modalApi');
+  const btnAbrirModal = document.getElementById('btnAbrirModalSidebar');
+  const btnFecharModal = document.getElementById('btnFecharModal');
+  const formApi = document.getElementById('formApi');
+  const inputApiKey = document.getElementById('apiKey');
+  const btnMostrarSenha = document.getElementById('btnMostrarSenha');
+  const mensagemApi = document.getElementById('mensagemApi');
 
-// Fecha o pop-up ao clicar no 'X'
-btnFechar.addEventListener('click', () => {
-    modal.classList.remove('modal-visivel');
-    modal.classList.add('modal-oculto');
-});
 
-// Fecha o pop-up se o usuário clicar na área escura (fora da caixinha)
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.classList.remove('modal-visivel');
-        modal.classList.add('modal-oculto');
+  // Função para abrir o modal
+  btnAbrirModal.addEventListener('click', () => {
+    modalApi.classList.add('active');
+    
+    const savedKey = localStorage.getItem('gemini_api_key');
+    if (savedKey && inputApiKey) inputApiKey.value = savedKey;
+  });
+
+  // Função para fechar o modal
+  const fecharModal = () => {
+    modalApi.classList.remove('active');
+    if (mensagemApi) {
+      mensagemApi.textContent = '';
+      mensagemApi.className = 'mensagem-feedback';
     }
-});
+  };
 
-// Lógica de envio para o n8n
-document.getElementById('formApi').addEventListener('submit', async function(event) {
-    event.preventDefault();
+  if (btnFecharModal) btnFecharModal.addEventListener('click', fecharModal);
 
-    const telefone = document.getElementById('telefone').value;
-    const apiKey = document.getElementById('apiKey').value;
-    const btnSubmit = document.getElementById('btnSubmit');
-    const divMensagem = document.getElementById('mensagem');
+  modalApi.addEventListener('click', (e) => {
+    if (e.target === modalApi) fecharModal();
+  });
 
-    btnSubmit.disabled = true;
-    btnSubmit.innerText = 'Autenticando...';
-    divMensagem.innerText = '';
+  // Lógica do Olhinho (Mostrar/Ocultar Senha)
+  if (btnMostrarSenha && inputApiKey) {
+    btnMostrarSenha.addEventListener('click', () => {
+      const icon = btnMostrarSenha.querySelector('i');
+      if (inputApiKey.type === 'password') {
+        inputApiKey.type = 'text';
+        if(icon) icon.className = 'ph ph-eye-slash input-icon';
+      } else {
+        inputApiKey.type = 'password';
+        if(icon) icon.className = 'ph ph-eye input-icon';
+      }
+    });
+  }
 
-    // Lembre-se de colocar a URL do seu nó Webhook da Railway aqui
-    const webhookUrl = 'https://primary-production-335ec.up.railway.app/webhook-test/registro_api';
+  // Lógica de Salvar a Chave
+  if (formApi) {
+    formApi.addEventListener('submit', (e) => {
+      e.preventDefault(); 
+      
+      const apiKey = inputApiKey.value.trim();
+      
+      if (apiKey.length < 10) {
+        mensagemApi.textContent = 'Por favor, insira uma chave de API válida.';
+        mensagemApi.className = 'mensagem-feedback mensagem-erro';
+        return;
+      }
 
-    try {
-        const resposta = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                telefone_cliente: telefone,
-                chave_gemini_recebida: apiKey
-            })
-        });
+      localStorage.setItem('gemini_api_key', apiKey);
+      
+      mensagemApi.textContent = 'Chave conectada com sucesso!';
+      mensagemApi.className = 'mensagem-feedback mensagem-sucesso';
 
-        if (resposta.ok) {
-            divMensagem.innerText = 'Chave conectada com sucesso!';
-            divMensagem.className = 'sucesso';
-            document.getElementById('apiKey').value = ''; 
-            
-            // Opcional: Fecha o pop-up automaticamente 2 segundos após o sucesso
-            setTimeout(() => {
-                modal.classList.remove('modal-visivel');
-                modal.classList.add('modal-oculto');
-                divMensagem.innerText = ''; // limpa a mensagem para a próxima abertura
-            }, 2000);
+      // Atualiza o status visual do agente para online (se a função existir no agent.js)
+      if (typeof window.atualizarStatusAgente === 'function') {
+        window.atualizarStatusAgente(true);
+      }
 
-        } else {
-            divMensagem.innerText = 'Falha ao conectar. Verifique o servidor.';
-            divMensagem.className = 'erro';
-        }
-    } catch (erro) {
-        console.error('Erro:', erro);
-        divMensagem.innerText = 'Erro de conexão com o n8n.';
-        divMensagem.className = 'erro';
-    } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerText = 'Conectar Chave';
-    }
+      setTimeout(() => {
+        fecharModal();
+      }, 1500);
+    });
+  }
 });

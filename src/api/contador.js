@@ -28,45 +28,79 @@
 export default async function handler(req, res) {
   try {
     const app = String(req.query.app || "").trim();
+    const userId = String(req.query.user_id || "").trim();
+    const metric = String(req.query.metric || "access").trim().toLowerCase();
+
     if (!app) return res.status(400).send("missing_app");
+    if (!userId) return res.status(400).send("missing_user");
+    if (!["access", "download"].includes(metric)) {
+      return res.status(400).send("invalid_metric");
+    }
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!SUPABASE_URL || !SERVICE_ROLE) return res.status(500).send("missing_env");
+    if (!SUPABASE_URL || !SERVICE_ROLE) {
+      return res.status(500).send("missing_env");
+    }
 
-    // Mapeia app -> URL final (configure via env vars)
     const targets = {
-     
       desktop: process.env.TARGET_DESKTOP_URL,
-
-      // NOVO: agente
-      // Use uma ENV dedicada, ou reaproveite AGENT_CHAT_URL
-      agent: process.env.TARGET_AGENT_URL || process.env.AGENT_CHAT_URL,
+      agent: process.env.TARGET_AGENT_URL,
+      protocol: process.env.TARGET_PROTOCOL_URL,
     };
 
     const target = targets[app];
     if (!target) return res.status(400).send("unknown_app");
 
-    // Incremento atômico via RPC
-    const rpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_access`, {
+    const headers = {
+      "Content-Type": "application/json",
+      apikey: SERVICE_ROLE,
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+    };
+
+    const globalRpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_access`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SERVICE_ROLE,
-        Authorization: `Bearer ${SERVICE_ROLE}`,
-      },
+      headers,
       body: JSON.stringify({ p_name: app }),
     });
 
-    if (!rpc.ok) {
-      const t = await rpc.text();
-      console.warn("increment_access failed:", t);
+    if (!globalRpc.ok) {
+      const t = await globalRpc.text();
+      console.error("increment_access failed:", {
+        status: globalRpc.status,
+        body: t,
+        app,
+      });
+    }
+
+    const profileRpc = await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_profile_app_metric`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        p_user_id: userId,
+        p_app_name: app,
+        p_metric: metric,
+      }),
+    });
+
+    if (!profileRpc.ok) {
+      const t = await profileRpc.text();
+      console.error("increment_profile_app_metric failed:", {
+        status: profileRpc.status,
+        body: t,
+        userId,
+        app,
+        metric,
+      });
+
+      return res.status(500).send("profile_metric_failed");
     }
 
     res.writeHead(302, { Location: target });
     res.end();
   } catch (e) {
+    console.error("contador error:", e);
     res.status(500).send("server_error");
   }
 }

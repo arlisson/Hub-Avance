@@ -1,78 +1,112 @@
 /**
- * hub.js — Hub AVANCE (cards dinâmicos + modal com YouTube)
+ * hub.js — Hub AVANCE (cards dinâmicos + modal + menu de configurações)
+ *
+ * Atualizações:
+ * - Captura o user.id da sessão do Supabase
+ * - Gera URLs dinâmicas do contador com app, user_id e metric
+ * - Registra access para apps online e download para apps baixáveis
+ * - Mantém menu, tema, modal, permissões e animações
  */
 
 let LOGIN_URL = "/login/login.html";
-const COUNTER_AGENT_URL = "/api/contador?app=agent";
-const COUNTER_DESKTOP_URL = "/api/contador?app=desktop";
+let CURRENT_USER_ID = "";
 
 /**
  * Defina seus cards aqui.
- * - youtubeId: apenas o ID do vídeo (não a URL inteira).
- * - actions: botões exibidos no modal.
- * - enabled: se false, o card fica “indisponível”.
+ * - youtubeId: apenas o ID do vídeo (não a URL inteira)
+ * - actions: botões exibidos no modal
+ * - enabled: se false, o card fica indisponível
+ * - app: nome do app para enviar ao contador
+ * - metric: "access" | "download"
  */
 const APPS = [
   {
     id: "agent",
-    badge: "Agente de suporte | EM PRODUÇÃO",
-    icon: "ph-globe",
-    title: "Agente Web | EM PRODUÇÃO",
+    badge: "Mentor estratégico de vendas",
+    image: "../img/Apolo.png",
+    title: "Mentor estratégico de vendas",
     shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
-      "Este é o agente de suporte web. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
-    youtubeId: "CNFqPBAdglE", // TROQUE pelo seu vídeo (ID)
-    enabled: false,
+      "Este é o agente mentor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+    youtubeId: "CNFqPBAdglE",
+    enabled: true,
     actions: [
-      // {
-      //   label: "Acessar",
-      //   icon: "ph-arrow-square-out",
-      //   href: COUNTER_AGENT_URL,
-      //   primary: true,
-      //   targetBlank: false,
-      // },
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        app: "agent",
+        metric: "access",
+        primary: true,
+        targetBlank: false,
+      },
     ],
   },
   {
     id: "desktop",
     badge: "Preenche Fácil",
-    icon: "ph-desktop",
-    title: "Aplicação Desktop",
+    image: "../img/PreencheFacil.png",
+    title: "Preenche Fácil",
     shortDesc:
       "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
     longDesc:
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
-    youtubeId: "", // TROQUE pelo seu vídeo (ID)
+    youtubeId: "",
     enabled: true,
     actions: [
       {
         label: "Baixar",
         icon: "ph-download-simple",
-        href: COUNTER_DESKTOP_URL,
-        primary: false,
+        app: "desktop",
+        metric: "download",
+        primary: true,
         targetBlank: true,
       },
     ],
   },
   {
-    id: "novo-produto",
-    badge: "Em breve",
-    icon: "ph-rocket-launch",
-    title: "Novo Produto",
-    shortDesc: "Espaço reservado para próximos aplicativos do hub.",
-    longDesc:
-      "Este espaço é reservado para novos produtos que serão disponibilizados no hub. Quando estiver pronto, você poderá incluir aqui descrição detalhada e um vídeo de apresentação.",
-    youtubeId: "", // sem vídeo
-    enabled: false,
-    actions: [],
+    id: "protocol",
+    badge: "Gerador de Protocolo Agendor",
+    image: "../img/Protocolo.png",
+    title: "Gerador de Protocolo Agendor",
+    shortDesc: "Gera e registra protocolos.",
+    longDesc: "Ferramenta para geração, registro e envio de protocolos.",
+    youtubeId: "",
+    enabled: true,
+    actions: [
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href:"../protocolo/protocolo.html",
+        primary: true,
+        targetBlank: false,
+      },
+    ],
   },
-  
+  {
+    id: "static-protocol",
+    badge: "Gerador de Protocolo",
+    image: "../img/Protocolo.png",
+    title: "Gerador de Protocolo",
+    shortDesc: "Gera novos protocolos.",
+    longDesc: "Ferramenta para geração de novos protocolos.",
+    youtubeId: "",
+    enabled: true,
+    actions: [
+      {
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        app: "protocol",
+        metric: "access",
+        primary: true,
+        targetBlank: false,
+      },
+    ],
+  },
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadPublicAgentConfig();
 
-  // Supabase session guard
   let sb;
   try {
     sb = await window.getSupabaseClient();
@@ -82,125 +116,125 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { data: sessionData } = await sb.auth.getSession();
-  if (!sessionData?.session) {
+  try {
+    const { data: sessionData } = await sb.auth.getSession();
+
+    if (!sessionData?.session) {
+      window.location.href = normalizeLoginUrl(LOGIN_URL);
+      return;
+    }
+
+    CURRENT_USER_ID = sessionData.session.user.id;
+    const email = sessionData.session.user?.email || "";
+
+    const { data: profile, error } = await sb
+      .from("profiles")
+      .select("protocol")
+      .eq("id", CURRENT_USER_ID)
+      .single();
+
+    if (error) {
+      console.error("Erro ao buscar permissões:", error);
+    }
+
+    const canAccessProtocol = !!profile?.protocol;
+
+    const menuUsers = document.getElementById("menu-users");
+    //console.log("menuUsers encontrado?", !!menuUsers);
+
+    if (menuUsers) {
+      menuUsers.hidden = !canAccessProtocol;
+    }
+
+    const userEmailEl = document.getElementById("user-email");
+    if (userEmailEl) {
+      userEmailEl.textContent = email || "";
+      userEmailEl.title = email || "";
+      userEmailEl.style.cursor = "default";
+    }
+
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsMenu = document.getElementById("settings-menu");
+    const themeToggle = document.getElementById("theme-toggle");
+    const menuLogout = document.getElementById("menu-logout");
+
+    initSettingsMenu(settingsBtn, settingsMenu);
+    initTheme(themeToggle);
+
+    if (menuLogout) {
+      menuLogout.addEventListener("click", async () => {
+        try {
+          await sb.auth.signOut();
+        } finally {
+          clearAgentChatSessionStorage();
+          window.location.href = normalizeLoginUrl(LOGIN_URL);
+        }
+      });
+    }
+
+    initMobileSidebar();
+    initAppModal();
+    renderHubCards({ canAccessProtocol });
+  } catch (e) {
+    console.error("Erro ao inicializar Hub:", e);
     window.location.href = normalizeLoginUrl(LOGIN_URL);
-    return;
   }
-
-  const email = sessionData.session.user?.email || "";
-
-  // Toast de boas-vindas (opcional)
-  const WELCOME_TOAST = {
-    title: "Bem-vindo!",
-    message:
-      "Seja bem-vindo ao Hub AVANCE. Selecione um produto para ver os detalhes e acessar.",
-    durationMs: 0,
-  };
-  showToast(WELCOME_TOAST);
-
-  // Mostra email no sidebar
-  const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) userEmailEl.textContent = email;
-
-  // Logout
-  const logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await sb.auth.signOut();
-      } finally {
-        clearAgentChatSessionStorage();
-        window.location.href = normalizeLoginUrl(LOGIN_URL);
-      }
-    });
-  }
-
-  // Tema
-  const themeToggle = document.getElementById("theme-toggle");
-  initTheme(themeToggle);
-
-  // Sidebar mobile
-  initMobileSidebar();
-
-  // Render cards dinâmicos
-  renderHubCards();
-
-  // Modal
-  initAppModal();
 });
+
+// -------------------------
+// URLs do contador
+// -------------------------
+function buildCounterUrl(app, metric = "access") {
+  if (!CURRENT_USER_ID || !app) return "#";
+  
+  const params = new URLSearchParams({
+    app,
+    user_id: CURRENT_USER_ID,
+    metric,
+  });
+
+  return `/api/contador?${params.toString()}`;
+}
 
 // -------------------------
 // Renderização dos cards
 // -------------------------
-function renderHubCards() {
+function renderHubCards({ canAccessProtocol = false } = {}) {
   const grid = document.getElementById("hub-grid");
   if (!grid) return;
 
   grid.innerHTML = "";
 
-  APPS.forEach((app) => {
+  const visibleApps = APPS.filter((app) => {
+    if (app.id === "protocol" && !canAccessProtocol) return false;
+    return true;
+  });
+
+  visibleApps.forEach((app) => {
     const card = document.createElement("article");
     card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
     card.setAttribute("data-app-id", app.id);
 
-    // Torna card clicável (mas não se estiver desabilitado)
     if (app.enabled) {
-      card.style.cursor = "pointer";
-      card.addEventListener("click", (e) => {
-        // se clicar em um link/botão, deixa o elemento cuidar (evita abrir modal “em cima”)
-        const isInteractive = e.target.closest("a,button");
-        if (isInteractive) return;
+      card.addEventListener("click", () => {
         openAppModal(app.id);
       });
-    } else {
-      card.style.cursor = "not-allowed";
     }
 
+    const imgTag = app.image
+      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}">`
+      : "";
+
     card.innerHTML = `
-      <div class="hub-card-top">
-        <div class="hub-badge">${escapeHtml(app.badge || "")}</div>
-        <div class="hub-icon">
-          <i class="ph ${escapeHtml(app.icon || "ph-cube")}"></i>
-        </div>
-      </div>
-
-      <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
-      <p class="hub-card-desc">${escapeHtml(app.shortDesc || "")}</p>
-
-      <div class="hub-card-actions">
-        ${
-          app.enabled
-            ? `
-              <button class="hub-btn hub-btn-primary" type="button" data-details="${escapeHtml(app.id)}">
-                <i class="ph ph-info"></i>
-                <span>Detalhes</span>
-              </button>
-            `
-            : `
-              <button class="hub-btn" type="button" disabled>
-                <i class="ph ph-lock"></i>
-                <span>Indisponível</span>
-              </button>
-            `
-        }
+      ${imgTag}
+      <div class="hub-card-content">
+        <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
       </div>
     `;
 
     grid.appendChild(card);
   });
-
-  // Botão “Detalhes” abre modal
-  grid.querySelectorAll("[data-details]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const id = btn.getAttribute("data-details");
-      openAppModal(id);
-    });
-  });
 }
-
-
 
 // -------------------------
 // Modal
@@ -214,12 +248,10 @@ function initAppModal() {
 
   closeBtn.addEventListener("click", closeAppModal);
 
-  // Fecha no ESC
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeAppModal();
   });
 
-  // Opcional: fechar clicando fora
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) closeAppModal();
   });
@@ -243,45 +275,50 @@ function openAppModal(appId) {
   if (titleEl) titleEl.textContent = app.title || "";
   if (descEl) descEl.textContent = app.longDesc || "";
 
-  // Actions
   if (actionsEl) {
     actionsEl.innerHTML = "";
+
     (app.actions || []).forEach((a) => {
-      const el = document.createElement(a.href ? "a" : "button");
+      const el = document.createElement("a");
       el.className = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
       el.innerHTML = `
         <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
         <span>${escapeHtml(a.label || "Abrir")}</span>
       `;
 
-      if (a.href) {
+      if (a.app) {
+        el.href = buildCounterUrl(a.app, a.metric || "access");
+      } else if (a.href) {
         el.href = a.href;
-        if (a.targetBlank) {
-          el.target = "_blank";
-          el.rel = "noopener noreferrer";
-        }
       } else {
-        el.type = "button";
+        el.href = "#";
+      }
+
+      if (a.targetBlank) {
+        el.target = "_blank";
+        el.rel = "noopener noreferrer";
       }
 
       actionsEl.appendChild(el);
     });
   }
 
-  // Vídeo
   if (videoEl) {
     videoEl.innerHTML = "";
+
     if (app.youtubeId) {
       const iframe = document.createElement("iframe");
       iframe.allow =
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
       iframe.loading = "lazy";
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
-      iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(app.youtubeId)}`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+        app.youtubeId
+      )}`;
+
       videoEl.appendChild(iframe);
     } else {
-      // fallback simples sem vídeo
       const div = document.createElement("div");
       div.style.padding = "14px";
       div.style.opacity = "0.85";
@@ -294,7 +331,6 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
-  // foco (acessibilidade)
   modal.setAttribute("tabindex", "-1");
   modal.focus();
 }
@@ -304,10 +340,7 @@ function closeAppModal() {
   const modal = document.getElementById("app-modal");
   const videoEl = document.getElementById("app-modal-video");
 
-  if (videoEl) {
-    // remove iframe para parar áudio
-    videoEl.innerHTML = "";
-  }
+  if (videoEl) videoEl.innerHTML = "";
 
   if (modal) modal.hidden = true;
   if (backdrop) backdrop.hidden = true;
@@ -315,12 +348,54 @@ function closeAppModal() {
 }
 
 // -------------------------
-// Config pública (opcional)
+// Menu de configurações
+// -------------------------
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  const close = () => {
+    menu.hidden = true;
+  };
+
+  const open = () => {
+    menu.hidden = false;
+  };
+
+  const toggle = () => {
+    if (menu.hidden) open();
+    else close();
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const container = document.querySelector(".user-menu-container");
+    if (!container) {
+      close();
+      return;
+    }
+
+    if (!container.contains(e.target)) {
+      close();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+}
+
+// -------------------------
+// Config pública
 // -------------------------
 async function loadPublicAgentConfig() {
   try {
     const r = await fetch("/api/public-agent-config", { cache: "no-store" });
     const j = await r.json().catch(() => null);
+
     if (r.ok && j?.ok) {
       if (j.loginUrl) LOGIN_URL = j.loginUrl;
     }
@@ -331,7 +406,9 @@ async function loadPublicAgentConfig() {
 
 function normalizeLoginUrl(url) {
   if (!url) return "/login/login.html";
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) {
+    return url;
+  }
   return "/" + url.replace(/^\.?\//, "");
 }
 
@@ -339,53 +416,67 @@ function normalizeLoginUrl(url) {
 // Tema
 // -------------------------
 function initTheme(themeToggle) {
-  const isDark = localStorage.getItem("theme") === "dark";
-  document.body.classList.toggle("dark-mode", isDark);
-  updateThemeIcon(themeToggle, isDark);
-
   if (!themeToggle) return;
+
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    updateThemeIcon(themeToggle, true);
+  } else {
+    document.body.classList.remove("dark-mode");
+    updateThemeIcon(themeToggle, false);
+  }
+
   themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
-    const nowDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", nowDark ? "dark" : "light");
-    updateThemeIcon(themeToggle, nowDark);
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    updateThemeIcon(themeToggle, isDark);
   });
 }
 
-function updateThemeIcon(themeToggle, isDark) {
-  if (!themeToggle) return;
-  const icon = themeToggle.querySelector("i");
-  const text = themeToggle.querySelector("span");
-  if (!icon || !text) return;
+function updateThemeIcon(btn, isDark) {
+  const icon = btn?.querySelector("i");
+  const text = btn?.querySelector("span");
+  const logo = document.querySelector(".company-logo");
 
-  if (isDark) {
-    icon.classList.replace("ph-moon", "ph-sun");
-    text.textContent = "Modo claro";
-  } else {
-    icon.classList.replace("ph-sun", "ph-moon");
-    text.textContent = "Modo escuro";
+  if (icon && text) {
+    icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
+    text.textContent = isDark ? "Modo claro" : "Modo escuro";
+  }
+
+  if (logo) {
+    if (isDark) {
+      logo.src = "../img/LogoEscuroSemFundo.png";
+    } else {
+      logo.src = "../img/LogoClaraSemFundo.png";
+    }
   }
 }
 
 // -------------------------
-// Sidebar mobile
+// Sidebar
 // -------------------------
 function initMobileSidebar() {
-  const menuBtn = document.getElementById("mobile-menu-btn");
+  const mobileBtn = document.getElementById("mobile-menu-btn");
+  const desktopBtn = document.getElementById("desktop-toggle-btn");
 
-  menuBtn?.addEventListener("click", () => {
+  desktopBtn?.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-collapsed");
+  });
+
+  mobileBtn?.addEventListener("click", () => {
     document.body.classList.toggle("sidebar-open");
   });
 
   document.addEventListener("click", (e) => {
-    if (!document.body.classList.contains("sidebar-open")) return;
+    if (window.innerWidth <= 900 && document.body.classList.contains("sidebar-open")) {
+      const sidebar = document.querySelector(".sidebar");
+      const clickedInsideSidebar = sidebar?.contains(e.target);
+      const clickedMobileBtn = mobileBtn?.contains(e.target);
 
-    const sidebar = document.querySelector(".sidebar");
-    const clickedInsideSidebar = sidebar?.contains(e.target);
-    const clickedMenuBtn = menuBtn?.contains(e.target);
-
-    if (!clickedInsideSidebar && !clickedMenuBtn) {
-      document.body.classList.remove("sidebar-open");
+      if (!clickedInsideSidebar && !clickedMobileBtn) {
+        document.body.classList.remove("sidebar-open");
+      }
     }
   });
 }
@@ -404,54 +495,6 @@ function clearAgentChatSessionStorage() {
 }
 
 // -------------------------
-// Toast de boas-vindas (seu código mantido)
-// -------------------------
-function showToast({ title, message, durationMs = 4500, backgroundImage }) {
-  const toast = document.getElementById("welcome-toast");
-  if (!toast) return;
-
-  const titleEl = document.getElementById("welcome-toast-title");
-  const msgEl = document.getElementById("welcome-toast-message");
-  const backdrop = document.getElementById("toast-backdrop");
-  const closeBtn = document.getElementById("welcome-toast-close");
-
-  if (titleEl) titleEl.textContent = title || "Bem-vindo!";
-  if (msgEl) msgEl.textContent = message || "";
-
-  if (backgroundImage) {
-    toast.style.backgroundImage = `url("${backgroundImage}")`;
-  }
-
-  if (backdrop) backdrop.hidden = false;
-  document.body.classList.add("modal-open");
-
-  toast.setAttribute("tabindex", "-1");
-  toast.focus();
-
-  toast.hidden = false;
-  toast.classList.remove("hide");
-  toast.offsetHeight;
-  toast.classList.add("show");
-
-  const hide = () => {
-    toast.classList.remove("show");
-    toast.classList.add("hide");
-
-    window.setTimeout(() => {
-      toast.hidden = true;
-      if (backdrop) backdrop.hidden = true;
-      document.body.classList.remove("modal-open");
-    }, 200);
-  };
-
-  if (closeBtn) closeBtn.onclick = hide;
-
-  if (durationMs && durationMs > 0) {
-    window.setTimeout(hide, durationMs);
-  }
-}
-
-// -------------------------
 // Helpers anti-injeção
 // -------------------------
 function escapeHtml(s) {
@@ -463,7 +506,112 @@ function escapeHtml(s) {
     .replaceAll("'", "&#039;");
 }
 
-function escapeAttr(s) {
-  // atributos como href
-  return escapeHtml(s).replaceAll("`", "&#096;");
-}
+// -------------------------
+// Efeito da Navbar
+// -------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.querySelector(".top-navbar");
+
+  if (!navbar) {
+    console.warn("Navbar não encontrada pelo script!");
+    return;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (e.clientY <= 30) {
+      navbar.classList.add("hover-active");
+    } else {
+      navbar.classList.remove("hover-active");
+    }
+  });
+});
+
+// ==========================================================
+// ANIMAÇÃO DE PARTÍCULAS
+// ==========================================================
+document.addEventListener("DOMContentLoaded", () => {
+  let canvas = document.getElementById("global-particles");
+
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.id = "global-particles";
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.zIndex = "-10";
+    canvas.style.pointerEvents = "none";
+    document.body.prepend(canvas);
+  }
+
+  const ctx = canvas.getContext("2d");
+  let particlesArray = [];
+
+  function setCanvasSize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  setCanvasSize();
+  window.addEventListener("resize", setCanvasSize);
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 3 + 1.5;
+      this.speedX = (Math.random() - 0.5) * 1.2;
+      this.speedY = (Math.random() - 0.5) * 1.2;
+      this.opacity = Math.random() * 0.7 + 0.3;
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "rgba(87, 197, 234, 1)";
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    particlesArray = [];
+    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000);
+
+    for (let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < particlesArray.length; i++) {
+      particlesArray[i].update();
+      particlesArray[i].draw();
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  init();
+  animate();
+});

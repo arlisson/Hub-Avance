@@ -1,5 +1,13 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const form = document.getElementById("reset-form");
+  const pass = document.getElementById("new-password");
+  const currentPassInput = document.getElementById("current-password");
+  const btn = document.getElementById("save-btn");
+  const rulesBox = document.getElementById("password-rules");
+  const toggleBtn = document.getElementById("toggle-new-password");
+  const toggleCurrentBtn = document.getElementById("toggle-current-password");
 
+  // [NOVO] Verifica se o utilizador já tem sessão iniciada para adaptar o botão "Voltar"
   try {
     const sb = await window.getSupabaseClient();
     const { data } = await sb.auth.getSession();
@@ -14,12 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     console.warn("Não foi possível verificar a sessão no carregamento.", err);
   }
-
-  const form = document.getElementById("reset-form");
-  const pass = document.getElementById("new-password");
-  const btn = document.getElementById("save-btn");
-  const rulesBox = document.getElementById("password-rules");
-  const toggleBtn = document.getElementById("toggle-new-password");
 
   if (!form || !pass) return;
 
@@ -97,6 +99,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const currentPass = currentPassInput ? currentPassInput.value : "";
+    const newPass = pass.value;
+
+    if (!currentPass) {
+      alert("Por favor, digite a sua senha atual.");
+      return;
+    }
+
     if (!validatePassword(true)) {
       return;
     }
@@ -109,30 +119,74 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    if (btn) btn.disabled = true;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "Verificando...";
+    }
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: pass.value,
+      // 1. Pega o email do utilizador com sessão iniciada
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error("Sessão expirada. Inicie sessão novamente.");
+      }
+
+      const userEmail = session.user.email;
+
+      // 2. Tenta "iniciar sessão" novamente apenas para validar se a senha atual está correta
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: currentPass,
       });
 
-      if (error) throw error;
+      if (signInError) {
+        throw new Error("A senha atual está incorreta.");
+      }
 
-      alert("Senha atualizada com sucesso. Faça login novamente.");
+      // 3. Se a senha atual estiver correta, atualizamos para a nova
+      if (btn) btn.innerText = "Atualizando...";
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPass,
+      });
+
+      if (updateError) throw updateError;
+
+      alert("Senha atualizada com sucesso! Inicie sessão com a sua nova senha.");
+      
+      // Termina a sessão do utilizador e envia para o ecrã de login
+      await supabase.auth.signOut();
       window.location.href = "../login/login.html";
+
     } catch (err) {
-      alert(err?.message || "Falha ao atualizar senha.");
+      alert(err?.message || "Falha ao atualizar a senha.");
     } finally {
-      if (btn) btn.disabled = false;
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "Salvar";
+      }
     }
   });
 
+  // Toggle do campo da NOVA senha
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
       const isPassword = pass.type === "password";
       pass.type = isPassword ? "text" : "password";
 
       toggleBtn.innerHTML = isPassword
+        ? '<i class="ph ph-eye-slash"></i>'
+        : '<i class="ph ph-eye"></i>';
+    });
+  }
+
+  // Toggle do campo da SENHA ATUAL
+  if (toggleCurrentBtn && currentPassInput) {
+    toggleCurrentBtn.addEventListener("click", () => {
+      const isPassword = currentPassInput.type === "password";
+      currentPassInput.type = isPassword ? "text" : "password";
+
+      toggleCurrentBtn.innerHTML = isPassword
         ? '<i class="ph ph-eye-slash"></i>'
         : '<i class="ph ph-eye"></i>';
     });
