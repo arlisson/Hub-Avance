@@ -1,22 +1,69 @@
 let allUsers = [];
 let searchEl = null;
 let errorBox = null;
+let appUsageErrorBox = null;
+let supabaseClient = null;
+let currentSession = null;
+let currentView = "users";
+
+const APP_CATALOG = {
+  desktop: {
+    label: "Preenche Fácil",
+    icon: "ph-desktop",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  agent: {
+    label: "Agente de IA",
+    icon: "ph-robot",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol: {
+    label: "Gerador de Protocolo",
+    icon: "ph-file-text",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol_static: {
+    label: "Gerador de Protocolo Estático",
+    icon: "ph-files",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+  protocol_agendor: {
+    label: "Gerador de Protocolo Agendor",
+    icon: "ph-briefcase",
+    metrics: [
+      { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },
+    ],
+  },
+};
+
+const APP_USAGE_TABLE_CANDIDATES = [
+  "app_usage",
+  "app_usages",
+  "app_access",
+  "app_accesses",
+  "controle_acessos_apps",
+  "controle_acesso_apps",
+  "controle_de_acessos_apps",
+];
 
 function applyFilterAndRender() {
   const term = (searchEl?.value || "").trim().toLowerCase();
 
   const filtered = allUsers.filter((u) => {
-    let regiao = {};
-
-    if (u.regiao && typeof u.regiao === "object") {
-      regiao = u.regiao;
-    } else if (typeof u.regiao === "string") {
-      try {
-        regiao = JSON.parse(u.regiao);
-      } catch {
-        regiao = {};
-      }
-    }
+    const regiao = parseRegion(u.regiao);
 
     return (
       String(u.name || "").toLowerCase().includes(term) ||
@@ -37,39 +84,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
   const HUB_URL = "/hub/hub.html";
 
-  let sb;
-  let session;
-
   searchEl = document.getElementById("search");
   errorBox = document.getElementById("errorBox");
+  appUsageErrorBox = document.getElementById("appUsageErrorBox");
 
   try {
-    sb = await window.getSupabaseClient();
+    supabaseClient = await window.getSupabaseClient();
   } catch {
     window.location.href = LOGIN_URL;
     return;
   }
 
   try {
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
 
     if (sessionError || !sessionData?.session) {
       window.location.href = LOGIN_URL;
       return;
     }
 
-    session = sessionData.session;
-    window.__USER_ACCESS_TOKEN__ = session.access_token;
+    currentSession = sessionData.session;
+    window.__USER_ACCESS_TOKEN__ = currentSession.access_token;
   } catch {
     window.location.href = LOGIN_URL;
     return;
   }
 
-  const user = session.user;
+  const user = currentSession.user;
   const email = user?.email || "";
 
   try {
-    const { data: profile, error } = await sb
+    const { data: profile, error } = await supabaseClient
       .from("profiles")
       .select("protocol")
       .eq("id", user.id)
@@ -101,6 +146,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
+  initNavigation();
 
   const menuBackHub = document.getElementById("menu-back-hub");
   if (menuBackHub) {
@@ -113,75 +159,123 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (menuLogout) {
     menuLogout.addEventListener("click", async () => {
       try {
-        await sb.auth.signOut();
+        await supabaseClient.auth.signOut();
       } finally {
         window.location.href = LOGIN_URL;
       }
     });
   }
 
-  async function loadUsers(token) {
-    try {
-      if (errorBox) {
-        errorBox.hidden = true;
-        errorBox.textContent = "";
-      }
-
-      const resp = await fetch("/api/admin/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        throw new Error(data?.error || "Falha ao carregar usuários.");
-      }
-
-      allUsers = Array.isArray(data?.users) ? data.users : [];
-      applyFilterAndRender();
-    } catch (e) {
-      if (errorBox) {
-        errorBox.textContent = e?.message || "Erro ao carregar usuários.";
-        errorBox.hidden = false;
-      }
-    }
-  }
+  document.getElementById("btn-refresh-app-usage")?.addEventListener("click", async () => {
+    await loadAppUsageDashboard();
+  });
 
   searchEl?.addEventListener("input", () => {
     applyFilterAndRender();
   });
 
-  await loadUsers(session.access_token);
+  await loadUsers(currentSession.access_token);
+  await loadAppUsageDashboard();
 });
 
-const METRICS = [{ key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },]
+async function loadUsers(token) {
+  try {
+    setError(errorBox, "", true);
 
-const APP_USAGE_META = {
-  agent: {
-    label: "Agente de IA",
-    metrics: METRICS
-  },
-  desktop: {
-    label: "Preenche Fácil",
-    metrics: METRICS
-  },
-  protocol_static: {
-    label: "Gerador de Protocolo Estático",
-     metrics: METRICS
-  },
-  protocol: {
-    label: "Gerador de Protocolo",
-     metrics: METRICS
-  },
-  protocol_agendor: {
-    label: "Gerador de Protocolo Agendor",
-    metrics: METRICS
-  },
-};
+    const resp = await fetch("/api/admin/users", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data?.error || "Falha ao carregar usuários.");
+    }
+
+    allUsers = Array.isArray(data?.users) ? data.users : [];
+    applyFilterAndRender();
+  } catch (e) {
+    setError(errorBox, e?.message || "Erro ao carregar usuários.");
+  }
+}
+
+async function loadAppUsageDashboard() {
+  try {
+    setError(appUsageErrorBox, "", true);
+
+    const records = await fetchAppUsageRecords();
+    renderAppUsageDashboard(records);
+  } catch (e) {
+    setError(appUsageErrorBox, e?.message || "Erro ao carregar uso dos aplicativos.");
+    renderAppUsageDashboard([]);
+  }
+}
+
+async function fetchAppUsageRecords() {
+  const tableResult = await tryFetchAppUsageTable();
+  if (tableResult.success) {
+    return normalizeTableRows(tableResult.rows);
+  }
+
+  return aggregateUsageFromUsers(allUsers);
+}
+
+async function tryFetchAppUsageTable() {
+  for (const tableName of APP_USAGE_TABLE_CANDIDATES) {
+    try {
+      const { data, error } = await supabaseClient
+        .from(tableName)
+        .select("id, name, acessos, updated_at")
+        .order("name", { ascending: true });
+
+      if (error) {
+        continue;
+      }
+
+      if (Array.isArray(data)) {
+        return { success: true, tableName, rows: data };
+      }
+    } catch {
+      // tenta próxima possibilidade
+    }
+  }
+
+  return { success: false, rows: [] };
+}
+
+function normalizeTableRows(rows) {
+  return rows.map((row) => ({
+    key: String(row?.name || "").trim(),
+    label: getAppMeta(row?.name)?.label || String(row?.name || "Aplicativo"),
+    accesses: Number(row?.acessos || 0),
+    updated_at: row?.updated_at || null,
+  }));
+}
+
+function aggregateUsageFromUsers(users) {
+  const totals = new Map();
+
+  users.forEach((user) => {
+    const usage = user?.app_usage && typeof user.app_usage === "object" ? user.app_usage : {};
+
+    Object.entries(usage).forEach(([appKey, appData]) => {
+      const current = totals.get(appKey) || {
+        key: appKey,
+        label: getAppMeta(appKey)?.label || appKey,
+        accesses: 0,
+        updated_at: null,
+      };
+
+      current.accesses += Number(appData?.access || 0);
+      totals.set(appKey, current);
+    });
+  });
+
+  return Array.from(totals.values()).sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
+}
 
 function renderUsers(users) {
   const tbody = document.getElementById("users-table-body");
@@ -192,7 +286,7 @@ function renderUsers(users) {
   if (!users.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td colspan="8" style="text-align:center; color: var(--muted); padding: 24px;">
+      <td colspan="8" style="text-align:center; color: var(--text-secondary); padding: 24px;">
         Nenhum usuário encontrado.
       </td>
     `;
@@ -201,18 +295,7 @@ function renderUsers(users) {
   }
 
   users.forEach((u) => {
-    let regiao = {};
-
-    if (u.regiao && typeof u.regiao === "object") {
-      regiao = u.regiao;
-    } else if (typeof u.regiao === "string") {
-      try {
-        regiao = JSON.parse(u.regiao);
-      } catch {
-        regiao = {};
-      }
-    }
-
+    const regiao = parseRegion(u.regiao);
     const cep = regiao.cep || u.cep || "";
     const cidade = regiao.cidade || "";
     const estado = regiao.estado || "";
@@ -323,7 +406,7 @@ function renderUsers(users) {
           </div>
 
           <div class="expand-section-title" style="margin-top: 18px;">Uso dos aplicativos</div>
-          ${renderAppUsageBlock(u.app_usage)}
+          ${renderUserAppUsageBlock(u.app_usage)}
 
           <div class="actions">
             <button class="btn-primary btn-save-user" type="button">Salvar alterações</button>
@@ -420,13 +503,10 @@ function renderUsers(users) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}`,
           },
-          body: JSON.stringify({
-            id: u.id,
-          }),
+          body: JSON.stringify({ id: u.id }),
         });
 
         const data = await resp.json();
-        
 
         if (!resp.ok) {
           throw new Error(data?.detail || data?.error || "Falha ao excluir usuário.");
@@ -434,6 +514,7 @@ function renderUsers(users) {
 
         allUsers = allUsers.filter((item) => item.id !== u.id);
         applyFilterAndRender();
+        await loadAppUsageDashboard();
         showFeedback("Usuário excluído com sucesso.", "success");
       } catch (e) {
         alert(e?.message || "Erro ao excluir usuário.");
@@ -448,9 +529,9 @@ function renderUsers(users) {
   });
 }
 
-function renderAppUsageBlock(appUsage) {
+function renderUserAppUsageBlock(appUsage) {
   const usage = appUsage && typeof appUsage === "object" ? appUsage : {};
-  const knownKeys = Object.keys(APP_USAGE_META);
+  const knownKeys = Object.keys(APP_CATALOG);
   const unknownKeys = Object.keys(usage).filter((key) => !knownKeys.includes(key));
   const orderedKeys = [...knownKeys.filter((key) => usage[key]), ...unknownKeys];
 
@@ -463,9 +544,12 @@ function renderAppUsageBlock(appUsage) {
   }
 
   const rows = orderedKeys.map((appKey) => {
-    const meta = APP_USAGE_META[appKey] || {
+    const meta = getAppMeta(appKey) || {
       label: appKey,
-      metrics: METRICS
+      metrics: [
+        { key: "access", label: "Acessos" },
+        { key: "download", label: "Downloads" },
+      ],
     };
 
     const appData = usage[appKey] || {};
@@ -476,7 +560,7 @@ function renderAppUsageBlock(appUsage) {
         return `
           <div class="usage-metric">
             <span class="usage-metric-label">${escapeHtml(metric.label)}</span>
-            <span class="usage-metric-value">${value}</span>
+            <span class="usage-metric-value">${formatNumber(value)}</span>
           </div>
         `;
       })
@@ -497,6 +581,151 @@ function renderAppUsageBlock(appUsage) {
       ${rows.join("")}
     </div>
   `;
+}
+
+function renderAppUsageDashboard(records) {
+  const summaryGrid = document.getElementById("usage-summary-grid");
+  const tbody = document.getElementById("app-usage-table-body");
+  if (!summaryGrid || !tbody) return;
+
+  summaryGrid.innerHTML = "";
+  tbody.innerHTML = "";
+
+  const orderedRecords = orderUsageRecords(records);
+
+  if (!orderedRecords.length) {
+    summaryGrid.innerHTML = `
+      <div class="usage-summary-card">
+        <div class="usage-summary-title">Nenhum dado disponível</div>
+        <div class="usage-summary-date">Nenhum acesso registrado.</div>
+      </div>
+    `;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td colspan="4" style="text-align:center; color: var(--text-secondary); padding: 24px;">
+        Nenhum dado de uso disponível.
+      </td>
+    `;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  orderedRecords.forEach((record) => {
+    const summaryCard = document.createElement("div");
+    summaryCard.className = "usage-summary-card";
+    summaryCard.innerHTML = `
+      <div class="usage-summary-top">
+        <div class="usage-summary-title">${escapeHtml(record.label)}</div>
+        <span class="usage-summary-key">${escapeHtml(record.key)}</span>
+      </div>
+      <div class="usage-summary-number">${formatNumber(record.accesses)}</div>
+      <div class="usage-summary-date">${formatDateTime(record.updated_at)}</div>
+    `;
+    summaryGrid.appendChild(summaryCard);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(record.label)}</td>
+      <td>${escapeHtml(record.key)}</td>
+      <td>${formatNumber(record.accesses)}</td>
+      <td>${escapeHtml(formatDateTime(record.updated_at))}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function orderUsageRecords(records) {
+  const map = new Map();
+
+  Object.entries(APP_CATALOG).forEach(([key, meta]) => {
+    map.set(key, {
+      key,
+      label: meta.label,
+      accesses: 0,
+      updated_at: null,
+    });
+  });
+
+  records.forEach((record) => {
+    if (!record?.key) return;
+    map.set(record.key, {
+      key: record.key,
+      label: record.label || getAppMeta(record.key)?.label || record.key,
+      accesses: Number(record.accesses || 0),
+      updated_at: record.updated_at || null,
+    });
+  });
+
+  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
+}
+
+function initNavigation() {
+  const navCards = Array.from(document.querySelectorAll(".nav-card"));
+  navCards.forEach((item) => {
+    item.addEventListener("click", () => {
+      const view = item.dataset.view || "users";
+      switchView(view);
+    });
+  });
+}
+
+function switchView(view) {
+  currentView = view;
+
+  document.querySelectorAll(".nav-card").forEach((item) => {
+    item.classList.toggle("active", item.dataset.view === view);
+  });
+
+  const usersSection = document.getElementById("view-users");
+  const appsSection = document.getElementById("view-apps-usage");
+  const usersHeader = document.getElementById("page-header-users");
+  const appsHeader = document.getElementById("page-header-apps");
+
+  const showingUsers = view === "users";
+  if (usersSection) usersSection.hidden = !showingUsers;
+  if (appsSection) appsSection.hidden = showingUsers;
+  if (usersHeader) usersHeader.hidden = !showingUsers;
+  if (appsHeader) appsHeader.hidden = showingUsers;
+
+  if (document.body.classList.contains("sidebar-open")) {
+    document.body.classList.remove("sidebar-open");
+  }
+}
+
+function parseRegion(regiao) {
+  if (regiao && typeof regiao === "object") return regiao;
+  if (typeof regiao === "string") {
+    try {
+      return JSON.parse(regiao);
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
+function getAppMeta(appKey) {
+  return APP_CATALOG[String(appKey || "").trim()] || null;
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString("pt-BR");
+}
+
+function formatDateTime(value) {
+  if (!value) return "Sem atualização";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Sem atualização";
+
+  return date.toLocaleString("pt-BR");
+}
+
+function setError(element, message, hidden = false) {
+  if (!element) return;
+  element.textContent = message || "";
+  element.hidden = hidden || !message;
 }
 
 function escapeHtml(s) {

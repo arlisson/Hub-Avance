@@ -18,13 +18,21 @@
     </div>
 
     <div class="chat-list" style="margin-top: 20px;">
-      <div class="chat-item active">
+      <button class="chat-item active nav-card" type="button" data-view="users">
         <i class="ph ph-users-three"></i>
         <div class="chat-info">
           <div class="chat-title">Usuários do sistema</div>
           <div class="chat-date">Gestão e permissões</div>
         </div>
-      </div>
+      </button>
+
+      <button class="chat-item nav-card" type="button" data-view="apps-usage">
+        <i class="ph ph-chart-bar"></i>
+        <div class="chat-info">
+          <div class="chat-title">Uso dos aplicativos</div>
+          <div class="chat-date">Painel interno de acessos</div>
+        </div>
+      </button>
     </div>
 
     <div class="sidebar-footer">
@@ -62,7 +70,7 @@
         <i class="ph ph-list"></i>
       </button>
 
-      <div class="assistant-info">
+      <div class="assistant-info" id="page-header-users">
         <div class="assistant-avatar">
           <i class="ph ph-users-three"></i>
         </div>
@@ -71,9 +79,19 @@
           <span class="status">Permissões, dados e uso dos aplicativos</span>
         </div>
       </div>
+
+      <div class="assistant-info" id="page-header-apps" hidden>
+        <div class="assistant-avatar">
+          <i class="ph ph-chart-bar"></i>
+        </div>
+        <div class="assistant-details">
+          <span class="name">Uso dos aplicativos</span>
+          <span class="status">Acompanhamento centralizado de acessos</span>
+        </div>
+      </div>
     </header>
 
-    <section class="protocol-wrap">
+    <section class="protocol-wrap view-section" id="view-users">
       <div class="protocol-card">
         <h1 class="protocol-title">Usuários cadastrados</h1>
         <p class="protocol-subtitle">Gerencie permissões e dados do sistema.</p>
@@ -101,12 +119,60 @@
                 <th>WhatsApp</th>
                 <th>Cidade</th>
                 <th>Estado</th>
-                <th>Protocolo Agendor</th>
+                <th>Acesso Protocolo</th>
                 <th>Cliente Avance</th>
               </tr>
             </thead>
             <tbody id="users-table-body"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="protocol-wrap view-section" id="view-apps-usage" hidden>
+      <div class="protocol-card">
+        <div class="section-head-row">
+          <div>
+            <h1 class="protocol-title">Uso dos aplicativos</h1>
+            <p class="protocol-subtitle">
+              Painel interno para acompanhar acessos por produto. Para adicionar novos apps,
+              basta cadastrar o item no objeto <strong>APP_CATALOG</strong> do arquivo <strong>usuarios.js</strong>.
+            </p>
+          </div>
+
+          <div class="actions compact-actions">
+            <button class="btn-secondary" id="btn-refresh-app-usage" type="button">
+              <i class="ph ph-arrow-clockwise"></i>
+              Atualizar painel
+            </button>
+          </div>
+        </div>
+
+        <div id="appUsageErrorBox" class="error" hidden></div>
+
+        <div class="usage-summary-grid" id="usage-summary-grid"></div>
+
+        <div class="usage-dashboard-card">
+          <div class="usage-dashboard-header">
+            <div>
+              <h2 class="expand-section-title" style="margin-bottom: 4px;">Detalhamento por aplicativo</h2>
+              <p class="hint">Mostra acessos totais e última atualização disponível.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="users-table usage-table">
+              <thead>
+                <tr>
+                  <th>Aplicativo</th>
+                  <th>Chave</th>
+                  <th>Acessos</th>
+                  <th>Última atualização</th>
+                </tr>
+              </thead>
+              <tbody id="app-usage-table-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
