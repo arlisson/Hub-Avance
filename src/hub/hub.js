@@ -20,27 +20,27 @@ let CURRENT_USER_ID = "";
  * - metric: "access" | "download"
  */
 const APPS = [
-  {
-    id: "agent",
-    badge: "Mentor estratégico de vendas",
-    image: "../img/Apolo.png",
-    title: "Mentor estratégico de vendas",
-    shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
-    longDesc:
-      "Este é o agente mentor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
-    youtubeId: "CNFqPBAdglE",
-    enabled: true,
-    actions: [
-      {
-        label: "Acessar",
-        icon: "ph-arrow-square-out",
-        app: "agent",
-        metric: "access",
-        primary: true,
-        targetBlank: false,
-      },
-    ],
-  },
+  // {
+  //   id: "agent",
+  //   badge: "Mentor estratégico de vendas",
+  //   image: "../img/Apolo.png",
+  //   title: "Mentor estratégico de vendas",
+  //   shortDesc: "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
+  //   longDesc:
+  //     "Este é o agente mentor estratégico de vendas. Ele permite atendimento e automações diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+  //   youtubeId: "CNFqPBAdglE",
+  //   enabled: true,
+  //   actions: [
+  //     {
+  //       label: "Acessar",
+  //       icon: "ph-arrow-square-out",
+  //       app: "agent",
+  //       metric: "access",
+  //       primary: true,
+  //       targetBlank: false,
+  //     },
+  //   ],
+  // },
   {
     id: "desktop",
     badge: "Preenche Fácil",
