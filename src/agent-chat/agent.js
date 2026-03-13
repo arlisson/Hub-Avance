@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000);
+      const timeoutId = setTimeout(() => controller.abort(), 150000);
 
       const resp = await fetch(AGENT_PROXY_URL, {
         method: "POST",
