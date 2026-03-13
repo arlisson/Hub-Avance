@@ -26,15 +26,15 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        208,
-        -96
+        752,
+        -48
       ],
-      "id": "17825c66-6078-4254-bb51-6bee539b9de0",
+      "id": "df1123ed-b0eb-4c83-9bed-dd96fe75a8cd",
       "name": "Update a row",
       "credentials": {
         "supabaseApi": {
-          "id": "Mj9YwlliJPoK7Dm0",
-          "name": "Supabase account 2"
+          "id": "aqRWUmETe2MqkT9n",
+          "name": "Supabase account"
         }
       }
     },
@@ -49,10 +49,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -576,
-        -144
+        -224,
+        -32
       ],
-      "id": "87b100ec-ddf5-442b-bd6d-888e013a2fc8",
+      "id": "aa20a053-d9b2-4c99-b663-60b28001fcfa",
       "name": "Webhook",
       "webhookId": "6f68dfcc-157a-406f-a3c9-261a35db8556"
     },
@@ -77,10 +77,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -368,
-        -64
+        0,
+        144
       ],
-      "id": "eb07e074-749c-488a-b75a-867203807e32",
+      "id": "a620c80f-7c67-4f4a-9b00-05defe5e6d34",
       "name": "HTTP Request"
     },
     {
@@ -90,10 +90,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        32,
-        -64
+        560,
+        112
       ],
-      "id": "e0a3162d-b97a-4f4f-b8f2-052cdaffcbd2",
+      "id": "60c4581e-cd7e-4876-87a1-e3e76a900394",
       "name": "Code in JavaScript"
     },
     {
@@ -103,7 +103,7 @@
             {
               "id": "414b9af7-301c-4f9f-9a82-1f5f63f361be",
               "name": "=master_key_transito",
-              "value": "={{ $env[\"MASTER_KEY\"] }}",
+              "value": "={{ $env[\"N8N_ENCRYPTION_KEY\"] }}",
               "type": "string"
             }
           ]
@@ -113,63 +113,14 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        -64
+        288,
+        0
       ],
-      "id": "fe818351-dba7-4363-bb5c-07223884dd89",
+      "id": "6fde12b7-ded4-4c12-b5e3-0803e372e2d5",
       "name": "Edit Fields"
     }
   ],
-  "pinData": {
-    "Webhook": [
-      {
-        "json": {
-          "headers": {
-            "host": "primary-production-335ec.up.railway.app",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
-            "content-length": "98",
-            "accept": "*/*",
-            "accept-encoding": "gzip",
-            "accept-language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-            "backend_is_origin": "1",
-            "cdn-loop": "Fastly",
-            "content-type": "application/json",
-            "fastly-client-ip": "168.195.160.175",
-            "fastly-orig-accept-encoding": "gzip, deflate, br, zstd",
-            "fastly-ssl": "1",
-            "origin": "https://hub-avance-mhsom1mph-arlisson-4929s-projects.vercel.app",
-            "priority": "u=1, i",
-            "referer": "https://hub-avance-mhsom1mph-arlisson-4929s-projects.vercel.app/",
-            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Windows\"",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "cross-site",
-            "x-edge-region": "SA-East",
-            "x-forwarded-for": "168.195.160.175, 140.248.89.78",
-            "x-forwarded-host": "primary-production-335ec.up.railway.app",
-            "x-forwarded-proto": "https",
-            "x-forwarded-server": "cache-gru-sbgr1930078-GRU",
-            "x-railway-edge": "railway/us-east4-eqdc4a",
-            "x-railway-request-id": "8d4mtvBIRCKbCarVg4a9AQ",
-            "x-real-ip": "140.248.89.78",
-            "x-request-start": "1772629576589",
-            "x-timer": "S1772629577.531530,VS0",
-            "x-varnish": "2151881394"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "email": "brenooh7@gmail.com",
-            "chave_gemini_recebida": "AIzaSyB8mVSuw2M-o0nT3NBQgfiIMZ_bQs3nzgE"
-          },
-          "webhookUrl": "https://primary-production-335ec.up.railway.app/webhook/registro_api",
-          "executionMode": "production"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [
@@ -180,11 +131,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Update a row": {
-      "main": [
-        []
       ]
     },
     "HTTP Request": {
@@ -227,11 +173,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "e4f3adb6-272b-4d32-a49b-41ee57f3896d",
+  "versionId": "58e69226-4415-4ed5-9276-196a760db689",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "42c932039a0f20f70679cdffdef01bc1a175401141a90115ce5da7c8c4998b60"
+    "instanceId": "2bcb6f337f0eca1d543878926b069f0862e185e0122a69880d4f93be2b3308e1"
   },
-  "id": "0rNISlyLUwzLI777",
+  "id": "g2hDqPY3MdDw3574",
   "tags": []
 }
