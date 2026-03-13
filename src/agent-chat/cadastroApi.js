@@ -1,3 +1,5 @@
+// Arquivo: script.js (na raiz do projeto)
+
 document.addEventListener('DOMContentLoaded', () => {
 
   const modalApi = document.getElementById('modalApi');
@@ -8,18 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnMostrarSenha = document.getElementById('btnMostrarSenha');
   const mensagemApi = document.getElementById('mensagemApi');
 
-
   // Função para abrir o modal
-  btnAbrirModal.addEventListener('click', () => {
-    modalApi.classList.add('active');
-    
-    const savedKey = localStorage.getItem('gemini_api_key');
-    if (savedKey && inputApiKey) inputApiKey.value = savedKey;
-  });
+  if (btnAbrirModal) {
+    btnAbrirModal.addEventListener('click', () => {
+      modalApi.classList.add('active');
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey && inputApiKey) inputApiKey.value = savedKey;
+    });
+  }
 
   // Função para fechar o modal
   const fecharModal = () => {
-    modalApi.classList.remove('active');
+    if (modalApi) modalApi.classList.remove('active');
     if (mensagemApi) {
       mensagemApi.textContent = '';
       mensagemApi.className = 'mensagem-feedback';
@@ -28,11 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnFecharModal) btnFecharModal.addEventListener('click', fecharModal);
 
-  modalApi.addEventListener('click', (e) => {
-    if (e.target === modalApi) fecharModal();
-  });
+  if (modalApi) {
+    modalApi.addEventListener('click', (e) => {
+      if (e.target === modalApi) fecharModal();
+    });
+  }
 
-  // Lógica do Olhinho (Mostrar/Ocultar Senha)
+  // Lógica de Mostrar/Ocultar Senha
   if (btnMostrarSenha && inputApiKey) {
     btnMostrarSenha.addEventListener('click', () => {
       const icon = btnMostrarSenha.querySelector('i');
@@ -46,9 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Lógica de Salvar a Chave
+  // Lógica Principal: Salvar, Validar no Google e chamar Vercel
   if (formApi) {
-    formApi.addEventListener('submit', (e) => {
+    formApi.addEventListener('submit', async (e) => {
       e.preventDefault(); 
       
       const apiKey = inputApiKey.value.trim();
@@ -59,19 +63,52 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      localStorage.setItem('gemini_api_key', apiKey);
-      
-      mensagemApi.textContent = 'Chave conectada com sucesso!';
-      mensagemApi.className = 'mensagem-feedback mensagem-sucesso';
+      mensagemApi.textContent = 'Validando chave com o Google...';
+      mensagemApi.className = 'mensagem-feedback';
 
-      // Atualiza o status visual do agente para online (se a função existir no agent.js)
-      if (typeof window.atualizarStatusAgente === 'function') {
-        window.atualizarStatusAgente(true);
+      try {
+        // 1. Valida direto no Google primeiro
+        const googleResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        
+        if (!googleResponse.ok) {
+          throw new Error('Chave inválida ou bloqueada pelo Google.');
+        }
+
+        // 2. Se o Google aprovou, chama o SEU servidor na Vercel (que vai chamar o n8n)
+        const vercelResponse = await fetch('/api/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            evento: 'nova_chave_conectada',
+            status: 'sucesso'
+          })
+        });
+
+        if (!vercelResponse.ok) {
+          throw new Error('Falha ao comunicar com o servidor da Vercel.');
+        }
+
+        // 3. Salva a chave no navegador e dá a mensagem verde
+        localStorage.setItem('gemini_api_key', apiKey);
+        
+        mensagemApi.textContent = 'Chave validada e conectada com sucesso!';
+        mensagemApi.className = 'mensagem-feedback mensagem-sucesso';
+
+        if (typeof window.atualizarStatusAgente === 'function') {
+          window.atualizarStatusAgente(true);
+        }
+
+        setTimeout(() => { fecharModal(); }, 1500);
+
+      } catch (erro) {
+        const mensagemErro = erro.message === 'Chave inválida ou bloqueada pelo Google.' 
+          ? erro.message 
+          : 'Falha na validação ou erro de comunicação com o servidor.';
+          
+        mensagemApi.textContent = `Erro: ${mensagemErro}`;
+        mensagemApi.className = 'mensagem-feedback mensagem-erro';
+        console.error('Falha no processo:', erro);
       }
-
-      setTimeout(() => {
-        fecharModal();
-      }, 1500);
     });
   }
 });

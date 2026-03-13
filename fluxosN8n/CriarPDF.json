@@ -6,7 +6,13 @@
         "workflowInputs": {
           "values": [
             {
+              "name": "resumo_diagnostico"
+            },
+            {
               "name": "estrutura_parametros"
+            },
+            {
+              "name": "email"
             }
           ]
         }
@@ -16,59 +22,110 @@
       "name": "When Executed by Another Workflow",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        272,
+        -256,
         192
       ]
     },
     {
       "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Split Out').item.json.capitulos_prontos }}",
         "options": {
-          "systemMessage": ""
+          "systemMessage": "=Persona: Você é um Copywriter Sênior com foco em Resposta Direta e Psicologia de Vendas. Sua voz é a de um mentor/irmão mais velho e por isso deve evitar ao máximo utilizar termos técnicos, seja direto, empático, mas extremamente pragmático e acessível. Você não desperdiça palavras; você resolve problemas de forma clara e com palvras conhecidas.\n\nMissão: Escrever um capítulo específico de um E-book de consultoria estratégica utilizando o Spin Selling como a unica metodologia.\n\nContexto da Empresa (O Paciente):\n{{ $('When Executed by Another Workflow').item.json.resumo_diagnostico }}\n\nFoco do Capítulo:\n\nTítulo: {{ $('Split Out').item.json.capitulos_prontos.titulo }}\n\nDiretrizes Específicas: {{ $('Split Out').item.json.capitulos_prontos.instrucoes }}\n\nDiretrizes de Escrita (Tom e Voz):\n\nPersonalização Máxima: Se este for o Capítulo 1, crie um título para o Ebook inteiro que seja magnético e que faça o leitor sentir que este livro foi escrito exclusivamente para a realidade dele.\n\nSem \"Encheção de Linguiça\": Elimine frases de transição óbvias. Comece o texto já no \"olho do furacão\". O leitor deve sentir que cada parágrafo economiza tempo e gera dinheiro.\n\nArquitetura de Solução: Identifique a dor citada no resumo e entregue a solução como se estivesse desenhando o caminho em um guardanapo para um amigo de confiança.\n\n[REGRA PRIMORDIAL ABSOLUTA INCONTESTÁVEL]\n- PROIBIÇÃO TOTAL DE DIVISORES: É terminantemente proibido o uso de qualquer caractere de repetição para criar linhas (ex: -------, =======, |-----|, *** e quais quer outro tipo independente da quantidade NÃO UTILIZE ESSE TIPO DE ESCRITA).\n- Não utlize arte ASCII\n- O texto deve conter APENAS palavras e Markdown\n- Não crie tabelas\n\n[REGRAS ABSOLUTAS DE FORMATAÇÃO - CRÍTICO]\n- Markdown Puro: Use estritamente ## para títulos e ** para ênfase.\n- Proibição de Arte ASCII: NUNCA UTILIZE divisores manuais. O output VAI ser processado por um conversor HTML, portanto, qualquer caractere especial de divisão quebrará o layout.\n\n\nEstrutura: Vá direto ao conteúdo de alto valor. Proibido introduções meta-linguísticas (ex: \"Claro, vou escrever o capítulo...\")."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        752,
-        352
+        848,
+        96
       ],
       "id": "841ac900-563a-4b9d-a8ec-ba6a3f6e20a2",
       "name": "AI Agent"
     },
     {
       "parameters": {
-        "model": "openai/gpt-oss-20b",
+        "mode": "runOnceForEachItem",
+        "jsCode": "let textoDaIA = $json.estrutura_parametros;\nlet listaDeCapitulos = [];\n\ntry {\n  // Se a IA mandou como texto, a gente converte. Se já for objeto, a gente só copia.\n  listaDeCapitulos = typeof textoDaIA === 'string' ? JSON.parse(textoDaIA) : textoDaIA;\n} catch(e) {\n  const erro = e instanceof Error ? e.message : String(e);\n  console.log(\"Erro ao abrir a caixa de capítulos:\", erro);\n}\n\n// Retornamos a lista limpa dentro de uma nova variável\nreturn {\n  json: {\n    capitulos_prontos: listaDeCapitulos\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        64
+      ],
+      "id": "56918fdc-6f07-4388-be60-3ce6e729230a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "capitulos_prontos",
+        "include": "allOtherFields",
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        640,
-        592
+        336,
+        64
       ],
-      "id": "ed863cd1-4650-4039-af10-3c3fd596a50c",
-      "name": "Groq Chat Model",
+      "id": "7bf6d3f8-8c56-4e40-9598-4f93ba9e4984",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        736,
+        304
+      ],
+      "id": "9ae7a509-e514-4772-82a4-bf68a13c2d04",
+      "name": "Google Gemini Chat Model",
       "credentials": {
-        "groqApi": {
-          "id": "0n2tIVmWPkzrj6CD",
-          "name": "Unnamed credential"
+        "googlePalmApi": {
+          "id": "omVitwH5HUbAA8zi",
+          "name": "Credencial Usuario"
         }
       }
     },
     {
       "parameters": {
-        "options": {
-          "separator": "\\n"
-        }
+        "operation": "executeQuery",
+        "query": "SELECT email, chave_api\nFROM profiles \nWHERE email = '{{ $('When Executed by Another Workflow').item.json.email }}';",
+        "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.outputParserItemList",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
       "position": [
-        400,
-        480
+        544,
+        64
       ],
-      "id": "f47c7563-4294-4156-b29a-7dc0136b6f83",
-      "name": "Item List Output Parser"
+      "id": "e275d57b-e81d-4f15-bac9-e7df68385418",
+      "name": "Traz chave de API",
+      "credentials": {
+        "postgres": {
+          "id": "BTZbbpngZnvweLav",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.email }}",
+        "contextWindowLength": 1
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        928,
+        336
+      ],
+      "id": "6cbd3ab3-6124-4fc2-9afa-16d7db0e87dc",
+      "name": "Simple Memory"
     }
   ],
   "pinData": {},
@@ -77,14 +134,41 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Groq Chat Model": {
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Traz chave de API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
           {
@@ -95,18 +179,35 @@
         ]
       ]
     },
-    "AI Agent": {
+    "Traz chave de API": {
       "main": [
-        []
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "2f1e32b1-161e-4dbb-860b-9b2dee5ee376",
+  "versionId": "4b55a2ad-b4eb-4fce-a192-c62cf456277d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "42c932039a0f20f70679cdffdef01bc1a175401141a90115ce5da7c8c4998b60"

@@ -3,15 +3,15 @@
  */
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // --- Elementos da Interface (CORRIGIDOS PARA O NOVO HTML) ---
+  // --- Elementos da Interface  ---
   const chatMessages = document.getElementById("chat-messages");
-  const userInput = document.querySelector(".input-container textarea"); // Corrigido
-  const sendBtn = document.querySelector(".send-btn"); // Corrigido
+  const userInput = document.querySelector(".input-container textarea");
+  const sendBtn = document.querySelector(".send-btn");
   const themeToggle = document.getElementById("theme-toggle");
-  const newChatBtn = document.querySelector(".new-chat-btn"); // Corrigido
+  const newChatBtn = document.querySelector(".new-chat-btn");
   const userEmailEl = document.getElementById("user-email");
 
-  // Elementos de Navegação (Padrão Hub)
+  // Elementos de Navegação
   const menuBtn = document.getElementById("mobile-menu-btn");
   const settingsBtn = document.getElementById("settings-btn");
   const settingsMenu = document.getElementById("settings-menu");
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ---------------------------------------------------------
-// FUNÇÕES DE NAVEGAÇÃO E VISUAL (PADRÃO HUB)
+// FUNÇÕES DE NAVEGAÇÃO E VISUAL
 // ---------------------------------------------------------
 
 function initSettingsMenu(btn, menu) {
