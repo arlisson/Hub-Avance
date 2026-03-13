@@ -5,59 +5,27 @@ let appUsageErrorBox = null;
 let supabaseClient = null;
 let currentSession = null;
 let currentView = "users";
+let METRICS = [  { key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },]
 
 const APP_CATALOG = {
   desktop: {
     label: "Preenche Fácil",
     icon: "ph-desktop",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
   agent: {
     label: "Agente de IA",
     icon: "ph-robot",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
   protocol: {
     label: "Gerador de Protocolo",
     icon: "ph-file-text",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
-  protocol_static: {
-    label: "Gerador de Protocolo Estático",
-    icon: "ph-files",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
-  },
-  protocol_agendor: {
-    label: "Gerador de Protocolo Agendor",
-    icon: "ph-briefcase",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
-  },
+  
 };
-
-const APP_USAGE_TABLE_CANDIDATES = [
-  "app_usage",
-  "app_usages",
-  "app_access",
-  "app_accesses",
-  "controle_acessos_apps",
-  "controle_acesso_apps",
-  "controle_de_acessos_apps",
-];
 
 function applyFilterAndRender() {
   const term = (searchEl?.value || "").trim().toLowerCase();
@@ -224,15 +192,16 @@ async function fetchAppUsageRecords() {
 }
 
 async function tryFetchAppUsageTable() {
-  for (const tableName of APP_USAGE_TABLE_CANDIDATES) {
+  
     try {
       const { data, error } = await supabaseClient
-        .from(tableName)
+        .from("app_access")
         .select("id, name, acessos, updated_at")
         .order("name", { ascending: true });
 
       if (error) {
-        continue;
+        alert(error.message);
+        return { success: false, rows: [] };
       }
 
       if (Array.isArray(data)) {
@@ -241,7 +210,7 @@ async function tryFetchAppUsageTable() {
     } catch {
       // tenta próxima possibilidade
     }
-  }
+  
 
   return { success: false, rows: [] };
 }
@@ -546,10 +515,7 @@ function renderUserAppUsageBlock(appUsage) {
   const rows = orderedKeys.map((appKey) => {
     const meta = getAppMeta(appKey) || {
       label: appKey,
-      metrics: [
-        { key: "access", label: "Acessos" },
-        { key: "download", label: "Downloads" },
-      ],
+      metrics: METRICS
     };
 
     const appData = usage[appKey] || {};
