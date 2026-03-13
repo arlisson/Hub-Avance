@@ -157,41 +157,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadUsers(session.access_token);
 });
 
+const METRICS = [{ key: "access", label: "Acessos" },
+      { key: "download", label: "Downloads" },]
+
 const APP_USAGE_META = {
   agent: {
     label: "Agente de IA",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
   desktop: {
     label: "Preenche Fácil",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
   protocol_static: {
     label: "Gerador de Protocolo Estático",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+     metrics: METRICS
   },
   protocol: {
     label: "Gerador de Protocolo",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+     metrics: METRICS
   },
   protocol_agendor: {
     label: "Gerador de Protocolo Agendor",
-    metrics: [
-      { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },
-    ],
+    metrics: METRICS
   },
 };
 
