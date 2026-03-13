@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const googleResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
         
         if (!googleResponse.ok) {
+          // NOVA PARTE: Pega o erro exato que o Google enviou
+          const erroDetalhado = await googleResponse.json();
+          console.error('⚠️ DETALHE DO ERRO DO GOOGLE:', erroDetalhado);
           throw new Error('Chave inválida ou bloqueada pelo Google.');
         }
 
