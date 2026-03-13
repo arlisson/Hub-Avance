@@ -108,6 +108,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     orgPickerWrap.hidden = true;
   }
 
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
+    });
+  }
+
   function showOrgPicker(matches) {
     if (!orgPickerWrap || !orgPicker) return;
 
