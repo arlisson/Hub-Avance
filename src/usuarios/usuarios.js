@@ -199,8 +199,8 @@ async function tryFetchAppUsageTable() {
       .select("id, name, acessos, updated_at")
       .order("name", { ascending: true });
 
-    console.log("app_access data:", data);
-    console.log("app_access error:", error);
+    // console.log("app_access data:", data);
+    // console.log("app_access error:", error);
 
 
     if (error) {

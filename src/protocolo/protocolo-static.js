@@ -67,6 +67,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCopyProto = document.getElementById("btn-copy-proto");
   const btnCopyMsg = document.getElementById("btn-copy-msg");
 
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
+    });
+  }
+
   function clearFeedback() {
     if (resultBox) resultBox.hidden = true;
     if (errorBox) {
