@@ -1,5 +1,5 @@
 {
-  "name": "CadastroAPI",
+  "name": "API Cadastro",
   "nodes": [
     {
       "parameters": {
@@ -49,39 +49,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -224,
-        -32
+        32,
+        64
       ],
       "id": "aa20a053-d9b2-4c99-b663-60b28001fcfa",
       "name": "Webhook",
       "webhookId": "6f68dfcc-157a-406f-a3c9-261a35db8556"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://primary-production-335ec.up.railway.app/api/v1/credentials",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "X-N8N-API-KEY",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMTdmOGM5ZS05Yzk1LTRlMDctYTgzMC00MTZjZWUwZTMzY2MiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNDJjNGRjMmQtYTMyYS00MDdhLWI3MzYtNWY4YzcwN2UxYzZkIiwiaWF0IjoxNzcyMDE3ODUzfQ.L9wO0PIbKEqX1h1G0qtfxaFl5FAGBnmNmn2SaLXDJd4"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"name\": \"Cliente Avance - {{ $json.whatsapp }}\",\n  \"type\": \"googlePalmApi\",\n  \"data\": {\n    \"apiKey\": \"{{ $('Webhook').item.json.body.chave_gemini_recebida }}\",\n    \"host\": \"https://generativelanguage.googleapis.com\"\n  }\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        0,
-        144
-      ],
-      "id": "a620c80f-7c67-4f4a-9b00-05defe5e6d34",
-      "name": "HTTP Request"
     },
     {
       "parameters": {
@@ -126,17 +99,6 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
             "node": "Edit Fields",
             "type": "main",
             "index": 0
@@ -173,7 +135,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "58e69226-4415-4ed5-9276-196a760db689",
+  "versionId": "7d6d87e2-eae5-4447-ac4c-20740e081595",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2bcb6f337f0eca1d543878926b069f0862e185e0122a69880d4f93be2b3308e1"

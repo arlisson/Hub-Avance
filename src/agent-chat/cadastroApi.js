@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({
             evento: 'nova_chave_conectada',
             status: 'sucesso',
-            apiKey: apiKey,
+            chave_gemini_recebida: apiKey,
             email: userEmail
           })
         });
