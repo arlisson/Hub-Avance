@@ -184,44 +184,39 @@ async function loadAppUsageDashboard() {
 
 async function fetchAppUsageRecords() {
   const tableResult = await tryFetchAppUsageTable();
-  if (tableResult.success) {
-    return normalizeTableRows(tableResult.rows);
-  }
-
-  return aggregateUsageFromUsers(allUsers);
+  return normalizeTableRows(tableResult.rows);
 }
 
 async function tryFetchAppUsageTable() {
-  
-    try {
-      const { data, error } = await supabaseClient
-        .from("app_access")
-        .select("id, name, acessos, updated_at")
-        .order("name", { ascending: true });
+  try {
+    const { data, error } = await supabaseClient
+      .from("app_access")
+      .select("id, name, acessos, updated_at")
+      .order("name", { ascending: true });
 
-      if (error) {
-        alert(error.message);
-        return { success: false, rows: [] };
-      }
-
-      if (Array.isArray(data)) {
-        return { success: true, tableName, rows: data };
-      }
-    } catch {
-      // tenta próxima possibilidade
+    if (error) {
+      console.error("Erro ao buscar app_access:", error);
+      return { success: false, rows: [] };
     }
-  
 
-  return { success: false, rows: [] };
+    return { success: true, rows: Array.isArray(data) ? data : [] };
+  } catch (err) {
+    console.error("Erro inesperado ao buscar app_access:", err);
+    return { success: false, rows: [] };
+  }
 }
 
 function normalizeTableRows(rows) {
-  return rows.map((row) => ({
-    key: String(row?.name || "").trim(),
-    label: getAppMeta(row?.name)?.label || String(row?.name || "Aplicativo"),
-    accesses: Number(row?.acessos || 0),
-    updated_at: row?.updated_at || null,
-  }));
+  return rows.map((row) => {
+    const key = String(row?.name || "").trim().toLowerCase();
+
+    return {
+      key,
+      label: getAppMeta(key)?.label || key || "Aplicativo",
+      accesses: Number(row?.acessos || 0),
+      updated_at: row?.updated_at || null,
+    };
+  });
 }
 
 function aggregateUsageFromUsers(users) {
@@ -672,7 +667,7 @@ function parseRegion(regiao) {
 }
 
 function getAppMeta(appKey) {
-  return APP_CATALOG[String(appKey || "").trim()] || null;
+  return APP_CATALOG[String(appKey || "").trim().toLowerCase()] || null;
 }
 
 function formatNumber(value) {
