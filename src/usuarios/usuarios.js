@@ -324,7 +324,7 @@ function renderUsers(users) {
             <div class="inline-checks">
               <label>
                 <input type="checkbox" class="edit-protocol" ${u.protocol ? "checked" : ""}>
-                Protocol
+                Protocolo Agendor
               </label>
 
               <label>
