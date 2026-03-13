@@ -465,10 +465,7 @@ function renderAppUsageBlock(appUsage) {
   const rows = orderedKeys.map((appKey) => {
     const meta = APP_USAGE_META[appKey] || {
       label: appKey,
-      metrics: [
-        { key: "access", label: "Acessos" },
-        { key: "download", label: "Downloads" },
-      ],
+      metrics: METRICS
     };
 
     const appData = usage[appKey] || {};
