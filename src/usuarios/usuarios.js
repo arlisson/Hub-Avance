@@ -184,7 +184,12 @@ async function loadAppUsageDashboard() {
 
 async function fetchAppUsageRecords() {
   const tableResult = await tryFetchAppUsageTable();
-  return normalizeTableRows(tableResult.rows);
+
+  if (tableResult.success && tableResult.rows.length) {
+    return normalizeTableRows(tableResult.rows);
+  }
+
+  return aggregateUsageFromUsers(allUsers);
 }
 
 async function tryFetchAppUsageTable() {
@@ -193,6 +198,10 @@ async function tryFetchAppUsageTable() {
       .from("app_access")
       .select("id, name, acessos, updated_at")
       .order("name", { ascending: true });
+
+    console.log("app_access data:", data);
+    console.log("app_access error:", error);
+
 
     if (error) {
       console.error("Erro ao buscar app_access:", error);
