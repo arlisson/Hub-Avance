@@ -1,5 +1,3 @@
-// Arquivo: api/webhook.js
-
 export default async function handler(req, res) {
   // 1. Bloqueia qualquer requisição que não seja POST por segurança
   if (req.method !== 'POST') {
@@ -7,11 +5,13 @@ export default async function handler(req, res) {
   }
 
   // 2. Puxa a sua URL secreta do n8n salva nas variáveis da Vercel
-  // ATENÇÃO: O nome lá no painel da Vercel tem que ser exatamente N8N_WEBHOOK_URL
-  const n8nWebhookUrl = process.env.N8N_CADASTRAR_API_WEBHOOK_URL;
+  // Certifique-se de que o nome na Vercel seja EXATAMENTE este:
+  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
 
   if (!n8nWebhookUrl) {
-    return res.status(500).json({ error: 'Variável de ambiente N8N_WEBHOOK_URL não configurada.' });
+    return res.status(500).json({ 
+        error: 'Variável de ambiente N8N_WEBHOOK_URL não configurada no painel da Vercel.' 
+    });
   }
 
   try {
@@ -23,7 +23,9 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      throw new Error(`Erro no n8n: ${response.statusText}`);
+      // Pega o erro detalhado que o n8n possa ter retornado
+      const errorText = await response.text(); 
+      throw new Error(`Erro no n8n (${response.status}): ${errorText || response.statusText}`);
     }
 
     // 4. Avisa o frontend que deu tudo certo
@@ -31,6 +33,11 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Erro na API Interna:', error);
-    return res.status(500).json({ success: false, error: 'Falha ao acionar o webhook do n8n.' });
+    // 5. Retorna o erro real para o navegador, facilitando o debug no F12 (Network)
+    return res.status(500).json({ 
+        success: false, 
+        error: 'Falha ao acionar o webhook do n8n.',
+        details: error.message 
+    });
   }
 }
