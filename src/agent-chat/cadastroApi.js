@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error('Chave inválida ou bloqueada pelo Google.');
         }
 
-        // 2. Se o Google aprovou, chama o SEU servidor na Vercel (que vai chamar o n8n)
+        // 2. Se o Google aprovou, chama o SEU servidor na Vercel (que vai chamar o n8n
         const vercelResponse = await fetch('./api/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
