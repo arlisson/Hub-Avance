@@ -469,7 +469,7 @@ body.dark-mode .hub-footer {
   transform: rotate(45deg);
 }
 
-/* Botão Sair */
+/* --- Item padrão do menu --- */
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -478,15 +478,41 @@ body.dark-mode .hub-footer {
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: #ef4444; /* Vermelho */
+  color: var(--text-primary); /* Cor padrão do texto */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   border-radius: 8px;
   position: relative;
   z-index: 2;
+  transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
+  background-color: var(--bg-hover);
+}
+
+/* --- Botão Sair (Danger) --- */
+.dropdown-item.danger {
+  color: #ef4444; 
+}
+
+.dropdown-item.danger:hover {
   background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Destaque para o botão de Alterar Senha no hover */
+.dropdown-item.reset-action {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item.reset-action:hover {
+  background: rgba(87, 197, 234, 0.12); /* Fundo azul suave */
+  color: #133868; /* Azul mais escuro para o texto no tema claro */
+}
+
+/* Ajuste do hover para o Modo Escuro */
+body.dark-mode .dropdown-item.reset-action:hover {
+  background: rgba(87, 197, 234, 0.18);
+  color: #ADE5F2; /* Azul claro para o texto no tema escuro */
 }

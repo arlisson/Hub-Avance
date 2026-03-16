@@ -39,10 +39,37 @@
                 </button>
 
                 <div class="settings-dropdown" id="settings-menu" hidden>
+                    <a
+                        href="../perfil/perfil.html"
+                        class="dropdown-item reset-action"
+                        id="perfil-user"
+                        style="text-decoration: none;"            
+                    >
+                        <i class="ph ph-user"></i>
+                        <span>Perfil</span>
+                    </a>
+
+                    <a
+                        href="../usuarios/usuarios.html"
+                        class="dropdown-item reset-action"
+                        id="menu-users"
+                        style="text-decoration: none;"
+                        hidden
+                    >
+                        <i class="ph ph-users-three"></i>
+                        <span>Usuários</span>
+                    </a>
+
+                    <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action" style="text-decoration: none;">
+                        <i class="ph ph-lock-key"></i>
+                        <span>Alterar Senha</span>
+                    </a>
+
                     <button type="button" class="dropdown-item danger" id="menu-logout">
                         <i class="ph ph-sign-out"></i>
                         <span>Sair</span>
                     </button>
+                    </div>
                 </div>
             </div>
         </div>
