@@ -1073,22 +1073,55 @@ body:not(.dark-mode) .logo-claro {
 
 /* 5. Estilo interno do botão "Sair" */
 .dropdown-item {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
-  color: var(--danger);
+  gap: 10px;
+  text-align: left;
+  padding: 12px 14px;
   font-size: 14px;
-  font-weight: 500;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  color: var(--text-primary);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background-color: rgba(255, 77, 77, 0.1);
-  /* Fundo avermelhado bem sutil no hover */
+  background-color: var(--bg-hover);
 }
+
+.dropdown-item i {
+  font-size: 16px;
+}
+
+body.light-mode .dropdown-item {
+  color: var(--text-primary);
+}
+
+body.light-mode .dropdown-item:hover {
+  background-color: #f4f9fc;
+}
+
+body.light-mode .dropdown-item.danger {
+  color: #c62828;
+}
+
+body.light-mode .dropdown-item.danger:hover {
+  background-color: #fef2f2;
+}
+
+body:not(.light-mode) .dropdown-item {
+  color: #eefcff;
+}
+
+body:not(.light-mode) .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body:not(.light-mode) .dropdown-item.danger {
+  color: #ffb4b4;
+}
+
 
 /* =========================================
    ANIMAÇÃO DE ENTRADA DO DROPDOWN
