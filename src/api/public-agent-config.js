@@ -19,7 +19,7 @@
 export default function handler(req, res) {
   const loginUrl = process.env.LOGIN_URL || "/login/login.html"; // ex: "/login/login.html"
   const agentChatUrl = process.env.AGENT_CHAT_URL || "/agent-chat/agent"; // ex: "/agente-chat/agent.html"
-  const agentProxyUrl = process.env.AGENT_PROXY_URL || "/api/agent"; // ex: "/api/agent"
+  const agentProxyUrl = process.env.AGENT_PROXY_URL || "https://n8n.clientevip.net.br/webhook/agente-avance-v2"; // ex: "/api/agent"
 
   if (!loginUrl || !agentChatUrl) {
     return res.status(500).json({ ok: false, error: "missing_env" });
