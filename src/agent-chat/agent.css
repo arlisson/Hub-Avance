@@ -1053,17 +1053,24 @@ body:not(.dark-mode) .logo-claro {
 /* 4. A caixa flutuante do Menu Dropdown */
 .settings-dropdown {
   position: absolute;
-  right: 12px;
-  bottom: 100%;
-  /* Faz o menu abrir para cima */
-  margin-bottom: 8px;
-  background-color: var(--bg-sidebar);
+  right: 0;
+  bottom: calc(100% + 8px);
+  min-width: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 50;
+}
+
+body.light-mode .settings-dropdown {
+  background: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: var(--shadow-soft);
-  padding: 6px;
-  min-width: 140px;
-  z-index: 100;
+  box-shadow: 0 10px 24px rgba(18, 49, 79, 0.1);
+}
+
+body:not(.light-mode) .settings-dropdown {
+  background: #18214a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Garante que o menu obedeça à função de ocultar do JavaScript (propriedade hidden) */
@@ -1081,13 +1088,19 @@ body:not(.dark-mode) .logo-claro {
   padding: 12px 14px;
   font-size: 14px;
   color: var(--text-primary);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-item:hover {
   background-color: var(--bg-hover);
+}
+
+body:not(.light-mode) .dropdown-item {
+  color: #eefcff;
+}
+
+body:not(.light-mode) .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .dropdown-item i {
