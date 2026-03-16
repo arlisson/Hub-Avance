@@ -30,17 +30,16 @@ const APP_CATALOG = {
 };
 
 function showLoading(title, message) {
-  if (window.AppLoading?.show) {
+  if (window.AppLoading && typeof window.AppLoading.show === "function") {
     window.AppLoading.show({ title, message });
   }
 }
 
 function hideLoading() {
-  if (window.AppLoading?.hide) {
+  if (window.AppLoading && typeof window.AppLoading.hide === "function") {
     window.AppLoading.hide();
   }
 }
-
 async function withLoading(title, message, task) {
   showLoading(title, message);
   try {
