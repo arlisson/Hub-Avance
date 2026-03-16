@@ -1,6 +1,7 @@
 /**
  * agent.js — Chat responsivo + Menus padrão Hub + Gestão de Sessão
  */
+HUB_URL = "/hub/hub.html";
 
 document.addEventListener("DOMContentLoaded", async () => {
   // --- Elementos da Interface  ---
@@ -69,6 +70,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearAgentChatSessionStorage();
         window.location.href = LOGIN_URL;
       }
+    });
+  }
+
+  const menuBackHub = document.getElementById("menu-back-hub");
+  if (menuBackHub) {
+    menuBackHub.addEventListener("click", () => {
+      window.location.href = HUB_URL;
     });
   }
 
