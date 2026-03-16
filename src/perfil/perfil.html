@@ -125,7 +125,15 @@
 
             <div class="field">
               <label for="cep">CEP</label>
-              <input id="cep" class="input-dark-lite" type="text" readonly />
+              <input
+                id="cep"
+                class="input-dark-lite"
+                type="text"
+                placeholder="00000-000"
+                inputmode="numeric"
+                maxlength="9"
+                autocomplete="postal-code"
+              />
             </div>
 
             <div class="field">

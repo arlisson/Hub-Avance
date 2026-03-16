@@ -2,6 +2,7 @@ const LOGIN_URL = "/login/login.html";
 const HUB_URL = "/hub/hub.html";
 
 let CURRENT_PROFILE = null;
+let cepLookupController = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   let sb;
@@ -130,6 +131,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.target.value = value;
   });
 
+  cepInput?.addEventListener("input", (e) => {
+    let value = String(e.target.value || "").replace(/\D/g, "");
+    if (value.length > 8) value = value.slice(0, 8);
+    value = value.replace(/^(\d{5})(\d)/, "$1-$2");
+    e.target.value = value;
+  });
+
+  cepInput?.addEventListener("blur", async () => {
+    await buscarCep(cepInput.value);
+  });
+
   activeLinesInput?.addEventListener("input", (e) => {
     let value = String(e.target.value || "").replace(/\D/g, "");
     e.target.value = value;
@@ -142,6 +154,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const nameValue = (nameInput?.value || "").trim();
     const whatsappValue = (whatsappInput?.value || "").replace(/\D/g, "");
+    const cepValue = (cepInput?.value || "").replace(/\D/g, "");
+    const cidadeValue = (cidadeInput?.value || "").trim();
+    const estadoValue = (estadoInput?.value || "").trim();
     const hasMobileRaw = hasMobileInput?.value || "";
     const contractTypeValue = (contractTypeInput?.value || "").trim().toUpperCase();
     const operatorValue = (operatorInput?.value || "").trim();
@@ -154,6 +169,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!whatsappValue || whatsappValue.length < 10) {
       showError(errorBox, "Informe um WhatsApp válido.");
+      return;
+    }
+
+    if (cepValue.length !== 8) {
+      showError(errorBox, "Informe um CEP válido.");
+      return;
+    }
+
+    const cepOk = await buscarCep(cepValue);
+    if (!cepOk) {
+      showError(errorBox, "Não foi possível validar o CEP informado.");
       return;
     }
 
@@ -184,9 +210,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    const regiaoPayload = {
+      ...(parseRegiao(CURRENT_PROFILE?.regiao)),
+      cep: cepValue,
+      cidade: cidadeValue,
+      estado: estadoValue,
+    };
+
     const payload = {
       name: nameValue,
       whatsapp: whatsappValue,
+      cep: cepValue,
+      regiao: regiaoPayload,
       has_mobile_service: hasMobileRaw === "true",
       contract_type: contractTypeValue,
       operator: operatorValue,
@@ -212,6 +247,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (CURRENT_PROFILE) {
         CURRENT_PROFILE.name = payload.name;
         CURRENT_PROFILE.whatsapp = payload.whatsapp;
+        CURRENT_PROFILE.cep = payload.cep;
+        CURRENT_PROFILE.regiao = payload.regiao;
         CURRENT_PROFILE.has_mobile_service = payload.has_mobile_service;
         CURRENT_PROFILE.contract_type = payload.contract_type;
         CURRENT_PROFILE.operator = payload.operator;
@@ -235,24 +272,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  function fillProfileForm(profile) {
-    let regiao = {};
+  async function buscarCep(cepInformado, opts = {}) {
+    if (!cepInput) return false;
 
-    if (profile?.regiao && typeof profile.regiao === "object") {
-      regiao = profile.regiao;
-    } else if (typeof profile?.regiao === "string") {
-      try {
-        regiao = JSON.parse(profile.regiao);
-      } catch {
-        regiao = {};
+    const { silent = false } = opts;
+    const cep = String(cepInformado || "").replace(/\D/g, "");
+
+    if (cep.length !== 8) {
+      if (!silent) {
+        showError(errorBox, "CEP inválido.");
       }
+      limparRegiaoUI();
+      return false;
     }
+
+    if (cepLookupController) {
+      cepLookupController.abort();
+    }
+
+    cepLookupController = new AbortController();
+
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`, {
+        signal: cepLookupController.signal,
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok || data?.erro) {
+        if (!silent) {
+          showError(errorBox, "CEP não encontrado.");
+        }
+        limparRegiaoUI();
+        return false;
+      }
+
+      if (cidadeInput) cidadeInput.value = data.localidade || "";
+      if (estadoInput) estadoInput.value = data.uf || "";
+      hideError(errorBox);
+      return true;
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return false;
+      }
+
+      console.error("Erro ao consultar CEP:", error);
+
+      if (!silent) {
+        showError(errorBox, "Não foi possível consultar o CEP.");
+      }
+
+      limparRegiaoUI();
+      return false;
+    }
+  }
+
+  function limparRegiaoUI() {
+    if (cidadeInput) cidadeInput.value = "";
+    if (estadoInput) estadoInput.value = "";
+  }
+
+  function fillProfileForm(profile) {
+    const regiao = parseRegiao(profile?.regiao);
 
     if (nameInput) nameInput.value = profile?.name || "";
     if (emailInput) emailInput.value = profile?.email || email || "";
     if (cpfInput) cpfInput.value = profile?.cpf || "";
     if (whatsappInput) whatsappInput.value = formatWhatsapp(profile?.whatsapp || "");
-    if (cepInput) cepInput.value = regiao?.cep || profile?.cep || "";
+    if (cepInput) cepInput.value = formatCep(regiao?.cep || profile?.cep || "");
     if (cidadeInput) cidadeInput.value = regiao?.cidade || "";
     if (estadoInput) estadoInput.value = regiao?.estado || "";
 
@@ -280,6 +367,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+function parseRegiao(regiao) {
+  if (regiao && typeof regiao === "object") return regiao;
+  if (typeof regiao === "string") {
+    try {
+      return JSON.parse(regiao);
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
 function formatWhatsapp(value) {
   let digits = String(value || "").replace(/\D/g, "");
   if (!digits) return "";
@@ -287,6 +386,13 @@ function formatWhatsapp(value) {
   digits = digits.replace(/^(\d{2})(\d)/, "($1) $2");
   digits = digits.replace(/(\d)(\d{4})$/, "$1-$2");
   return digits;
+}
+
+function formatCep(value) {
+  let digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.length > 8) digits = digits.slice(0, 8);
+  return digits.replace(/^(\d{5})(\d)/, "$1-$2");
 }
 
 function showError(errorBox, message) {
