@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   // 2. Puxa a sua URL secreta do n8n salva nas variáveis da Vercel
   // Certifique-se de que o nome na Vercel seja EXATAMENTE este:
-  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
+  const n8nWebhookUrl = process.env.N8N_CADASTRAR_API_WEBHOOK_URL;
 
   if (!n8nWebhookUrl) {
     return res.status(500).json({ 
