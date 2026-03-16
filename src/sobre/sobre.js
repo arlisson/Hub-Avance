@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
 const settingsMenu = document.getElementById("settings-menu");
-
+ const settingsBtn = document.getElementById("settings-btn");
 
 // -------------------------
 // Menu de configurações
