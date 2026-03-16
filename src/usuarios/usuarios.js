@@ -5,27 +5,50 @@ let appUsageErrorBox = null;
 let supabaseClient = null;
 let currentSession = null;
 let currentView = "users";
-let METRICS = [  { key: "access", label: "Acessos" },
-      { key: "download", label: "Downloads" },]
+
+const METRICS = [
+  { key: "access", label: "Acessos" },
+  { key: "download", label: "Downloads" },
+];
 
 const APP_CATALOG = {
   desktop: {
     label: "Preenche Fácil",
     icon: "ph-desktop",
-    metrics: METRICS
+    metrics: METRICS,
   },
   agent: {
     label: "Agente de IA",
     icon: "ph-robot",
-    metrics: METRICS
+    metrics: METRICS,
   },
   protocol: {
     label: "Gerador de Protocolo",
     icon: "ph-file-text",
-    metrics: METRICS
+    metrics: METRICS,
   },
-  
 };
+
+function showLoading(title, message) {
+  if (window.AppLoading?.show) {
+    window.AppLoading.show({ title, message });
+  }
+}
+
+function hideLoading() {
+  if (window.AppLoading?.hide) {
+    window.AppLoading.hide();
+  }
+}
+
+async function withLoading(title, message, task) {
+  showLoading(title, message);
+  try {
+    return await task();
+  } finally {
+    hideLoading();
+  }
+}
 
 function applyFilterAndRender() {
   const term = (searchEl?.value || "").trim().toLowerCase();
@@ -57,129 +80,170 @@ document.addEventListener("DOMContentLoaded", async () => {
   appUsageErrorBox = document.getElementById("appUsageErrorBox");
 
   try {
-    supabaseClient = await window.getSupabaseClient();
-  } catch {
-    window.location.href = LOGIN_URL;
-    return;
-  }
+    await withLoading(
+      "Carregando usuários",
+      "Validando acesso e buscando dados...",
+      async () => {
+        try {
+          supabaseClient = await window.getSupabaseClient();
+        } catch {
+          window.location.href = LOGIN_URL;
+          return;
+        }
 
-  try {
-    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+        try {
+          const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
 
-    if (sessionError || !sessionData?.session) {
-      window.location.href = LOGIN_URL;
-      return;
-    }
+          if (sessionError || !sessionData?.session) {
+            window.location.href = LOGIN_URL;
+            return;
+          }
 
-    currentSession = sessionData.session;
-    window.__USER_ACCESS_TOKEN__ = currentSession.access_token;
-  } catch {
-    window.location.href = LOGIN_URL;
-    return;
-  }
+          currentSession = sessionData.session;
+          window.__USER_ACCESS_TOKEN__ = currentSession.access_token;
+        } catch {
+          window.location.href = LOGIN_URL;
+          return;
+        }
 
-  const user = currentSession.user;
-  const email = user?.email || "";
+        const user = currentSession.user;
+        const email = user?.email || "";
 
-  try {
-    const { data: profile, error } = await supabaseClient
-      .from("profiles")
-      .select("protocol")
-      .eq("id", user.id)
-      .single();
+        try {
+          const { data: profile, error } = await supabaseClient
+            .from("profiles")
+            .select("protocol")
+            .eq("id", user.id)
+            .single();
 
-    if (error) throw error;
+          if (error) throw error;
 
-    if (!profile?.protocol) {
-      alert("Você não tem permissão para acessar esta tela.");
-      window.location.href = HUB_URL;
-      return;
-    }
-  } catch (err) {
-    console.error("Erro ao validar acesso:", err);
-    alert("Não foi possível validar sua permissão de acesso.");
-    window.location.href = HUB_URL;
-    return;
-  }
+          if (!profile?.protocol) {
+            alert("Você não tem permissão para acessar esta tela.");
+            window.location.href = HUB_URL;
+            return;
+          }
+        } catch (err) {
+          console.error("Erro ao validar acesso:", err);
+          alert("Não foi possível validar sua permissão de acesso.");
+          window.location.href = HUB_URL;
+          return;
+        }
 
-  const userEmailEl = document.getElementById("user-email");
-  if (userEmailEl) {
-    userEmailEl.textContent = email;
-    userEmailEl.title = email;
-  }
+        const userEmailEl = document.getElementById("user-email");
+        if (userEmailEl) {
+          userEmailEl.textContent = email;
+          userEmailEl.title = email;
+        }
 
-  initSettingsMenu(
-    document.getElementById("settings-btn"),
-    document.getElementById("settings-menu")
-  );
-  initMobileSidebar(document.getElementById("mobile-menu-btn"));
-  initTheme(document.getElementById("theme-toggle"));
-  initNavigation();
+        initSettingsMenu(
+          document.getElementById("settings-btn"),
+          document.getElementById("settings-menu")
+        );
+        initMobileSidebar(document.getElementById("mobile-menu-btn"));
+        initTheme(document.getElementById("theme-toggle"));
+        initNavigation();
 
-  const menuBackHub = document.getElementById("menu-back-hub");
-  if (menuBackHub) {
-    menuBackHub.addEventListener("click", () => {
-      window.location.href = HUB_URL;
-    });
-  }
+        const menuBackHub = document.getElementById("menu-back-hub");
+        if (menuBackHub) {
+          menuBackHub.addEventListener("click", () => {
+            window.location.href = HUB_URL;
+          });
+        }
 
-  const menuLogout = document.getElementById("menu-logout");
-  if (menuLogout) {
-    menuLogout.addEventListener("click", async () => {
-      try {
-        await supabaseClient.auth.signOut();
-      } finally {
-        window.location.href = LOGIN_URL;
+        const menuLogout = document.getElementById("menu-logout");
+        if (menuLogout) {
+          menuLogout.addEventListener("click", async () => {
+            try {
+              await supabaseClient.auth.signOut();
+            } finally {
+              window.location.href = LOGIN_URL;
+            }
+          });
+        }
+
+        document
+          .getElementById("btn-refresh-app-usage")
+          ?.addEventListener("click", async () => {
+            await loadAppUsageDashboard(true);
+          });
+
+        searchEl?.addEventListener("input", () => {
+          applyFilterAndRender();
+        });
+
+        await loadUsers(currentSession.access_token, false);
+        await loadAppUsageDashboard(false);
       }
-    });
+    );
+  } catch (err) {
+    console.error(err);
+    setError(errorBox, "Erro ao carregar os dados da página.");
   }
-
-  document.getElementById("btn-refresh-app-usage")?.addEventListener("click", async () => {
-    await loadAppUsageDashboard();
-  });
-
-  searchEl?.addEventListener("input", () => {
-    applyFilterAndRender();
-  });
-
-  await loadUsers(currentSession.access_token);
-  await loadAppUsageDashboard();
 });
 
-async function loadUsers(token) {
-  try {
-    setError(errorBox, "", true);
+async function loadUsers(token, showLoader = true) {
+  const task = async () => {
+    try {
+      setError(errorBox, "", true);
 
-    const resp = await fetch("/api/admin/users", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const resp = await fetch("/api/admin/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await resp.json();
+      const data = await resp.json();
 
-    if (!resp.ok) {
-      throw new Error(data?.error || "Falha ao carregar usuários.");
+      if (!resp.ok) {
+        throw new Error(data?.error || "Falha ao carregar usuários.");
+      }
+
+      allUsers = Array.isArray(data?.users) ? data.users : [];
+      applyFilterAndRender();
+    } catch (e) {
+      setError(errorBox, e?.message || "Erro ao carregar usuários.");
     }
+  };
 
-    allUsers = Array.isArray(data?.users) ? data.users : [];
-    applyFilterAndRender();
-  } catch (e) {
-    setError(errorBox, e?.message || "Erro ao carregar usuários.");
+  if (!showLoader) {
+    return await task();
   }
+
+  return await withLoading(
+    "Carregando usuários",
+    "Buscando dados no banco...",
+    task
+  );
 }
 
-async function loadAppUsageDashboard() {
-  try {
-    setError(appUsageErrorBox, "", true);
+async function loadAppUsageDashboard(showLoader = true) {
+  const task = async () => {
+    try {
+      setError(appUsageErrorBox, "", true);
 
-    const records = await fetchAppUsageRecords();
-    renderAppUsageDashboard(records);
-  } catch (e) {
-    setError(appUsageErrorBox, e?.message || "Erro ao carregar uso dos aplicativos.");
-    renderAppUsageDashboard([]);
+      const records = await fetchAppUsageRecords();
+      renderAppUsageDashboard(records);
+    } catch (e) {
+      setError(
+        appUsageErrorBox,
+        e?.message || "Erro ao carregar uso dos aplicativos."
+      );
+      renderAppUsageDashboard([]);
+    }
+  };
+
+  if (!showLoader) {
+    return await task();
   }
+
+  return await withLoading(
+    "Carregando painel",
+    "Consultando uso dos aplicativos...",
+    task
+  );
 }
 
 async function fetchAppUsageRecords() {
@@ -198,10 +262,6 @@ async function tryFetchAppUsageTable() {
       .from("app_access")
       .select("id, name, acessos, updated_at")
       .order("name", { ascending: true });
-
-    // console.log("app_access data:", data);
-    // console.log("app_access error:", error);
-
 
     if (error) {
       console.error("Erro ao buscar app_access:", error);
@@ -232,7 +292,10 @@ function aggregateUsageFromUsers(users) {
   const totals = new Map();
 
   users.forEach((user) => {
-    const usage = user?.app_usage && typeof user.app_usage === "object" ? user.app_usage : {};
+    const usage =
+      user?.app_usage && typeof user.app_usage === "object"
+        ? user.app_usage
+        : {};
 
     Object.entries(usage).forEach(([appKey, appData]) => {
       const current = totals.get(appKey) || {
@@ -247,7 +310,9 @@ function aggregateUsageFromUsers(users) {
     });
   });
 
-  return Array.from(totals.values()).sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
+  return Array.from(totals.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "pt-BR")
+  );
 }
 
 function renderUsers(users) {
@@ -308,57 +373,79 @@ function renderUsers(users) {
           <div class="user-card-grid">
             <div class="field">
               <label>Nome</label>
-              <input class="input-dark-lite edit-name" value="${escapeAttr(u.name || "")}" readonly />
+              <input class="input-dark-lite edit-name" value="${escapeAttr(
+                u.name || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>E-mail</label>
-              <input class="input-dark-lite edit-email" value="${escapeAttr(u.email || "")}" readonly />
+              <input class="input-dark-lite edit-email" value="${escapeAttr(
+                u.email || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>CPF/CNPJ</label>
-              <input class="input-dark-lite edit-cpf" value="${escapeAttr(u.cpf || "")}" readonly />
+              <input class="input-dark-lite edit-cpf" value="${escapeAttr(
+                u.cpf || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>WhatsApp</label>
-              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(u.whatsapp || "")}" readonly />
+              <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(
+                u.whatsapp || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>CEP</label>
-              <input class="input-dark-lite edit-cep" value="${escapeAttr(cep)}" readonly />
+              <input class="input-dark-lite edit-cep" value="${escapeAttr(
+                cep
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>Cidade</label>
-              <input class="input-dark-lite edit-cidade" value="${escapeAttr(cidade)}" readonly />
+              <input class="input-dark-lite edit-cidade" value="${escapeAttr(
+                cidade
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>Estado</label>
-              <input class="input-dark-lite edit-estado" value="${escapeAttr(estado)}" readonly />
+              <input class="input-dark-lite edit-estado" value="${escapeAttr(
+                estado
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>Telefonia ativa</label>
-              <input class="input-dark-lite" value="${u.has_mobile_service ? "Sim" : "Não"}" readonly />
+              <input class="input-dark-lite" value="${
+                u.has_mobile_service ? "Sim" : "Não"
+              }" readonly />
             </div>
 
             <div class="field">
               <label>Tipo de contrato</label>
-              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(u.contract_type || "")}" readonly />
+              <input class="input-dark-lite edit-contract-type" value="${escapeAttr(
+                u.contract_type || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>Operadora</label>
-              <input class="input-dark-lite edit-operator" value="${escapeAttr(u.operator || "")}" readonly />
+              <input class="input-dark-lite edit-operator" value="${escapeAttr(
+                u.operator || ""
+              )}" readonly />
             </div>
 
             <div class="field">
               <label>Linhas ativas</label>
-              <input class="input-dark-lite edit-active-lines" type="number" value="${Number.isFinite(u.active_lines) ? u.active_lines : ""}" readonly />
+              <input class="input-dark-lite edit-active-lines" type="number" value="${
+                Number.isFinite(u.active_lines) ? u.active_lines : ""
+              }" readonly />
             </div>
           </div>
 
@@ -367,12 +454,16 @@ function renderUsers(users) {
           <div class="field">
             <div class="inline-checks">
               <label>
-                <input type="checkbox" class="edit-protocol" ${u.protocol ? "checked" : ""}>
+                <input type="checkbox" class="edit-protocol" ${
+                  u.protocol ? "checked" : ""
+                }>
                 Protocolo Agendor
               </label>
 
               <label>
-                <input type="checkbox" class="edit-cliente-avance" ${u.cliente_avance ? "checked" : ""}>
+                <input type="checkbox" class="edit-cliente-avance" ${
+                  u.cliente_avance ? "checked" : ""
+                }>
                 Cliente Avance
               </label>
             </div>
@@ -390,7 +481,9 @@ function renderUsers(users) {
     `;
 
     summaryRow.addEventListener("click", (e) => {
-      const clickedFormElement = e.target.closest("button, input, textarea, select, label");
+      const clickedFormElement = e.target.closest(
+        "button, input, textarea, select, label"
+      );
       if (clickedFormElement) return;
 
       detailsRow.hidden = !detailsRow.hidden;
@@ -428,7 +521,10 @@ function renderUsers(users) {
             whatsapp: (whatsappEl?.value || "").trim(),
             contract_type: (contractTypeEl?.value || "").trim(),
             operator: (operatorEl?.value || "").trim(),
-            active_lines: activeLinesEl?.value === "" ? null : Number(activeLinesEl.value),
+            active_lines:
+              activeLinesEl?.value === ""
+                ? null
+                : Number(activeLinesEl.value),
             protocol: !!protocolEl?.checked,
             cliente_avance: !!clienteEl?.checked,
           }),
@@ -446,7 +542,8 @@ function renderUsers(users) {
         u.whatsapp = (whatsappEl?.value || "").trim();
         u.contract_type = (contractTypeEl?.value || "").trim();
         u.operator = (operatorEl?.value || "").trim();
-        u.active_lines = activeLinesEl?.value === "" ? null : Number(activeLinesEl.value);
+        u.active_lines =
+          activeLinesEl?.value === "" ? null : Number(activeLinesEl.value);
         u.protocol = !!protocolEl?.checked;
         u.cliente_avance = !!clienteEl?.checked;
 
@@ -461,7 +558,9 @@ function renderUsers(users) {
 
     btnDelete?.addEventListener("click", async () => {
       const confirmed = window.confirm(
-        `Tem certeza que deseja excluir o usuário "${u.name || u.email || u.id}"?\n\nEssa ação não pode ser desfeita.`
+        `Tem certeza que deseja excluir o usuário "${
+          u.name || u.email || u.id
+        }"?\n\nEssa ação não pode ser desfeita.`
       );
 
       if (!confirmed) return;
@@ -482,12 +581,14 @@ function renderUsers(users) {
         const data = await resp.json();
 
         if (!resp.ok) {
-          throw new Error(data?.detail || data?.error || "Falha ao excluir usuário.");
+          throw new Error(
+            data?.detail || data?.error || "Falha ao excluir usuário."
+          );
         }
 
         allUsers = allUsers.filter((item) => item.id !== u.id);
         applyFilterAndRender();
-        await loadAppUsageDashboard();
+        await loadAppUsageDashboard(false);
         showFeedback("Usuário excluído com sucesso.", "success");
       } catch (e) {
         alert(e?.message || "Erro ao excluir usuário.");
@@ -505,7 +606,9 @@ function renderUsers(users) {
 function renderUserAppUsageBlock(appUsage) {
   const usage = appUsage && typeof appUsage === "object" ? appUsage : {};
   const knownKeys = Object.keys(APP_CATALOG);
-  const unknownKeys = Object.keys(usage).filter((key) => !knownKeys.includes(key));
+  const unknownKeys = Object.keys(usage).filter(
+    (key) => !knownKeys.includes(key)
+  );
   const orderedKeys = [...knownKeys.filter((key) => usage[key]), ...unknownKeys];
 
   if (!orderedKeys.length) {
@@ -519,7 +622,7 @@ function renderUserAppUsageBlock(appUsage) {
   const rows = orderedKeys.map((appKey) => {
     const meta = getAppMeta(appKey) || {
       label: appKey,
-      metrics: METRICS
+      metrics: METRICS,
     };
 
     const appData = usage[appKey] || {};
@@ -529,7 +632,9 @@ function renderUserAppUsageBlock(appUsage) {
         const value = Number(appData?.[metric.key] || 0);
         return `
           <div class="usage-metric">
-            <span class="usage-metric-label">${escapeHtml(metric.label)}</span>
+            <span class="usage-metric-label">${escapeHtml(
+              metric.label
+            )}</span>
             <span class="usage-metric-value">${formatNumber(value)}</span>
           </div>
         `;
@@ -627,7 +732,9 @@ function orderUsageRecords(records) {
     });
   });
 
-  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
+  return Array.from(map.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, "pt-BR")
+  );
 }
 
 function initNavigation() {
