@@ -130,6 +130,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.target.value = value;
   });
 
+  activeLinesInput?.addEventListener("input", (e) => {
+    let value = String(e.target.value || "").replace(/\D/g, "");
+    e.target.value = value;
+  });
+
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -137,6 +142,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const nameValue = (nameInput?.value || "").trim();
     const whatsappValue = (whatsappInput?.value || "").replace(/\D/g, "");
+    const hasMobileRaw = hasMobileInput?.value || "";
+    const contractTypeValue = (contractTypeInput?.value || "").trim().toUpperCase();
+    const operatorValue = (operatorInput?.value || "").trim();
+    const activeLinesRaw = String(activeLinesInput?.value || "").trim();
 
     if (!nameValue) {
       showError(errorBox, "Informe seu nome.");
@@ -147,6 +156,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       showError(errorBox, "Informe um WhatsApp válido.");
       return;
     }
+
+    if (hasMobileRaw !== "true" && hasMobileRaw !== "false") {
+      showError(errorBox, "Selecione se a telefonia está ativa.");
+      return;
+    }
+
+    if (contractTypeValue !== "CPF" && contractTypeValue !== "CNPJ") {
+      showError(errorBox, "Selecione um tipo de contrato válido.");
+      return;
+    }
+
+    if (!operatorValue) {
+      showError(errorBox, "Informe a operadora.");
+      return;
+    }
+
+    if (activeLinesRaw === "") {
+      showError(errorBox, "Informe a quantidade de linhas ativas.");
+      return;
+    }
+
+    const activeLinesValue = Number(activeLinesRaw);
+
+    if (!Number.isInteger(activeLinesValue) || activeLinesValue < 0) {
+      showError(errorBox, "Informe um número válido de linhas ativas.");
+      return;
+    }
+
+    const payload = {
+      name: nameValue,
+      whatsapp: whatsappValue,
+      has_mobile_service: hasMobileRaw === "true",
+      contract_type: contractTypeValue,
+      operator: operatorValue,
+      active_lines: activeLinesValue,
+    };
 
     if (saveBtn) {
       saveBtn.disabled = true;
@@ -159,17 +204,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const { error } = await sb
         .from("profiles")
-        .update({
-          name: nameValue,
-          whatsapp: whatsappValue,
-        })
+        .update(payload)
         .eq("id", user.id);
 
       if (error) throw error;
 
       if (CURRENT_PROFILE) {
-        CURRENT_PROFILE.name = nameValue;
-        CURRENT_PROFILE.whatsapp = whatsappValue;
+        CURRENT_PROFILE.name = payload.name;
+        CURRENT_PROFILE.whatsapp = payload.whatsapp;
+        CURRENT_PROFILE.has_mobile_service = payload.has_mobile_service;
+        CURRENT_PROFILE.contract_type = payload.contract_type;
+        CURRENT_PROFILE.operator = payload.operator;
+        CURRENT_PROFILE.active_lines = payload.active_lines;
       }
 
       if (typeof showFeedback === "function") {
@@ -209,9 +255,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (cepInput) cepInput.value = regiao?.cep || profile?.cep || "";
     if (cidadeInput) cidadeInput.value = regiao?.cidade || "";
     if (estadoInput) estadoInput.value = regiao?.estado || "";
-    if (hasMobileInput) hasMobileInput.value = profile?.has_mobile_service ? "Sim" : "Não";
-    if (contractTypeInput) contractTypeInput.value = profile?.contract_type || "";
+
+    if (hasMobileInput) {
+      if (profile?.has_mobile_service === true) {
+        hasMobileInput.value = "true";
+      } else if (profile?.has_mobile_service === false) {
+        hasMobileInput.value = "false";
+      } else {
+        hasMobileInput.value = "";
+      }
+    }
+
+    if (contractTypeInput) {
+      const contract = String(profile?.contract_type || "").trim().toUpperCase();
+      contractTypeInput.value = contract === "CPF" || contract === "CNPJ" ? contract : "";
+    }
+
     if (operatorInput) operatorInput.value = profile?.operator || "";
+
     if (activeLinesInput) {
       activeLinesInput.value =
         Number.isFinite(profile?.active_lines) ? String(profile.active_lines) : "";

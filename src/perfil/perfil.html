@@ -140,22 +140,30 @@
 
             <div class="field">
               <label for="has-mobile">Telefonia ativa</label>
-              <input id="has-mobile" class="input-dark-lite" type="text" readonly />
+              <select id="has-mobile" class="input-dark-lite">
+                <option value="">Selecione</option>
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+              </select>
             </div>
 
             <div class="field">
               <label for="contract-type">Tipo de contrato</label>
-              <input id="contract-type" class="input-dark-lite" type="text" readonly />
+              <select id="contract-type" class="input-dark-lite">
+                <option value="">Selecione</option>
+                <option value="CPF">CPF</option>
+                <option value="CNPJ">CNPJ</option>
+              </select>
             </div>
 
             <div class="field">
               <label for="operator">Operadora</label>
-              <input id="operator" class="input-dark-lite" type="text" readonly />
+              <input id="operator" class="input-dark-lite" type="text" placeholder="Operadora" />
             </div>
 
             <div class="field">
               <label for="active-lines">Linhas ativas</label>
-              <input id="active-lines" class="input-dark-lite" type="text" readonly />
+              <input id="active-lines" class="input-dark-lite" type="number" min="0" step="1" placeholder="0" />
             </div>
           </div>
 
