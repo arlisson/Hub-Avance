@@ -516,3 +516,7 @@ body.dark-mode .dropdown-item.reset-action:hover {
   background: rgba(87, 197, 234, 0.18);
   color: #ADE5F2; /* Azul claro para o texto no tema escuro */
 }
+
+[hidden] {
+  display: none !important;
+}
