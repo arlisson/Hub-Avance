@@ -445,6 +445,16 @@ body.dark-mode .hub-footer {
   .navbar-links.active {
     display: flex !important;
   }
+
+  /* Esconde o texto do email no telemóvel */
+  .nav-user-email {
+    display: none !important;
+  }
+  
+  /* Se quiser esconder também a setinha para baixo no telemóvel para ficar ainda mais limpo, adicione isto: */
+  .user-profile-btn .ph-caret-down {
+    display: none !important;
+  }
 }
 
 /* ==========================================================
