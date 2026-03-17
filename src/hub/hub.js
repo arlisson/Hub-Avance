@@ -105,27 +105,34 @@ const APPS = [
 ];
 
 // -------------------------
-// Renderização dos Depoimentos
+// Renderização dos Depoimentos (Vindo do Banco de Dados)
 // -------------------------
-function renderTestimonials() {
+function renderTestimonials(avaliacoes) {
   const track = document.getElementById("testimonials-track");
   if (!track) return;
 
+  // Se não vier nenhuma avaliação do banco, não faz nada
+  if (!avaliacoes || avaliacoes.length === 0) return;
+
   let html = "";
   
-  // Duplicamos a lista (original + clones) para o efeito infinito funcionar
-  const allTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
+  // Usa as avaliações que vieram do Supabase e duplica para o efeito de loop infinito
+  const allTestimonials = [...avaliacoes, ...avaliacoes];
 
   allTestimonials.forEach((t) => {
+    // Definimos cores padrão caso você esqueça de preencher a cor no banco de dados
+    const cor1 = t.cor1 || "#00d4ff";
+    const cor2 = t.cor2 || "#0066ff";
+
     html += `
       <div class="testimonial-card">
         <div class="stars">★★★★★</div>
-        <p class="testimonial-text">"${escapeHtml(t.text)}"</p>
+        <p class="testimonial-text">"${escapeHtml(t.texto)}"</p>
         <div class="testimonial-author">
-          <div class="author-avatar" style="background: linear-gradient(135deg, ${t.color1}, ${t.color2});">${t.initials}</div>
+          <div class="author-avatar" style="background: linear-gradient(135deg, ${cor1}, ${cor2});">${escapeHtml(t.iniciais)}</div>
           <div>
-            <div class="author-name">${escapeHtml(t.author)}</div>
-            <div class="author-role">${escapeHtml(t.role)}</div>
+            <div class="author-name">${escapeHtml(t.autor)}</div>
+            <div class="author-role">${escapeHtml(t.cargo)}</div>
           </div>
         </div>
       </div>
