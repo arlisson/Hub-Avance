@@ -1162,6 +1162,9 @@ body:not(.dark-mode) .logo-claro {
   display: flex;
   gap: 24px;
   width: max-content;
+}
+
+.testimonials-track.iniciada {
   animation: marquee 30s linear infinite;
 }
 

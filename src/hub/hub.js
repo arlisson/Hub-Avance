@@ -105,22 +105,49 @@ const APPS = [
 ];
 
 // -------------------------
-// Renderização dos Depoimentos (Vindo do Banco de Dados)
+// Busca as avaliações no banco de dados
+// -------------------------
+async function carregarAvaliacoes(sb) {
+  const section = document.querySelector('.hub-testimonials-section');
+  const track = document.getElementById("testimonials-track");
+
+  if (!track || !section) return;
+
+  // 1. Mostra um aviso enquanto a internet busca os dados
+  track.innerHTML = '<div style="padding: 20px; color: var(--text-primary); opacity: 0.6; font-weight: 500;">Buscando avaliações...</div>';
+
+  try {
+    const { data: avaliacoes, error } = await sb
+      .from('avaliacoes')
+      .select('*')
+
+    if (error) throw error;
+
+    // 2. Se achou avaliações, desenha na tela. Se o banco estiver vazio, esconde a seção.
+    if (avaliacoes && avaliacoes.length > 0) {
+      renderTestimonials(avaliacoes);
+    } else {
+      section.style.display = 'none';
+    }
+
+  } catch (e) {
+    console.error("Falha na conexão com avaliações:", e);
+    // 3. Se a internet cair ou der erro, esconde a seção para não ficar um buraco no site
+    section.style.display = 'none';
+  }
+}
+
+// -------------------------
+// Renderização dos Depoimentos
 // -------------------------
 function renderTestimonials(avaliacoes) {
   const track = document.getElementById("testimonials-track");
   if (!track) return;
 
-  // Se não vier nenhuma avaliação do banco, não faz nada
-  if (!avaliacoes || avaliacoes.length === 0) return;
-
   let html = "";
-  
-  // Usa as avaliações que vieram do Supabase e duplica para o efeito de loop infinito
   const allTestimonials = [...avaliacoes, ...avaliacoes];
 
   allTestimonials.forEach((t) => {
-    // Definimos cores padrão caso você esqueça de preencher a cor no banco de dados
     const cor1 = t.cor1 || "#00d4ff";
     const cor2 = t.cor2 || "#0066ff";
 
@@ -140,29 +167,9 @@ function renderTestimonials(avaliacoes) {
   });
 
   track.innerHTML = html;
-}
 
-// Busca as avaliações no banco de dados e depois renderiza
-async function carregarAvaliacoes(sb) {
-  try {
-    // Pede para o Supabase todas as avaliações aprovadas
-    const { data: avaliacoes, error } = await sb
-      .from('avaliacoes')
-      .select('*')
-
-    if (error) {
-      console.error("Erro ao puxar depoimentos:", error);
-      return;
-    }
-
-    // Se deu certo, manda a lista para a nossa função de desenhar na tela
-    if (avaliacoes && avaliacoes.length > 0) {
-      renderTestimonials(avaliacoes);
-    }
-
-  } catch (e) {
-    console.error("Falha na conexão com avaliações:", e);
-  }
+  // 4. Só agora que os cartões estão fisicamente no HTML, ligamos o motor da animação!
+  track.classList.add("iniciada");
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
