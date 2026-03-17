@@ -1147,7 +1147,7 @@ body:not(.dark-mode) .logo-claro {
 .hub-testimonials-section {
   width: 100%;
   max-width: 1600px;
-  margin: -100px auto 60px auto;
+  margin: -60px auto 60px auto;
   overflow: hidden;
   position: relative;
   z-index: 5;
