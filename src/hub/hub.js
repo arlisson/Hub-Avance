@@ -111,7 +111,6 @@ async function carregarAvaliacoes(sb) {
     const { data: avaliacoes, error } = await sb
       .from('avaliacoes')
       .select('*')
-      .order('created_at', { ascending: false });
 
     if (error) {
       console.error("Erro ao puxar depoimentos:", error);
@@ -200,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initAppModal();
     renderHubCards({ canAccessProtocol });
     await carregarAvaliacoes(sb);
-    
+
   } catch (e) {
     console.error("Erro ao inicializar Hub:", e);
     window.location.href = normalizeLoginUrl(LOGIN_URL);
