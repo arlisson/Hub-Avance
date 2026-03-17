@@ -602,28 +602,36 @@ function updateThemeIcon(btn, isDark) {
 // -------------------------
 // Sidebar
 // -------------------------
+// -------------------------
+// Menu Mobile (Navbar)
+// -------------------------
 function initMobileSidebar() {
   const mobileBtn = document.getElementById("mobile-menu-btn");
-  const desktopBtn = document.getElementById("desktop-toggle-btn");
+  const navbarLinks = document.querySelector(".navbar-links");
 
-  desktopBtn?.addEventListener("click", () => {
-    document.body.classList.toggle("sidebar-collapsed");
-  });
+  if (!mobileBtn || !navbarLinks) return;
 
-  mobileBtn?.addEventListener("click", () => {
-    document.body.classList.toggle("sidebar-open");
-  });
-
-  document.addEventListener("click", (e) => {
-    if (window.innerWidth <= 900 && document.body.classList.contains("sidebar-open")) {
-      const sidebar = document.querySelector(".sidebar");
-      const clickedInsideSidebar = sidebar?.contains(e.target);
-      const clickedMobileBtn = mobileBtn?.contains(e.target);
-
-      if (!clickedInsideSidebar && !clickedMobileBtn) {
-        document.body.classList.remove("sidebar-open");
-      }
+  // Quando clica no botão do menu
+  mobileBtn.addEventListener("click", () => {
+    navbarLinks.classList.toggle("active");
+    
+    // Altera o ícone de Hambúrguer (Lista) para um "X" (Fechar)
+    const icon = mobileBtn.querySelector("i");
+    if (navbarLinks.classList.contains("active")) {
+      icon.className = "ph ph-x";
+    } else {
+      icon.className = "ph ph-list";
     }
+  });
+
+  // Fecha o menu automaticamente se o utilizador clicar num dos links (ex: "Aplicações")
+  const links = navbarLinks.querySelectorAll(".nav-link");
+  links.forEach(link => {
+    link.addEventListener("click", () => {
+      navbarLinks.classList.remove("active");
+      const icon = mobileBtn.querySelector("i");
+      if(icon) icon.className = "ph ph-list";
+    });
   });
 }
 

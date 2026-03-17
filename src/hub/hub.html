@@ -28,6 +28,9 @@
     </nav>
 
     <div class="navbar-right">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu" type="button">
+        <i class="ph ph-list"></i>
+      </button>
       <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Alternar tema">
         <i class="ph ph-moon"></i>
         <span style="display: none;">Modo escuro</span> </button>
@@ -38,30 +41,22 @@
           <i class="ph ph-caret-down" style="font-size: 14px;"></i>
         </button>
 
-       <div class="settings-dropdown" id="settings-menu" hidden>
+        <div class="settings-dropdown" id="settings-menu" hidden>
 
-          <a
-            href="../perfil/perfil.html"
-            class="dropdown-item reset-action"
-            id="perfil-user"
-            style="text-decoration: none;"            
-          >
+          <a href="../perfil/perfil.html" class="dropdown-item reset-action" id="perfil-user"
+            style="text-decoration: none;">
             <i class="ph ph-user"></i>
             <span>Perfil</span>
           </a>
 
-          <a
-            href="../usuarios/usuarios.html"
-            class="dropdown-item reset-action"
-            id="menu-users"
-            style="text-decoration: none;"
-            hidden
-          >
+          <a href="../usuarios/usuarios.html" class="dropdown-item reset-action" id="menu-users"
+            style="text-decoration: none;" hidden>
             <i class="ph ph-users-three"></i>
             <span>Usuários</span>
           </a>
 
-          <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action" style="text-decoration: none;">
+          <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action"
+            style="text-decoration: none;">
             <i class="ph ph-lock-key"></i>
             <span>Alterar Senha</span>
           </a>

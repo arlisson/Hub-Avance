@@ -118,12 +118,40 @@ body.dark-mode .chat-item.active {
    RESPONSIVIDADE (MOBILE)
    ========================================================== */
 @media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: -300px;
-    z-index: 9999;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* O botão hambúrguer aparece */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s ease;
+  }
+  /* Os links viram um menu que cai por baixo da Navbar */
+  .navbar-links {
+    display: none; /* Escondido por defeito */
+    position: absolute;
+    top: 100%; /* Fica exatamente abaixo da barra */
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-main); /* Mantém a cor do tema */
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    gap: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: none; /* Cancela a centralização do ecrã de PC */
+    z-index: 999;
+  }
+
+  /* Quando o JavaScript adicionar a classe 'active', o menu aparece */
+  .navbar-links.active {
+    display: flex;
   }
 
   body.sidebar-open .sidebar {
