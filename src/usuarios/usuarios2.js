@@ -98,17 +98,12 @@ function applyFilterAndRender() {
     // Linhas ativas
     if (fLinhas !== "") {
       const lines = Number.isFinite(u.active_lines) ? u.active_lines : null;
-      if (fLinhas === "0"    && lines !== 0)                      return false;
-      if (fLinhas === "1"  && (lines === null || lines === 1))  return false;
-      if (fLinhas === "2"  && (lines === null || lines === 2))  return false;
-      if (fLinhas === "3"  && (lines === null || lines === 3))  return false;
-      if (fLinhas === "4"  && (lines === null || lines === 4))  return false;
-      if (fLinhas === "5"  && (lines === null || lines === 5))  return false;
-      if (fLinhas === "6"  && (lines === null || lines === 6))  return false;
-      if (fLinhas === "7"  && (lines === null || lines === 7))  return false;
-      if (fLinhas === "8"  && (lines === null || lines === 8))  return false;
-      if (fLinhas === "9"  && (lines === null || lines === 9))  return false;
-      if (fLinhas === "10+" && (lines === null || lines > 10)) return false;
+      if (fLinhas === "10+") {
+        if (lines === null || lines < 10) return false;
+      } else {
+        const exact = Number(fLinhas);
+        if (lines !== exact) return false;
+      }
     }
 
     // Tipo de contrato
