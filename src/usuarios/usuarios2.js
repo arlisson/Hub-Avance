@@ -8,6 +8,9 @@ let currentView = "users";
 
 // Filtros
 let filterClienteEl = null;
+
+// Último conjunto filtrado (para exportação)
+let lastFilteredUsers = [];
 let filterTelefoniaEl = null;
 let filterLinhasEl = null;
 let filterContratoEl = null;
@@ -115,8 +118,18 @@ function applyFilterAndRender() {
     return true;
   });
 
+  lastFilteredUsers = filtered;
   updateFilterBadge();
+  updateResultCount(filtered.length);
   renderUsers(filtered);
+}
+
+function updateResultCount(count) {
+  const el = document.getElementById("filter-result-count");
+  if (!el) return;
+  el.textContent = count === 1
+    ? "1 usuário encontrado"
+    : `${count.toLocaleString("pt-BR")} usuários encontrados`;
 }
 
 function updateFilterBadge() {
@@ -259,6 +272,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (filterContratoEl)  filterContratoEl.value  = "";
           if (filterOperadoraEl) filterOperadoraEl.value = "";
           applyFilterAndRender();
+        });
+
+        document.getElementById("btn-export-excel")?.addEventListener("click", () => {
+          exportFilteredUsersToExcel(lastFilteredUsers);
         });
 
         document.getElementById("filter-bar-toggle")?.addEventListener("click", () => {
@@ -900,6 +917,52 @@ function setError(element, message, hidden = false) {
   if (!element) return;
   element.textContent = message || "";
   element.hidden = hidden || !message;
+}
+
+
+function exportFilteredUsersToExcel(users) {
+  if (!users || !users.length) {
+    alert("Nenhum usuário para exportar com os filtros atuais.");
+    return;
+  }
+
+  const rows = users.map((u) => {
+    const regiao = parseRegion(u.regiao);
+    return {
+      "Nome":               u.name              || "",
+      "E-mail":             u.email             || "",
+      "CPF/CNPJ":           u.cpf               || "",
+      "WhatsApp":           u.whatsapp          || "",
+      "CEP":                regiao.cep          || u.cep || "",
+      "Cidade":             regiao.cidade       || "",
+      "Estado":             regiao.estado       || "",
+      "Acesso Protocolo":   u.protocol          ? "Sim" : "Não",
+      "Cliente Avance":     u.cliente_avance    ? "Sim" : "Não",
+      "Telefonia ativa":    u.has_mobile_service ? "Sim" : "Não",
+      "Tipo de contrato":   u.contract_type     || "",
+      "Operadora":          u.operator          || "",
+      "Linhas ativas":      Number.isFinite(u.active_lines) ? u.active_lines : "",
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // Larguras de coluna automáticas
+  const colWidths = Object.keys(rows[0]).map((key) => {
+    const maxLen = Math.max(
+      key.length,
+      ...rows.map((r) => String(r[key] ?? "").length)
+    );
+    return { wch: Math.min(maxLen + 2, 40) };
+  });
+  ws["!cols"] = colWidths;
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Usuários");
+
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+  XLSX.writeFile(wb, `usuarios_avance_${stamp}.xlsx`);
 }
 
 function escapeHtml(s) {

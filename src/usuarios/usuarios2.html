@@ -176,6 +176,14 @@
           </div>
         </div>
 
+        <div class="filter-export-row">
+          <span class="filter-result-count" id="filter-result-count"></span>
+          <button class="btn-export-excel" id="btn-export-excel" type="button">
+            <i class="ph ph-microsoft-excel-logo"></i>
+            Exportar para Excel
+          </button>
+        </div>
+
         <div class="table-wrap">
           <table class="users-table">
             <thead>
@@ -245,6 +253,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script src="../shared/loading.js"></script>
   <script src="../supabaseClient.js"></script>
   <script src="./usuarios2.js" defer></script>
