@@ -1154,8 +1154,19 @@ body:not(.dark-mode) .logo-claro {
 }
 
 .testimonials-container {
-  overflow: hidden;
+  /* Habilita a rolagem real na horizontal */
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 10px 0;
+  
+  /* Esconde a barra de rolagem feia do Windows/Mac (fica invisível, mas funciona) */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-behavior: auto; /* IMPORTANTE: não use smooth aqui */
+}
+
+.testimonials-container::-webkit-scrollbar {
+  display: none; /* Esconde a barra no Chrome/Safari */
 }
 
 .testimonials-track {
@@ -1163,6 +1174,10 @@ body:not(.dark-mode) .logo-claro {
   gap: 24px;
   width: max-content;
 }
+
+/* Mostra a "mãozinha" para indicar que dá pra arrastar no PC */
+.testimonials-container.grab { cursor: grab; }
+.testimonials-container.grabbing { cursor: grabbing; }
 
 .testimonials-track.iniciada {
   animation: marquee 30s linear infinite;
