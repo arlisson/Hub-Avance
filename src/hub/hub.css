@@ -118,58 +118,39 @@ body.dark-mode .chat-item.active {
    RESPONSIVIDADE (MOBILE)
    ========================================================== */
 @media (max-width: 900px) {
-
-  /* O botão hambúrguer aparece */
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    font-size: 28px;
-    color: var(--text-primary);
-    cursor: pointer;
-    padding: 4px;
-    transition: transform 0.2s ease;
-  }
-
   /* 1. Reduz o espaçamento geral da barra */
   .top-navbar {
-    padding: 12px 16px;
+    padding: 12px 16px !important;
   }
 
-  /* 2. Diminui o logótipo para caber melhor ao lado dos botões */
+  /* 2. Força o logótipo a diminuir no telemóvel */
   .company-logo {
-    max-width: 120px;
-    /* Estava em 200px */
+    max-width: 120px !important; 
   }
-
+  
   .navbar-logo {
-    height: 26px;
-    /* Ajusta a altura proporcionalmente */
+    height: 26px !important; 
   }
 
-  /* 3. Aproxima os botões do lado direito */
+  /* 3. Aproxima os botões do lado direito à força */
   .navbar-right {
-    gap: 8px;
-    /* Estava em 20px, aproximando os ícones */
+    gap: 8px !important; 
   }
 
-  /* 4. Deixa o botão de perfil mais compacto no mobile */
+  /* 4. Deixa os botões mais compactos */
   .user-profile-btn {
-    padding: 6px 10px;
+    padding: 6px 10px !important;
   }
-
-  /* Deixa o botão de tema um bocadinho menor */
+  
   .theme-toggle-top {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
   }
 
-  /* O botão hambúrguer que adicionámos antes (mantenha como estava) */
+  /* Botão hambúrguer */
   .mobile-menu-btn {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     background: transparent;
@@ -181,17 +162,14 @@ body.dark-mode .chat-item.active {
     transition: transform 0.2s ease;
   }
 
-  /* Os links viram um menu que cai por baixo da Navbar */
+  /* Menu suspenso */
   .navbar-links {
     display: none;
-    /* Escondido por defeito */
     position: absolute;
     top: 100%;
-    /* Fica exatamente abaixo da barra */
     left: 0;
     width: 100%;
     background-color: var(--bg-main);
-    /* Mantém a cor do tema */
     flex-direction: column;
     align-items: center;
     padding: 24px 0;
@@ -199,20 +177,13 @@ body.dark-mode .chat-item.active {
     border-bottom: 1px solid var(--border-subtle);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transform: none;
-    /* Cancela a centralização do ecrã de PC */
     z-index: 999;
   }
 
-  /* Quando o JavaScript adicionar a classe 'active', o menu aparece */
   .navbar-links.active {
-    display: flex;
-  }
-
-  body.sidebar-open .sidebar {
-    left: 0;
+    display: flex !important;
   }
 }
-
 /* ==========================================================
    2. LAYOUT GERAL, GRID E CARDS (Novo Design)
    ========================================================== */
