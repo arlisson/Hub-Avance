@@ -104,6 +104,75 @@ const APPS = [
   },
 ];
 
+// -------------------------
+// Dados dos Depoimentos
+// -------------------------
+const TESTIMONIALS = [
+  {
+    text: "O Agente de IA mudou completamente nossa dinâmica de treinamento. Em 2 semanas, o time já performava muito melhor nas abordagens de vendas.",
+    author: "Marcelo A.",
+    role: "Gerente Comercial",
+    initials: "MA",
+    color1: "#00d4ff",
+    color2: "#0066ff"
+  },
+  {
+    text: "O Preenche Fácil foi uma revolução na nossa rotina. Antes levávamos horas preenchendo planilhas. Agora é questão de minutos.",
+    author: "Patricia S.",
+    role: "Supervisora de Operações",
+    initials: "PS",
+    color1: "#7c3aff",
+    color2: "#0066ff"
+  },
+  {
+    text: "O Gerador de Protocolo deixou nosso atendimento muito mais profissional. Cliente recebe o número na hora com uma mensagem caprichada.",
+    author: "Ricardo F.",
+    role: "Coordenador de CS",
+    initials: "RF",
+    color1: "#00c896",
+    color2: "#0066ff"
+  },
+  {
+    text: "Nunca imaginei que minha operadora também seria parceira de tecnologia. Os softwares gratuitos foram um diferencial enorme.",
+    author: "Camila L.",
+    role: "Diretora de TI",
+    initials: "CL",
+    color1: "#ff6b35",
+    color2: "#ff0066"
+  }
+];
+
+// -------------------------
+// Renderização dos Depoimentos
+// -------------------------
+function renderTestimonials() {
+  const track = document.getElementById("testimonials-track");
+  if (!track) return;
+
+  let html = "";
+  
+  // Duplicamos a lista (original + clones) para o efeito infinito funcionar
+  const allTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
+
+  allTestimonials.forEach((t) => {
+    html += `
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"${escapeHtml(t.text)}"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, ${t.color1}, ${t.color2});">${t.initials}</div>
+          <div>
+            <div class="author-name">${escapeHtml(t.author)}</div>
+            <div class="author-role">${escapeHtml(t.role)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  track.innerHTML = html;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   await loadPublicAgentConfig();
 
@@ -175,6 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initMobileSidebar();
     initAppModal();
     renderHubCards({ canAccessProtocol });
+    renderTestimonials();
   } catch (e) {
     console.error("Erro ao inicializar Hub:", e);
     window.location.href = normalizeLoginUrl(LOGIN_URL);
