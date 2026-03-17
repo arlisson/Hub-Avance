@@ -118,6 +118,7 @@ body.dark-mode .chat-item.active {
    RESPONSIVIDADE (MOBILE)
    ========================================================== */
 @media (max-width: 900px) {
+
   /* O botão hambúrguer aparece */
   .mobile-menu-btn {
     display: flex;
@@ -131,21 +132,74 @@ body.dark-mode .chat-item.active {
     padding: 4px;
     transition: transform 0.2s ease;
   }
+
+  /* 1. Reduz o espaçamento geral da barra */
+  .top-navbar {
+    padding: 12px 16px;
+  }
+
+  /* 2. Diminui o logótipo para caber melhor ao lado dos botões */
+  .company-logo {
+    max-width: 120px;
+    /* Estava em 200px */
+  }
+
+  .navbar-logo {
+    height: 26px;
+    /* Ajusta a altura proporcionalmente */
+  }
+
+  /* 3. Aproxima os botões do lado direito */
+  .navbar-right {
+    gap: 8px;
+    /* Estava em 20px, aproximando os ícones */
+  }
+
+  /* 4. Deixa o botão de perfil mais compacto no mobile */
+  .user-profile-btn {
+    padding: 6px 10px;
+  }
+
+  /* Deixa o botão de tema um bocadinho menor */
+  .theme-toggle-top {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  /* O botão hambúrguer que adicionámos antes (mantenha como estava) */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s ease;
+  }
+
   /* Os links viram um menu que cai por baixo da Navbar */
   .navbar-links {
-    display: none; /* Escondido por defeito */
+    display: none;
+    /* Escondido por defeito */
     position: absolute;
-    top: 100%; /* Fica exatamente abaixo da barra */
+    top: 100%;
+    /* Fica exatamente abaixo da barra */
     left: 0;
     width: 100%;
-    background-color: var(--bg-main); /* Mantém a cor do tema */
+    background-color: var(--bg-main);
+    /* Mantém a cor do tema */
     flex-direction: column;
     align-items: center;
     padding: 24px 0;
     gap: 24px;
     border-bottom: 1px solid var(--border-subtle);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transform: none; /* Cancela a centralização do ecrã de PC */
+    transform: none;
+    /* Cancela a centralização do ecrã de PC */
     z-index: 999;
   }
 
@@ -493,13 +547,15 @@ body.dark-mode .hub-card {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: rgba(250, 254, 255, 0.95); /* Branco gelo com opacidade */
+  background: rgba(250, 254, 255, 0.95);
+  /* Branco gelo com opacidade */
   transition: background 0.3s ease;
 }
 
 /* Fundo quando ativar o Modo Escuro */
 body.dark-mode .app-modal-backdrop {
-  background: rgba(11, 14, 35, 0.95); /* Azul escuro com opacidade */
+  background: rgba(11, 14, 35, 0.95);
+  /* Azul escuro com opacidade */
 }
 
 .app-modal {
@@ -509,11 +565,12 @@ body.dark-mode .app-modal-backdrop {
   transform: translate(-50%, -50%);
   z-index: 9999;
   width: min(1000px, 92vw);
-  max-height: 90vh; /* Evita que o modal passe do tamanho da tela */
+  max-height: 90vh;
+  /* Evita que o modal passe do tamanho da tela */
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
-  
+
   /* Sombra 3D com um leve brilho ciano */
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(87, 197, 234, 0.1);
   background: var(--bg-card);
@@ -541,7 +598,8 @@ body.dark-mode .app-modal-backdrop {
   display: inline-block;
   font-size: 12px;
   padding: 6px 14px;
-  border-radius: 50px; /* Mais arredondado */
+  border-radius: 50px;
+  /* Mais arredondado */
   background: rgba(87, 197, 234, 0.15);
   color: var(--brand-action);
   border: 1px solid rgba(87, 197, 234, 0.3);
@@ -591,7 +649,8 @@ body.dark-mode .app-modal-close {
   flex-direction: column;
   gap: 24px;
   padding: 30px 40px;
-  overflow-y: auto; /* Cria barra de rolagem interna se a tela for pequena */
+  overflow-y: auto;
+  /* Cria barra de rolagem interna se a tela for pequena */
 }
 
 .app-modal-desc {
@@ -622,7 +681,8 @@ body.dark-mode .app-modal-close {
 /* --- Botão Principal (Acessar / Baixar) --- */
 .app-modal-actions {
   display: flex;
-  justify-content: flex-end; /* Joga o botão para a direita */
+  justify-content: flex-end;
+  /* Joga o botão para a direita */
   padding-top: 10px;
 }
 
@@ -908,7 +968,8 @@ body.dark-mode .nav-link.active {
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: var(--text-primary); /* Cor padrão do texto */
+  color: var(--text-primary);
+  /* Cor padrão do texto */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -924,7 +985,7 @@ body.dark-mode .nav-link.active {
 
 /* --- Botão Sair (Danger) --- */
 .dropdown-item.danger {
-  color: #ef4444; 
+  color: #ef4444;
 }
 
 .dropdown-item.danger:hover {
@@ -937,14 +998,17 @@ body.dark-mode .nav-link.active {
 }
 
 .dropdown-item.reset-action:hover {
-  background: rgba(87, 197, 234, 0.12); /* Fundo azul suave */
-  color: #133868; /* Azul mais escuro para o texto no tema claro */
+  background: rgba(87, 197, 234, 0.12);
+  /* Fundo azul suave */
+  color: #133868;
+  /* Azul mais escuro para o texto no tema claro */
 }
 
 /* Ajuste do hover para o Modo Escuro */
 body.dark-mode .dropdown-item.reset-action:hover {
   background: rgba(87, 197, 234, 0.18);
-  color: #ADE5F2; /* Azul claro para o texto no tema escuro */
+  color: #ADE5F2;
+  /* Azul claro para o texto no tema escuro */
 }
 
 /* ==========================================================
@@ -1032,7 +1096,7 @@ body {
 
   /* 2. O BLOOM NEON PULSANTE */
   animation: pulseNeonLED 4s ease-in-out infinite;
-  
+
   /* ADICIONADO: Aceleração de Hardware para não travar o site */
   will-change: box-shadow;
   transform: translateZ(0);
@@ -1157,6 +1221,7 @@ body:not(.dark-mode) .logo-claro {
    OTIMIZAÇÃO DE PERFORMANCE PARA MOBILE
    ========================================= */
 @media (max-width: 900px) {
+
   /* Reduz o cálculo do efeito vidro em celulares para não travar a rolagem */
   body.dark-mode .hub-card,
   .top-navbar,
@@ -1186,15 +1251,17 @@ body:not(.dark-mode) .logo-claro {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 10px 0;
-  
+
   /* Esconde a barra de rolagem feia do Windows/Mac (fica invisível, mas funciona) */
   -ms-overflow-style: none;
   scrollbar-width: none;
-  scroll-behavior: auto; /* IMPORTANTE: não use smooth aqui */
+  scroll-behavior: auto;
+  /* IMPORTANTE: não use smooth aqui */
 }
 
 .testimonials-container::-webkit-scrollbar {
-  display: none; /* Esconde a barra no Chrome/Safari */
+  display: none;
+  /* Esconde a barra no Chrome/Safari */
 }
 
 .testimonials-track {
@@ -1204,8 +1271,13 @@ body:not(.dark-mode) .logo-claro {
 }
 
 /* Mostra a "mãozinha" para indicar que dá pra arrastar no PC */
-.testimonials-container.grab { cursor: grab; }
-.testimonials-container.grabbing { cursor: grabbing; }
+.testimonials-container.grab {
+  cursor: grab;
+}
+
+.testimonials-container.grabbing {
+  cursor: grabbing;
+}
 
 .testimonials-track.iniciada {
   animation: marquee 30s linear infinite;
@@ -1303,6 +1375,11 @@ body.dark-mode .testimonial-card {
 
 /* Animação que move a esteira */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
