@@ -1140,3 +1140,123 @@ body:not(.dark-mode) .logo-claro {
 [hidden] {
   display: none !important;
 }
+
+/* ==========================================================
+   SEÇÃO DE AVALIAÇÕES / DEPOIMENTOS (MARQUEE)
+   ========================================================== */
+.hub-testimonials-section {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto 60px auto;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+}
+
+.testimonials-container {
+  overflow: hidden;
+  padding: 10px 0;
+}
+
+.testimonials-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+/* Pausa a rolagem ao passar o mouse */
+.testimonials-track:hover {
+  animation-play-state: paused;
+}
+
+.testimonial-card {
+  flex-shrink: 0;
+  width: 360px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efeito Vidro para o Modo Escuro */
+body.dark-mode .testimonial-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--brand-action);
+  box-shadow: 0 15px 40px rgba(87, 197, 234, 0.2);
+}
+
+/* Aspas gigantes estilizadas ao fundo */
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 80px;
+  line-height: 1;
+  font-family: 'Inter', sans-serif;
+  color: var(--border-subtle);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.testimonial-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  opacity: 0.85;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #FAFEFF;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.author-role {
+  font-size: 13px;
+  color: var(--text-primary);
+  opacity: 0.6;
+}
+
+.stars {
+  color: #fbbf24;
+  font-size: 15px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+/* Animação que move a esteira */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
