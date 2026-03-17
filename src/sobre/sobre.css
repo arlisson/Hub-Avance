@@ -450,11 +450,6 @@ body.dark-mode .hub-footer {
   .nav-user-email {
     display: none !important;
   }
-  
-  /* Se quiser esconder também a setinha para baixo no telemóvel para ficar ainda mais limpo, adicione isto: */
-  .user-profile-btn .ph-caret-down {
-    display: none !important;
-  }
 }
 
 /* ==========================================================
