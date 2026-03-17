@@ -99,10 +99,16 @@ function applyFilterAndRender() {
     if (fLinhas !== "") {
       const lines = Number.isFinite(u.active_lines) ? u.active_lines : null;
       if (fLinhas === "0"    && lines !== 0)                      return false;
-      if (fLinhas === "1-5"  && (lines === null || lines < 1  || lines > 5))  return false;
-      if (fLinhas === "6-10" && (lines === null || lines < 6  || lines > 10)) return false;
-      if (fLinhas === "11-20"&& (lines === null || lines < 11 || lines > 20)) return false;
-      if (fLinhas === "21+"  && (lines === null || lines < 21))   return false;
+      if (fLinhas === "1"  && (lines === null || lines === 1))  return false;
+      if (fLinhas === "2"  && (lines === null || lines === 2))  return false;
+      if (fLinhas === "3"  && (lines === null || lines === 3))  return false;
+      if (fLinhas === "4"  && (lines === null || lines === 4))  return false;
+      if (fLinhas === "5"  && (lines === null || lines === 5))  return false;
+      if (fLinhas === "6"  && (lines === null || lines === 6))  return false;
+      if (fLinhas === "7"  && (lines === null || lines === 7))  return false;
+      if (fLinhas === "8"  && (lines === null || lines === 8))  return false;
+      if (fLinhas === "9"  && (lines === null || lines === 9))  return false;
+      if (fLinhas === "10+" && (lines === null || lines > 10)) return false;
     }
 
     // Tipo de contrato
