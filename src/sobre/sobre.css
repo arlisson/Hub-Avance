@@ -39,7 +39,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--bg-main) !important; /* Mantém a cor base para o fundo */
+  background-color: var(--bg-main) !important;
+  /* Mantém a cor base para o fundo */
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
@@ -89,10 +90,21 @@ body.dark-mode .top-navbar {
 }
 
 /* Controle da Logo Claro/Escuro */
-body.dark-mode .logo-escuro { display: block; }
-body.dark-mode .logo-claro { display: none; }
-body:not(.dark-mode) .logo-escuro { display: none; }
-body:not(.dark-mode) .logo-claro { display: block; }
+body.dark-mode .logo-escuro {
+  display: block;
+}
+
+body.dark-mode .logo-claro {
+  display: none;
+}
+
+body:not(.dark-mode) .logo-escuro {
+  display: none;
+}
+
+body:not(.dark-mode) .logo-claro {
+  display: block;
+}
 
 .navbar-links {
   display: flex;
@@ -111,12 +123,14 @@ body:not(.dark-mode) .logo-claro { display: block; }
   transition: all 0.2s;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   opacity: 1;
   color: var(--brand-primary);
 }
 
-body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
   color: var(--brand-action);
 }
 
@@ -149,14 +163,19 @@ body.dark-mode .theme-toggle-top {
    ========================================================== */
 /* Hero Section Menor para páginas internas */
 .about-hero {
-  width: 100%; /* Garante que ocupe a tela toda de ponta a ponta */
-  min-height: 40vh; 
+  width: 100%;
+  /* Garante que ocupe a tela toda de ponta a ponta */
+  min-height: 40vh;
   display: flex;
-  flex-direction: column; /* Organiza em coluna (título em cima, subtítulo embaixo) */
-  align-items: center;    /* A MÁGICA: Centraliza horizontalmente */
-  justify-content: center; /* Centraliza verticalmente */
-  text-align: center;     /* Centraliza o texto dentro da caixa */
-  padding: 120px 20px 40px; 
+  flex-direction: column;
+  /* Organiza em coluna (título em cima, subtítulo embaixo) */
+  align-items: center;
+  /* A MÁGICA: Centraliza horizontalmente */
+  justify-content: center;
+  /* Centraliza verticalmente */
+  text-align: center;
+  /* Centraliza o texto dentro da caixa */
+  padding: 120px 20px 40px;
 }
 
 /* Garante que o bloco de texto interno não tenha margens empurrando ele */
@@ -195,7 +214,8 @@ body.dark-mode .hero-subtitle {
 .showcase-wrapper {
   position: relative;
   width: 95%;
-  max-width: 1200px; /* Largura bacana para leitura */
+  max-width: 1200px;
+  /* Largura bacana para leitura */
   margin: 40px auto 80px auto;
   border-radius: 20px;
   overflow: visible;
@@ -209,7 +229,7 @@ body.dark-mode .hero-subtitle {
   position: absolute;
   inset: -1px;
   background: var(--border-color);
-  border-radius: 21px; 
+  border-radius: 21px;
   z-index: -2;
 }
 
@@ -217,22 +237,26 @@ body.dark-mode .hero-subtitle {
   content: "";
   position: absolute;
   inset: 0;
-  background-color: var(--bg-card); /* Usa a cor do tema */
-  border-radius: 20px; 
+  background-color: var(--bg-card);
+  /* Usa a cor do tema */
+  border-radius: 20px;
   z-index: -1;
   transition: background-color 0.3s ease;
 }
 
 @keyframes pulseNeonLED {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 40px 80px rgba(0, 0, 0, 0.6),
       0 0 10px 1px rgba(87, 197, 234, 0.3),
       0 0 40px 5px rgba(87, 197, 234, 0.1),
       0 0 60px 10px rgba(15, 44, 88, 0.1);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 40px 80px rgba(0, 0, 0, 0.6),
       0 0 15px 1px rgba(87, 197, 234, 0.6),
       0 0 70px 15px rgba(87, 197, 234, 0.3),
@@ -304,7 +328,8 @@ body.dark-mode .hub-section-title h2 {
   border: 1px solid var(--border-subtle);
   border-radius: 20px;
   padding: 40px 30px;
-  width: 320px; /* Um pouco mais largo */
+  width: 320px;
+  /* Um pouco mais largo */
   text-align: center;
   text-decoration: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
@@ -380,6 +405,7 @@ body.dark-mode .hub-footer {
    9. RESPONSIVIDADE (MOBILE)
    ========================================================== */
 @media (max-width: 900px) {
+
   /* 1. Reduz o espaçamento geral da barra */
   .top-navbar {
     padding: 12px 16px !important;
@@ -387,23 +413,23 @@ body.dark-mode .hub-footer {
 
   /* 2. Força o logótipo a diminuir no telemóvel */
   .company-logo {
-    max-width: 120px !important; 
+    max-width: 120px !important;
   }
-  
+
   .navbar-logo {
-    height: 26px !important; 
+    height: 26px !important;
   }
 
   /* 3. Aproxima os botões do lado direito à força */
   .navbar-right {
-    gap: 8px !important; 
+    gap: 8px !important;
   }
 
   /* 4. Deixa os botões mais compactos */
   .user-profile-btn {
     padding: 6px 10px !important;
   }
-  
+
   .theme-toggle-top {
     width: 36px !important;
     height: 36px !important;
@@ -450,6 +476,11 @@ body.dark-mode .hub-footer {
   .nav-user-email {
     display: none !important;
   }
+}
+
+/* Esconde o botão do menu mobile por padrão (no PC) */
+.mobile-menu-btn {
+  display: none;
 }
 
 /* ==========================================================
@@ -542,7 +573,8 @@ body.dark-mode .hub-footer {
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: var(--text-primary); /* Cor padrão do texto */
+  color: var(--text-primary);
+  /* Cor padrão do texto */
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -558,7 +590,7 @@ body.dark-mode .hub-footer {
 
 /* --- Botão Sair (Danger) --- */
 .dropdown-item.danger {
-  color: #ef4444; 
+  color: #ef4444;
 }
 
 .dropdown-item.danger:hover {
@@ -571,14 +603,17 @@ body.dark-mode .hub-footer {
 }
 
 .dropdown-item.reset-action:hover {
-  background: rgba(87, 197, 234, 0.12); /* Fundo azul suave */
-  color: #133868; /* Azul mais escuro para o texto no tema claro */
+  background: rgba(87, 197, 234, 0.12);
+  /* Fundo azul suave */
+  color: #133868;
+  /* Azul mais escuro para o texto no tema claro */
 }
 
 /* Ajuste do hover para o Modo Escuro */
 body.dark-mode .dropdown-item.reset-action:hover {
   background: rgba(87, 197, 234, 0.18);
-  color: #ADE5F2; /* Azul claro para o texto no tema escuro */
+  color: #ADE5F2;
+  /* Azul claro para o texto no tema escuro */
 }
 
 [hidden] {
