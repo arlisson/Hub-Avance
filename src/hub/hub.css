@@ -184,10 +184,10 @@ body.dark-mode .hub-title {
   text-align: center;
 
   /* Faz a seção ocupar 85% da altura da tela, empurrando os cards pra baixo */
-  min-height: 95vh;
+  min-height: 80vh;
   padding: 20px;
   position: relative;
-  margin-bottom: 60px;
+  margin-bottom: 0px;
   background-color: transparent !important;
 }
 
@@ -1147,7 +1147,7 @@ body:not(.dark-mode) .logo-claro {
 .hub-testimonials-section {
   width: 100%;
   max-width: 1600px;
-  margin: 0 auto 60px auto;
+  margin: -30px auto 60px auto;
   overflow: hidden;
   position: relative;
   z-index: 5;
