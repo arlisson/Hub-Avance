@@ -104,6 +104,37 @@ const APPS = [
   },
 ];
 
+// -------------------------
+// Renderização dos Depoimentos
+// -------------------------
+function renderTestimonials() {
+  const track = document.getElementById("testimonials-track");
+  if (!track) return;
+
+  let html = "";
+  
+  // Duplicamos a lista (original + clones) para o efeito infinito funcionar
+  const allTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
+
+  allTestimonials.forEach((t) => {
+    html += `
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"${escapeHtml(t.text)}"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, ${t.color1}, ${t.color2});">${t.initials}</div>
+          <div>
+            <div class="author-name">${escapeHtml(t.author)}</div>
+            <div class="author-role">${escapeHtml(t.role)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  track.innerHTML = html;
+}
+
 // Busca as avaliações no banco de dados e depois renderiza
 async function carregarAvaliacoes(sb) {
   try {
