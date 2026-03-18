@@ -12,6 +12,15 @@
 </head>
 
 <body>
+  <!-- Aplica o tema ANTES de qualquer renderização para evitar o flash de tema claro -->
+  <script>
+    (function () {
+      if (localStorage.getItem('theme') !== 'light') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+
   <header class="top-navbar">
     <div class="logo-container">
       <a href="/hub/hub.html">
