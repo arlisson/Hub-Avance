@@ -168,12 +168,16 @@ function renderTestimonials(avaliacoes) {
 
   track.innerHTML = html;
 
-  // Substituímos a classe CSS antiga por esta chamada Javascript:
+  // Ativa a animação CSS de marquee infinita
+  // (a duplicação dos itens acima garante o loop perfeito em -50%)
+  requestAnimationFrame(() => track.classList.add("iniciada"));
+
+  // Suporte a arrastar com o mouse
   iniciarCarrosselInterativo();
 }
 
 // -------------------------
-// Motor de Rolagem e Clique & Arrasta
+// Suporte a clique & arrasta no carrossel
 // -------------------------
 function iniciarCarrosselInterativo() {
   const container = document.querySelector(".testimonials-container");
@@ -183,69 +187,44 @@ function iniciarCarrosselInterativo() {
   let isDown = false;
   let startX;
   let scrollLeft;
-  let isInteracting = false;
 
-  // 1. Pausa o motor quando o mouse ou o dedo entra
+  // Pausa a animação CSS ao passar o mouse (já feito via CSS :hover,
+  // mas o drag precisa de controle extra)
   container.addEventListener("mouseenter", () => {
-    isInteracting = true;
     container.classList.add("grab");
-  });
-  
-  container.addEventListener("touchstart", () => {
-    isInteracting = true;
-  }, { passive: true });
-
-  container.addEventListener("touchend", () => {
-    isInteracting = false;
-  });
-
-  // 2. Lógica para "Clicar e Arrastar" no Computador (Mouse)
-  container.addEventListener("mousedown", (e) => {
-    isDown = true;
-    container.classList.remove("grab");
-    container.classList.add("grabbing");
-    startX = e.pageX - container.offsetLeft;
-    scrollLeft = container.scrollLeft;
   });
 
   container.addEventListener("mouseleave", () => {
     isDown = false;
-    isInteracting = false; // Retoma o motor se o mouse sair
     container.classList.remove("grabbing");
+    container.classList.remove("grab");
+  });
+
+  container.addEventListener("mousedown", (e) => {
+    isDown = true;
+    container.classList.remove("grab");
+    container.classList.add("grabbing");
+    // Pausa a animação para arrastar livremente
+    track.style.animationPlayState = "paused";
+    startX = e.pageX - container.offsetLeft;
+    scrollLeft = container.scrollLeft;
   });
 
   container.addEventListener("mouseup", () => {
     isDown = false;
     container.classList.remove("grabbing");
     container.classList.add("grab");
+    // Retoma a animação após soltar
+    track.style.animationPlayState = "";
   });
 
   container.addEventListener("mousemove", (e) => {
     if (!isDown) return;
     e.preventDefault();
     const x = e.pageX - container.offsetLeft;
-    const walk = (x - startX) * 1.5; // Velocidade de arraste (1.5x)
+    const walk = (x - startX) * 1.5;
     container.scrollLeft = scrollLeft - walk;
   });
-
-  // 3. O Motor Infinito que rola sozinho 
-  function autoScroll() {
-    // Só rola se o usuário NÃO estiver passando o mouse ou o dedo em cima
-    if (!isInteracting && !isDown) {
-      container.scrollLeft += 1; // 1 pixel de velocidade por frame
-      
-      // O Pulo do Gato (Loop Infinito): 
-      // Quando a rolagem atinge exatamente a metade (onde começam os clones),
-      // o scroll volta para o pixel zero de forma instantânea e invisível
-      if (container.scrollLeft >= track.scrollWidth / 2) {
-        container.scrollLeft = 0;
-      }
-    }
-    requestAnimationFrame(autoScroll); // Repete infinitamente a 60 frames por segundo
-  }
-
-  // Dá a partida
-  autoScroll();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
