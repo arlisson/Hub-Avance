@@ -249,6 +249,11 @@ function iniciarCarrosselInterativo() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Inicia imediatamente (não dependem de autenticação)
+  initNavbarEffect();
+  initParticles();
+  renderSkeletonCards();
+
   await loadPublicAgentConfig();
 
   let sb;
@@ -343,6 +348,21 @@ function buildCounterUrl(app, metric = "access") {
 }
 
 // -------------------------
+// Skeleton Loader
+// -------------------------
+function renderSkeletonCards(count = 3) {
+  const grid = document.getElementById("hub-grid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const skeleton = document.createElement("div");
+    skeleton.className = "hub-card-skeleton";
+    grid.appendChild(skeleton);
+  }
+}
+
+// -------------------------
 // Renderização dos cards
 // -------------------------
 function renderHubCards({ canAccessProtocol = false } = {}) {
@@ -362,8 +382,17 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
     card.setAttribute("data-app-id", app.id);
 
     if (app.enabled) {
-      card.addEventListener("click", () => {
-        openAppModal(app.id);
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-label", `Abrir detalhes: ${app.title}`);
+
+      const openModal = () => openAppModal(app.id);
+      card.addEventListener("click", openModal);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openModal();
+        }
       });
     }
 
@@ -375,11 +404,51 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
       ${imgTag}
       <div class="hub-card-content">
         <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
+        ${app.shortDesc ? `<p class="hub-card-short-desc">${escapeHtml(app.shortDesc)}</p>` : ""}
       </div>
     `;
 
     grid.appendChild(card);
   });
+}
+
+// -------------------------
+// Focus Trap (acessibilidade do modal)
+// -------------------------
+function createFocusTrap(modal) {
+  const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  function handler(e) {
+    if (e.key !== "Tab") return;
+    const els = Array.from(modal.querySelectorAll(FOCUSABLE)).filter(
+      (el) => !el.closest("[hidden]")
+    );
+    if (els.length === 0) return;
+    const first = els[0];
+    const last = els[els.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  modal.addEventListener("keydown", handler);
+  modal._focusTrapHandler = handler;
+}
+
+function removeFocusTrap(modal) {
+  if (modal._focusTrapHandler) {
+    modal.removeEventListener("keydown", modal._focusTrapHandler);
+    delete modal._focusTrapHandler;
+  }
 }
 
 // -------------------------
@@ -477,6 +546,7 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
+  createFocusTrap(modal);
   modal.setAttribute("tabindex", "-1");
   modal.focus();
 }
@@ -488,7 +558,10 @@ function closeAppModal() {
 
   if (videoEl) videoEl.innerHTML = "";
 
-  if (modal) modal.hidden = true;
+  if (modal) {
+    removeFocusTrap(modal);
+    modal.hidden = true;
+  }
   if (backdrop) backdrop.hidden = true;
   document.body.classList.remove("modal-open");
 }
@@ -583,19 +656,10 @@ function initTheme(themeToggle) {
 function updateThemeIcon(btn, isDark) {
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector("span");
-  const logo = document.querySelector(".company-logo");
 
   if (icon && text) {
     icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
     text.textContent = isDark ? "Modo claro" : "Modo escuro";
-  }
-
-  if (logo) {
-    if (isDark) {
-      logo.src = "../img/LogoEscuroSemFundo.png";
-    } else {
-      logo.src = "../img/LogoClaraSemFundo.png";
-    }
   }
 }
 
@@ -663,7 +727,7 @@ function escapeHtml(s) {
 // -------------------------
 // Efeito da Navbar
 // -------------------------
-document.addEventListener("DOMContentLoaded", () => {
+function initNavbarEffect() {
   const navbar = document.querySelector(".top-navbar");
 
   if (!navbar) {
@@ -686,12 +750,12 @@ document.addEventListener("DOMContentLoaded", () => {
       navbar.classList.remove("hover-active");
     }
   });
-});
+}
 
 // ==========================================================
 // ANIMAÇÃO DE PARTÍCULAS
 // ==========================================================
-document.addEventListener("DOMContentLoaded", () => {
+function initParticles() {
   let canvas = document.getElementById("global-particles");
 
   if (!canvas) {
@@ -716,7 +780,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setCanvasSize();
-  window.addEventListener("resize", setCanvasSize);
+
+  // Debounce: espera 200ms após parar o resize antes de reinicializar
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      setCanvasSize();
+      init();
+    }, 200);
+  });
 
   class Particle {
     constructor() {
@@ -768,4 +841,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   init();
   animate();
-});
+}
