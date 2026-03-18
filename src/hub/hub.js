@@ -616,13 +616,13 @@ function normalizeLoginUrl(url) {
 function initTheme(themeToggle) {
   if (!themeToggle) return;
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    updateThemeIcon(themeToggle, true);
-  } else {
-    document.body.classList.remove("dark-mode");
-    updateThemeIcon(themeToggle, false);
-  }
+  if (localStorage.getItem("theme") === "light") {
+  document.body.classList.remove("dark-mode");
+  updateThemeIcon(themeToggle, false);
+} else {
+  document.body.classList.add("dark-mode");
+  updateThemeIcon(themeToggle, true);
+}
 
   themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
