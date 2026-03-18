@@ -59,6 +59,24 @@ function setValid(inputEl) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // --- TEMA (padrão: escuro, igual ao Hub) ---
+  const themeToggle = document.getElementById('theme-toggle');
+
+  function updateThemeIcon(isDark) {
+    const icon = themeToggle?.querySelector('i');
+    if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+  }
+
+  const isDarkOnLoad = localStorage.getItem('theme') !== 'light';
+  document.body.classList.toggle('dark-mode', isDarkOnLoad);
+  updateThemeIcon(isDarkOnLoad);
+
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeIcon(isDark);
+  });
+
   const identifierInput = document.getElementById("identifier");
   const passwordInput = document.getElementById("password");
   const loginForm = document.getElementById("login-form");

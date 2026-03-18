@@ -12,11 +12,27 @@
     <link rel="stylesheet" href="login.css" />
   </head>
   <body>
+    <script>
+      (function () {
+        const isDark = localStorage.getItem('theme') !== 'light';
+        if (isDark) document.body.classList.add('dark-mode');
+        document.addEventListener('DOMContentLoaded', function () {
+          const icon = document.querySelector('#theme-toggle i');
+          if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+        });
+      })();
+    </script>
+
+    <button class="theme-toggle-login" id="theme-toggle" type="button" aria-label="Alternar tema">
+      <i class="ph ph-sun"></i>
+    </button>
+
     <div class="login-container">
       <div class="login-card">
         <div class="login-header">
           <div class="login-logo-container">
-            <img src="../../img/avanceVip.png" alt="Logo" />
+            <img src="../../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" />
+            <img src="../../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-claro" />
           </div>
           <h1>Bem-vindo</h1>
           <p>Entre com suas credenciais para continuar</p>

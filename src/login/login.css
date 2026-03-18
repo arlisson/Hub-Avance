@@ -313,3 +313,54 @@ body.dark-mode .login-footer a { color: var(--brand-light); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+/* =========================================
+   BOTÃO DE ALTERNÂNCIA DE TEMA
+   ========================================= */
+.theme-toggle-login {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-toggle-login:hover {
+  background: rgba(87, 197, 234, 0.15);
+  color: var(--brand-action);
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(87, 197, 234, 0.15);
+}
+
+body.dark-mode .theme-toggle-login {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+   CONTROLE DA LOGO (TEMA CLARO / ESCURO)
+   ========================================= */
+.company-logo {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 84px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(19, 56, 104, 0.10));
+}
+
+body.dark-mode .logo-escuro { display: block; }
+body.dark-mode .logo-claro  { display: none;  }
+
+body:not(.dark-mode) .logo-escuro { display: none;  }
+body:not(.dark-mode) .logo-claro  { display: block; }
