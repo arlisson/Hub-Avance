@@ -17,7 +17,7 @@ let CURRENT_USER_ID = "";
  * - actions: botões exibidos no modal
  * - enabled: se false, o card fica indisponível
  * - app: nome do app para enviar ao contador
- * - metric: "access" | "download"
+ * - metric: "access" | "download
  */
 const APPS = [
   {
