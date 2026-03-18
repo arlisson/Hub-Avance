@@ -33,7 +33,6 @@
             <a href="sobre.html" class="nav-link active">Sobre</a>
         </nav>
 
-
         <div class="navbar-right">
             <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu" type="button">
                 <i class="ph ph-list"></i>
@@ -113,10 +112,10 @@
         </div>
 
         <div class="contact-grid">
-            <a href="/cdn-cgi/l/email-protection#4b2824253f2a3f240b2a3d2a25282e65282426" class="contact-card">
+            <a href="mailto:contato@avance.com" class="contact-card">
                 <div class="contact-icon"><i class="ph ph-envelope-simple"></i></div>
                 <h3>E-mail</h3>
-                <p><span class="__cf_email__" data-cfemail="e3808c8d9782978ca38295828d8086cd808c8e">[email&#160;protected]</span></p>
+                <p>contato@avance.com</p>
             </a>
 
             <a href="https://wa.me/22988124656" target="_blank" class="contact-card">
@@ -137,4 +136,93 @@
         </footer>
     </main>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cl
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabaseClient.js"></script>
+    <script src="../hub/hub.js" defer></script>
+
+    <!-- Animação de partículas (igual ao hub) -->
+    <script>
+        (function initParticles() {
+            let canvas = document.getElementById("global-particles");
+
+            if (!canvas) {
+                canvas = document.createElement("canvas");
+                canvas.id = "global-particles";
+                canvas.style.position = "fixed";
+                canvas.style.top = "0";
+                canvas.style.left = "0";
+                canvas.style.width = "100vw";
+                canvas.style.height = "100vh";
+                canvas.style.zIndex = "-10";
+                canvas.style.pointerEvents = "none";
+                document.body.prepend(canvas);
+            }
+
+            const ctx = canvas.getContext("2d");
+            let particlesArray = [];
+
+            function setCanvasSize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            setCanvasSize();
+
+            let resizeTimer;
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    setCanvasSize();
+                    init();
+                }, 200);
+            });
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1.5;
+                    this.speedX = (Math.random() - 0.5) * 1.2;
+                    this.speedY = (Math.random() - 0.5) * 1.2;
+                    this.opacity = Math.random() * 0.7 + 0.3;
+                }
+
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "rgba(87, 197, 234, 1)";
+                    ctx.fill();
+                }
+            }
+
+            function init() {
+                particlesArray = [];
+                const count = Math.floor((canvas.width * canvas.height) / 8000);
+                for (let i = 0; i < count; i++) particlesArray.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                }
+                requestAnimationFrame(animate);
+            }
+
+            init();
+            animate();
+        })();
+    </script>
+</body>
+
+</html>
