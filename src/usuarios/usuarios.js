@@ -1,4 +1,3 @@
-let allUsers = [];
 let searchEl = null;
 let errorBox = null;
 let appUsageErrorBox = null;
@@ -6,15 +5,20 @@ let supabaseClient = null;
 let currentSession = null;
 let currentView = "users";
 
-// Filtros
-let filterClienteEl = null;
+// Paginação
+const PAGE_SIZE = 25;
+let currentPage = 1;
+let totalUsers = 0;
 
-// Último conjunto filtrado (para exportação)
-let lastFilteredUsers = [];
+// Filtros
+let filterClienteEl   = null;
 let filterTelefoniaEl = null;
-let filterLinhasEl = null;
-let filterContratoEl = null;
+let filterLinhasEl    = null;
+let filterContratoEl  = null;
 let filterOperadoraEl = null;
+
+// Debounce do campo de busca
+let searchDebounceTimer = null;
 
 const METRICS = [
   { key: "access", label: "Acessos" },
@@ -59,78 +63,40 @@ async function withLoading(title, message, task) {
   }
 }
 
-function applyFilterAndRender() {
-  const term = (searchEl?.value || "").trim().toLowerCase();
+// Monta os query params com base nos filtros e busca ativos
+function buildQueryParams(page, limit) {
+  const params = new URLSearchParams();
+  params.set("page",  String(page));
+  params.set("limit", String(limit));
 
-  const fCliente   = filterClienteEl?.value   ?? "";
-  const fTelefonia = filterTelefoniaEl?.value ?? "";
-  const fLinhas    = filterLinhasEl?.value    ?? "";
-  const fContrato  = filterContratoEl?.value  ?? "";
-  const fOperadora = filterOperadoraEl?.value ?? "";
+  const search = (searchEl?.value || "").trim();
+  if (search)                          params.set("search",            search);
+  if (filterClienteEl?.value)          params.set("cliente_avance",    filterClienteEl.value);
+  if (filterTelefoniaEl?.value)        params.set("has_mobile_service", filterTelefoniaEl.value);
+  if (filterLinhasEl?.value)           params.set("active_lines",       filterLinhasEl.value);
+  if (filterContratoEl?.value)         params.set("contract_type",      filterContratoEl.value);
+  if (filterOperadoraEl?.value)        params.set("operator",           filterOperadoraEl.value);
 
-  const filtered = allUsers.filter((u) => {
-    const regiao = parseRegion(u.regiao);
-
-    // busca textual
-    const matchSearch =
-      !term ||
-      String(u.name || "").toLowerCase().includes(term) ||
-      String(u.email || "").toLowerCase().includes(term) ||
-      String(u.cpf || "").toLowerCase().includes(term) ||
-      String(u.whatsapp || "").toLowerCase().includes(term) ||
-      String(u.cep || "").toLowerCase().includes(term) ||
-      String(regiao.cep || "").toLowerCase().includes(term) ||
-      String(regiao.cidade || "").toLowerCase().includes(term) ||
-      String(regiao.estado || "").toLowerCase().includes(term);
-
-    if (!matchSearch) return false;
-
-    // Cliente Avance
-    if (fCliente !== "") {
-      if (!!u.cliente_avance !== (fCliente === "1")) return false;
-    }
-
-    // Telefonia ativa
-    if (fTelefonia !== "") {
-      if (!!u.has_mobile_service !== (fTelefonia === "1")) return false;
-    }
-
-    // Linhas ativas
-    if (fLinhas !== "") {
-      const lines = Number.isFinite(u.active_lines) ? u.active_lines : null;
-      if (fLinhas === "10+") {
-        if (lines === null || lines < 10) return false;
-      } else {
-        const exact = Number(fLinhas);
-        if (lines !== exact) return false;
-      }
-    }
-
-    // Tipo de contrato
-    if (fContrato !== "") {
-      if (String(u.contract_type || "").trim().toUpperCase() !== fContrato.toUpperCase()) return false;
-    }
-
-    // Operadora
-    if (fOperadora !== "") {
-      if (String(u.operator || "").trim().toUpperCase() !== fOperadora.toUpperCase()) return false;
-    }
-
-    return true;
-  });
-
-  lastFilteredUsers = filtered;
-  updateFilterBadge();
-  updateResultCount(filtered.length);
-  renderUsers(filtered);
+  return params;
 }
 
-function updateResultCount(count) {
+// Chamado quando filtro/busca muda: volta para página 1 e recarrega
+function applyFiltersAndReload() {
+  currentPage = 1;
+  loadUsers(window.__USER_ACCESS_TOKEN__, 1, true);
+  updateFilterBadge();
+}
+
+function updateResultCount(total, page, pageSize) {
   const el = document.getElementById("filter-result-count");
   if (!el) return;
-  el.textContent = count === 1
-    ? "1 usuário encontrado"
-    : `${count.toLocaleString("pt-BR")} usuários encontrados`;
+  if (total === 0) {
+    el.textContent = "Nenhum usuário encontrado";
+    return;
+  }
+  const from = (page - 1) * pageSize + 1;
+  const to   = Math.min(page * pageSize, total);
+  el.textContent = `Exibindo ${from}–${to} de ${total.toLocaleString("pt-BR")} usuário${total !== 1 ? "s" : ""}`;
 }
 
 function updateFilterBadge() {
@@ -152,6 +118,65 @@ function updateFilterBadge() {
     countEl.hidden = active === 0;
   }
   if (clearBtn) clearBtn.hidden = active === 0;
+}
+
+function renderPagination(total, page, pageSize) {
+  const container = document.getElementById("pagination-controls");
+  if (!container) return;
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  container.innerHTML = "";
+
+  if (totalPages <= 1) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "pagination";
+
+  const mkBtn = (label, targetPage, disabled, active = false) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "page-btn" + (active ? " active" : "");
+    btn.disabled = disabled;
+    btn.innerHTML = label;
+    if (!disabled) {
+      btn.addEventListener("click", () => {
+        currentPage = targetPage;
+        loadUsers(window.__USER_ACCESS_TOKEN__, targetPage, false);
+      });
+    }
+    return btn;
+  };
+
+  wrap.appendChild(mkBtn('<i class="ph ph-caret-left"></i>', page - 1, page === 1));
+
+  // Janela de páginas
+  const delta = 2;
+  const range = [];
+  for (let i = Math.max(1, page - delta); i <= Math.min(totalPages, page + delta); i++) {
+    range.push(i);
+  }
+  if (range[0] > 1) {
+    wrap.appendChild(mkBtn("1", 1, false));
+    if (range[0] > 2) {
+      const dots = document.createElement("span");
+      dots.className = "page-dots";
+      dots.textContent = "…";
+      wrap.appendChild(dots);
+    }
+  }
+  range.forEach((p) => wrap.appendChild(mkBtn(String(p), p, false, p === page)));
+  if (range[range.length - 1] < totalPages) {
+    if (range[range.length - 1] < totalPages - 1) {
+      const dots = document.createElement("span");
+      dots.className = "page-dots";
+      dots.textContent = "…";
+      wrap.appendChild(dots);
+    }
+    wrap.appendChild(mkBtn(String(totalPages), totalPages, false));
+  }
+
+  wrap.appendChild(mkBtn('<i class="ph ph-caret-right"></i>', page + 1, page === totalPages));
+  container.appendChild(wrap);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -252,8 +277,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             await loadAppUsageDashboard(true);
           });
 
+        // Busca com debounce de 350ms
         searchEl?.addEventListener("input", () => {
-          applyFilterAndRender();
+          clearTimeout(searchDebounceTimer);
+          searchDebounceTimer = setTimeout(() => applyFiltersAndReload(), 350);
         });
 
         // Inicializa referências dos filtros
@@ -264,7 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         filterOperadoraEl = document.getElementById("filter-operadora");
 
         [filterClienteEl, filterTelefoniaEl, filterLinhasEl, filterContratoEl, filterOperadoraEl]
-          .forEach((el) => el?.addEventListener("change", () => applyFilterAndRender()));
+          .forEach((el) => el?.addEventListener("change", () => applyFiltersAndReload()));
 
         document.getElementById("btn-clear-filters")?.addEventListener("click", () => {
           if (filterClienteEl)   filterClienteEl.value   = "";
@@ -272,11 +299,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (filterLinhasEl)    filterLinhasEl.value    = "";
           if (filterContratoEl)  filterContratoEl.value  = "";
           if (filterOperadoraEl) filterOperadoraEl.value = "";
-          applyFilterAndRender();
+          applyFiltersAndReload();
         });
 
         document.getElementById("btn-export-excel")?.addEventListener("click", () => {
-          exportFilteredUsersToExcel(lastFilteredUsers);
+          exportFilteredUsersToExcel();
         });
 
         document.getElementById("filter-bar-toggle")?.addEventListener("click", () => {
@@ -288,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (caret) caret.className = open ? "ph ph-caret-up filter-caret" : "ph ph-caret-down filter-caret";
         });
 
-        await loadUsers(currentSession.access_token, false);
+        await loadUsers(currentSession.access_token, 1, false);
         await loadAppUsageDashboard(false);
       }
     );
@@ -298,16 +325,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-async function loadUsers(token, showLoader = true) {
+async function loadUsers(token, page = 1, showLoader = true) {
   const task = async () => {
     try {
       setError(errorBox, "", true);
 
-      const resp = await fetch("/api/admin/users", {
+      const params = buildQueryParams(page, PAGE_SIZE);
+      const resp   = await fetch(`/api/admin/users?${params.toString()}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await resp.json();
@@ -316,8 +342,19 @@ async function loadUsers(token, showLoader = true) {
         throw new Error(data?.error || "Falha ao carregar usuários.");
       }
 
-      allUsers = Array.isArray(data?.users) ? data.users : [];
-      applyFilterAndRender();
+      const users = Array.isArray(data?.users) ? data.users : [];
+      // Suporte a resposta com campo "total" ou inferência pelo tamanho da página
+      totalUsers = Number.isFinite(data?.total)
+        ? data.total
+        : page === 1 && users.length < PAGE_SIZE
+          ? users.length
+          : (page - 1) * PAGE_SIZE + users.length + (users.length === PAGE_SIZE ? 1 : 0);
+
+      currentPage = page;
+
+      renderUsers(users);
+      updateResultCount(totalUsers, page, PAGE_SIZE);
+      renderPagination(totalUsers, page, PAGE_SIZE);
     } catch (e) {
       setError(errorBox, e?.message || "Erro ao carregar usuários.");
     }
@@ -332,6 +369,33 @@ async function loadUsers(token, showLoader = true) {
     "Buscando dados no banco...",
     task
   );
+}
+
+// Busca TODAS as páginas com os filtros ativos (usado apenas no export)
+async function fetchAllFilteredUsers(token) {
+  const limit   = 500;
+  let   page    = 1;
+  const results = [];
+
+  while (true) {
+    const params = buildQueryParams(page, limit);
+    const resp   = await fetch(`/api/admin/users?${params.toString()}`, {
+      method:  "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!resp.ok) throw new Error("Falha ao buscar usuários para exportação.");
+
+    const data  = await resp.json();
+    const users = Array.isArray(data?.users) ? data.users : [];
+    results.push(...users);
+
+    // Para quando vier menos que o limite (última página)
+    if (users.length < limit) break;
+    page++;
+  }
+
+  return results;
 }
 
 async function loadAppUsageDashboard(showLoader = true) {
@@ -368,7 +432,7 @@ async function fetchAppUsageRecords() {
     return normalizeTableRows(tableResult.rows);
   }
 
-  return aggregateUsageFromUsers(allUsers);
+  return aggregateUsageFromUsers([]);
 }
 
 async function tryFetchAppUsageTable() {
@@ -701,8 +765,8 @@ function renderUsers(users) {
           );
         }
 
-        allUsers = allUsers.filter((item) => item.id !== u.id);
-        applyFilterAndRender();
+        // Recarrega a página atual após excluir
+        await loadUsers(window.__USER_ACCESS_TOKEN__ || "", currentPage, false);
         await loadAppUsageDashboard(false);
         showFeedback("Usuário excluído com sucesso.", "success");
       } catch (e) {
@@ -921,49 +985,61 @@ function setError(element, message, hidden = false) {
 }
 
 
-function exportFilteredUsersToExcel(users) {
-  if (!users || !users.length) {
-    alert("Nenhum usuário para exportar com os filtros atuais.");
-    return;
+async function exportFilteredUsersToExcel() {
+  const exportBtn = document.getElementById("btn-export-excel");
+  if (exportBtn) {
+    exportBtn.disabled = true;
+    exportBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Buscando dados…';
   }
 
-  const rows = users.map((u) => {
-    const regiao = parseRegion(u.regiao);
-    return {
-      "Nome":               u.name              || "",
-      "E-mail":             u.email             || "",
-      "CPF/CNPJ":           u.cpf               || "",
-      "WhatsApp":           u.whatsapp          || "",
-      "CEP":                regiao.cep          || u.cep || "",
-      "Cidade":             regiao.cidade       || "",
-      "Estado":             regiao.estado       || "",
-      "Acesso Protocolo":   u.protocol          ? "Sim" : "Não",
-      "Cliente Avance":     u.cliente_avance    ? "Sim" : "Não",
-      "Telefonia ativa":    u.has_mobile_service ? "Sim" : "Não",
-      "Tipo de contrato":   u.contract_type     || "",
-      "Operadora":          u.operator          || "",
-      "Linhas ativas":      Number.isFinite(u.active_lines) ? u.active_lines : "",
+  try {
+    const users = await fetchAllFilteredUsers(window.__USER_ACCESS_TOKEN__ || "");
+
+    if (!users.length) {
+      alert("Nenhum usuário encontrado com os filtros atuais.");
+      return;
+    }
+
+    const buildRow = (u) => {
+      const regiao = parseRegion(u.regiao);
+      return {
+        "Nome":             u.name               || "",
+        "E-mail":           u.email              || "",
+        "CPF/CNPJ":         u.cpf                || "",
+        "WhatsApp":         u.whatsapp           || "",
+        "CEP":              regiao.cep           || u.cep || "",
+        "Cidade":           regiao.cidade        || "",
+        "Estado":           regiao.estado        || "",
+        "Acesso Protocolo": u.protocol           ? "Sim" : "Não",
+        "Cliente Avance":   u.cliente_avance     ? "Sim" : "Não",
+        "Telefonia ativa":  u.has_mobile_service ? "Sim" : "Não",
+        "Tipo de contrato": u.contract_type      || "",
+        "Operadora":        u.operator           || "",
+        "Linhas ativas":    Number.isFinite(u.active_lines) ? u.active_lines : "",
+      };
     };
-  });
 
-  const ws = XLSX.utils.json_to_sheet(rows);
+    const rows      = users.map(buildRow);
+    const ws        = XLSX.utils.json_to_sheet(rows);
+    const colWidths = Object.keys(rows[0]).map((key) => ({
+      wch: Math.min(Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2, 40),
+    }));
+    ws["!cols"] = colWidths;
 
-  // Larguras de coluna automáticas
-  const colWidths = Object.keys(rows[0]).map((key) => {
-    const maxLen = Math.max(
-      key.length,
-      ...rows.map((r) => String(r[key] ?? "").length)
-    );
-    return { wch: Math.min(maxLen + 2, 40) };
-  });
-  ws["!cols"] = colWidths;
+    const wb    = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Usuários");
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Usuários");
-
-  const now = new Date();
-  const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-  XLSX.writeFile(wb, `usuarios_avance_${stamp}.xlsx`);
+    const now   = new Date();
+    const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    XLSX.writeFile(wb, `usuarios_avance_${stamp}.xlsx`);
+  } catch (e) {
+    alert(e?.message || "Erro ao exportar.");
+  } finally {
+    if (exportBtn) {
+      exportBtn.disabled = false;
+      exportBtn.innerHTML = '<i class="ph ph-microsoft-excel-logo"></i> Exportar para Excel';
+    }
+  }
 }
 
 function escapeHtml(s) {
