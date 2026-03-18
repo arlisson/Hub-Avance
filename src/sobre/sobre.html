@@ -10,6 +10,15 @@
 </head>
 
 <body>
+    <!-- Aplica o tema ANTES de qualquer renderização para evitar o flash de tema claro -->
+    <script>
+        (function () {
+            if (localStorage.getItem('theme') !== 'light') {
+                document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
+
     <header class="top-navbar">
         <div class="logo-container">
             <a href="/hub/hub.html">
@@ -104,10 +113,10 @@
         </div>
 
         <div class="contact-grid">
-            <a href="mailto:contato@avance.com" class="contact-card">
+            <a href="/cdn-cgi/l/email-protection#4b2824253f2a3f240b2a3d2a25282e65282426" class="contact-card">
                 <div class="contact-icon"><i class="ph ph-envelope-simple"></i></div>
                 <h3>E-mail</h3>
-                <p>contato@avance.com</p>
+                <p><span class="__cf_email__" data-cfemail="e3808c8d9782978ca38295828d8086cd808c8e">[email&#160;protected]</span></p>
             </a>
 
             <a href="https://wa.me/22988124656" target="_blank" class="contact-card">
@@ -128,9 +137,4 @@
         </footer>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabaseClient.js"></script>
-    <script src="../hub/hub.js" defer></script>
-</body>
-
-</html>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cl
