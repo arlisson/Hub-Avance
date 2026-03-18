@@ -6,6 +6,16 @@ let supabaseClient = null;
 let currentSession = null;
 let currentView = "users";
 
+// Filtros
+let filterClienteEl = null;
+
+// Último conjunto filtrado (para exportação)
+let lastFilteredUsers = [];
+let filterTelefoniaEl = null;
+let filterLinhasEl = null;
+let filterContratoEl = null;
+let filterOperadoraEl = null;
+
 const METRICS = [
   { key: "access", label: "Acessos" },
   { key: "download", label: "Downloads" },
@@ -52,10 +62,18 @@ async function withLoading(title, message, task) {
 function applyFilterAndRender() {
   const term = (searchEl?.value || "").trim().toLowerCase();
 
+  const fCliente   = filterClienteEl?.value   ?? "";
+  const fTelefonia = filterTelefoniaEl?.value ?? "";
+  const fLinhas    = filterLinhasEl?.value    ?? "";
+  const fContrato  = filterContratoEl?.value  ?? "";
+  const fOperadora = filterOperadoraEl?.value ?? "";
+
   const filtered = allUsers.filter((u) => {
     const regiao = parseRegion(u.regiao);
 
-    return (
+    // busca textual
+    const matchSearch =
+      !term ||
       String(u.name || "").toLowerCase().includes(term) ||
       String(u.email || "").toLowerCase().includes(term) ||
       String(u.cpf || "").toLowerCase().includes(term) ||
@@ -63,11 +81,77 @@ function applyFilterAndRender() {
       String(u.cep || "").toLowerCase().includes(term) ||
       String(regiao.cep || "").toLowerCase().includes(term) ||
       String(regiao.cidade || "").toLowerCase().includes(term) ||
-      String(regiao.estado || "").toLowerCase().includes(term)
-    );
+      String(regiao.estado || "").toLowerCase().includes(term);
+
+    if (!matchSearch) return false;
+
+    // Cliente Avance
+    if (fCliente !== "") {
+      if (!!u.cliente_avance !== (fCliente === "1")) return false;
+    }
+
+    // Telefonia ativa
+    if (fTelefonia !== "") {
+      if (!!u.has_mobile_service !== (fTelefonia === "1")) return false;
+    }
+
+    // Linhas ativas
+    if (fLinhas !== "") {
+      const lines = Number.isFinite(u.active_lines) ? u.active_lines : null;
+      if (fLinhas === "10+") {
+        if (lines === null || lines < 10) return false;
+      } else {
+        const exact = Number(fLinhas);
+        if (lines !== exact) return false;
+      }
+    }
+
+    // Tipo de contrato
+    if (fContrato !== "") {
+      if (String(u.contract_type || "").trim().toUpperCase() !== fContrato.toUpperCase()) return false;
+    }
+
+    // Operadora
+    if (fOperadora !== "") {
+      if (String(u.operator || "").trim().toUpperCase() !== fOperadora.toUpperCase()) return false;
+    }
+
+    return true;
   });
 
+  lastFilteredUsers = filtered;
+  updateFilterBadge();
+  updateResultCount(filtered.length);
   renderUsers(filtered);
+}
+
+function updateResultCount(count) {
+  const el = document.getElementById("filter-result-count");
+  if (!el) return;
+  el.textContent = count === 1
+    ? "1 usuário encontrado"
+    : `${count.toLocaleString("pt-BR")} usuários encontrados`;
+}
+
+function updateFilterBadge() {
+  const countEl  = document.getElementById("filter-active-count");
+  const clearBtn = document.getElementById("btn-clear-filters");
+
+  const active = [
+    filterClienteEl?.value,
+    filterTelefoniaEl?.value,
+    filterLinhasEl?.value,
+    filterContratoEl?.value,
+    filterOperadoraEl?.value,
+  ].filter(Boolean).length;
+
+  if (countEl) {
+    countEl.textContent = active > 0
+      ? `${active} filtro${active > 1 ? "s" : ""} ativo${active > 1 ? "s" : ""}`
+      : "";
+    countEl.hidden = active === 0;
+  }
+  if (clearBtn) clearBtn.hidden = active === 0;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -170,6 +254,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         searchEl?.addEventListener("input", () => {
           applyFilterAndRender();
+        });
+
+        // Inicializa referências dos filtros
+        filterClienteEl   = document.getElementById("filter-cliente");
+        filterTelefoniaEl = document.getElementById("filter-telefonia");
+        filterLinhasEl    = document.getElementById("filter-linhas");
+        filterContratoEl  = document.getElementById("filter-contrato");
+        filterOperadoraEl = document.getElementById("filter-operadora");
+
+        [filterClienteEl, filterTelefoniaEl, filterLinhasEl, filterContratoEl, filterOperadoraEl]
+          .forEach((el) => el?.addEventListener("change", () => applyFilterAndRender()));
+
+        document.getElementById("btn-clear-filters")?.addEventListener("click", () => {
+          if (filterClienteEl)   filterClienteEl.value   = "";
+          if (filterTelefoniaEl) filterTelefoniaEl.value = "";
+          if (filterLinhasEl)    filterLinhasEl.value    = "";
+          if (filterContratoEl)  filterContratoEl.value  = "";
+          if (filterOperadoraEl) filterOperadoraEl.value = "";
+          applyFilterAndRender();
+        });
+
+        document.getElementById("btn-export-excel")?.addEventListener("click", () => {
+          exportFilteredUsersToExcel(lastFilteredUsers);
+        });
+
+        document.getElementById("filter-bar-toggle")?.addEventListener("click", () => {
+          const body  = document.getElementById("filter-bar-body");
+          const caret = document.getElementById("filter-caret");
+          if (!body) return;
+          const open = body.hidden;
+          body.hidden = !open;
+          if (caret) caret.className = open ? "ph ph-caret-up filter-caret" : "ph ph-caret-down filter-caret";
         });
 
         await loadUsers(currentSession.access_token, false);
@@ -802,6 +918,52 @@ function setError(element, message, hidden = false) {
   if (!element) return;
   element.textContent = message || "";
   element.hidden = hidden || !message;
+}
+
+
+function exportFilteredUsersToExcel(users) {
+  if (!users || !users.length) {
+    alert("Nenhum usuário para exportar com os filtros atuais.");
+    return;
+  }
+
+  const rows = users.map((u) => {
+    const regiao = parseRegion(u.regiao);
+    return {
+      "Nome":               u.name              || "",
+      "E-mail":             u.email             || "",
+      "CPF/CNPJ":           u.cpf               || "",
+      "WhatsApp":           u.whatsapp          || "",
+      "CEP":                regiao.cep          || u.cep || "",
+      "Cidade":             regiao.cidade       || "",
+      "Estado":             regiao.estado       || "",
+      "Acesso Protocolo":   u.protocol          ? "Sim" : "Não",
+      "Cliente Avance":     u.cliente_avance    ? "Sim" : "Não",
+      "Telefonia ativa":    u.has_mobile_service ? "Sim" : "Não",
+      "Tipo de contrato":   u.contract_type     || "",
+      "Operadora":          u.operator          || "",
+      "Linhas ativas":      Number.isFinite(u.active_lines) ? u.active_lines : "",
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // Larguras de coluna automáticas
+  const colWidths = Object.keys(rows[0]).map((key) => {
+    const maxLen = Math.max(
+      key.length,
+      ...rows.map((r) => String(r[key] ?? "").length)
+    );
+    return { wch: Math.min(maxLen + 2, 40) };
+  });
+  ws["!cols"] = colWidths;
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Usuários");
+
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+  XLSX.writeFile(wb, `usuarios_avance_${stamp}.xlsx`);
 }
 
 function escapeHtml(s) {
