@@ -368,3 +368,35 @@ body.dark-mode .radio-item { background: rgba(255,255,255,0.04); }
 body.dark-mode .theme-toggle-cadastro {
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* =========================================
+   CONTROLE DA LOGO (TEMA CLARO / ESCURO)
+   ========================================= */
+
+/* Garante que ambas as logos tenham o mesmo tamanho */
+.company-logo {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 84px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(19, 56, 104, 0.10));
+}
+
+/* Modo escuro: mostra a logo escura, esconde a clara */
+body.dark-mode .logo-escuro {
+  display: block;
+}
+
+body.dark-mode .logo-claro {
+  display: none;
+}
+
+/* Modo claro: esconde a logo escura, mostra a clara */
+body:not(.dark-mode) .logo-escuro {
+  display: none;
+}
+
+body:not(.dark-mode) .logo-claro {
+  display: block;
+}
