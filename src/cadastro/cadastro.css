@@ -335,3 +335,36 @@ body.dark-mode .radio-item { background: rgba(255,255,255,0.04); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+/* ==========================================================
+   BOTÃO DE ALTERNÂNCIA DE TEMA (CANTO SUPERIOR DIREITO)
+   ========================================================== */
+.theme-toggle-cadastro {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-toggle-cadastro:hover {
+  background: rgba(87, 197, 234, 0.15);
+  color: var(--brand-action);
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(87, 197, 234, 0.15);
+}
+
+body.dark-mode .theme-toggle-cadastro {
+  background: rgba(255, 255, 255, 0.05);
+}

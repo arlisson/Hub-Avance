@@ -13,6 +13,22 @@
     <link rel="stylesheet" href="cadastro.css" />
   </head>
   <body>
+    <!-- Aplica o tema ANTES do render para evitar flash de tela clara -->
+    <script>
+      (function () {
+        const isDark = localStorage.getItem('theme') !== 'light';
+        if (isDark) document.body.classList.add('dark-mode');
+        document.addEventListener('DOMContentLoaded', function () {
+          const icon = document.querySelector('#theme-toggle i');
+          if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+        });
+      })();
+    </script>
+
+    <button class="theme-toggle-cadastro" id="theme-toggle" type="button" aria-label="Alternar tema">
+      <i class="ph ph-sun"></i>
+    </button>
+
     <div class="register-container">
       <div class="register-card">
         <div class="register-header">

@@ -144,6 +144,25 @@ function friendlyAuthMessage(detailOrMessage) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // --- TEMA (padrão: escuro, igual ao Hub) ---
+  const themeToggle = document.getElementById('theme-toggle');
+
+  function updateThemeIcon(isDark) {
+    const icon = themeToggle?.querySelector('i');
+    if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+  }
+
+  const savedTheme = localStorage.getItem('theme');
+  const isDarkOnLoad = savedTheme !== 'light';
+  document.body.classList.toggle('dark-mode', isDarkOnLoad);
+  updateThemeIcon(isDarkOnLoad);
+
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeIcon(isDark);
+  });
+
   // --- ELEMENTOS ---
   const docInput = document.getElementById("document");
   const phoneInput = document.getElementById("whatsapp");
