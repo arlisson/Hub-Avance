@@ -258,11 +258,11 @@ body.dark-mode .hub-title {
    ========================== */
 .hero-badge {
   display: inline-block;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 4px;
-  padding: 14px 36px;
+  letter-spacing: 5px;
+  padding: 16px 44px;
   border-radius: 50px;
   background: rgba(87, 197, 234, 0.12);
   color: var(--brand-action);
