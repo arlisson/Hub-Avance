@@ -15,9 +15,14 @@ let CURRENT_USER_ID = "";
  * Defina seus cards aqui.
  * - youtubeId: apenas o ID do vídeo (não a URL inteira)
  * - actions: botões exibidos no modal
- * - enabled: se false, o card fica indisponível
+ * - enabled: se false, o card fica indisponível (mostra visual disabled)
  * - app: nome do app para enviar ao contador
  * - metric: "access" | "download"
+ * - requiresPermission: se true, o card só aparece para usuários com perfil autorizado
+ *
+ * ATENÇÃO SEGURANÇA: a visibilidade do card é apenas UI.
+ * O acesso real aos recursos deve ser protegido por RLS no Supabase
+ * e/ou autenticação server-side nas rotas de destino.
  */
 const APPS = [
   {
@@ -30,6 +35,7 @@ const APPS = [
       "Este é o agente mentor estratégico de vendas. Ele permite atendimento e diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
     youtubeId: "CNFqPBAdglE",
     enabled: true,
+    requiresPermission: false,
     actions: [
       {
         label: "Acessar",
@@ -52,6 +58,7 @@ const APPS = [
       "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. E pode ficar tranquilo: o programa funciona na sua máquina, sem internet, então suas informações ficam com você. Ninguém tem acesso aos seus dados. Depois de baixar, ele é seu para sempre.",
     youtubeId: "",
     enabled: true,
+    requiresPermission: false,
     actions: [
       {
         label: "Baixar",
@@ -68,15 +75,16 @@ const APPS = [
     badge: "Gerador de Protocolo Agendor",
     image: "../img/Protocolo.png",
     title: "Gerador de Protocolo Agendor",
-    shortDesc: "Gera e registra protocolos.",
+    shortDesc: "Gera e registra protocolos com um clique.",
     longDesc: "Ferramenta para geração, registro e envio de protocolos.",
     youtubeId: "",
     enabled: true,
+    requiresPermission: true,
     actions: [
       {
         label: "Acessar",
         icon: "ph-arrow-square-out",
-        href:"../protocolo/protocolo.html",
+        href: "../protocolo/protocolo.html",
         primary: true,
         targetBlank: false,
       },
@@ -91,6 +99,7 @@ const APPS = [
     longDesc: "Ferramenta para geração de novos protocolos.",
     youtubeId: "",
     enabled: true,
+    requiresPermission: false,
     actions: [
       {
         label: "Acessar",
@@ -188,8 +197,6 @@ function iniciarCarrosselInterativo() {
   let startX;
   let scrollLeft;
 
-  // Pausa a animação CSS ao passar o mouse (já feito via CSS :hover,
-  // mas o drag precisa de controle extra)
   container.addEventListener("mouseenter", () => {
     container.classList.add("grab");
   });
@@ -204,8 +211,22 @@ function iniciarCarrosselInterativo() {
     isDown = true;
     container.classList.remove("grab");
     container.classList.add("grabbing");
-    // Pausa a animação para arrastar livremente
-    track.style.animationPlayState = "paused";
+
+    // Captura a posição real do translateX da animação CSS antes de pausar.
+    // Sem isso, ao retomar, o track "pula" de volta para onde a animação estava
+    // internamente — causando o salto visual.
+    const matrix = window.getComputedStyle(track).transform;
+    if (matrix && matrix !== "none") {
+      // matrix("a,b,c,d,tx,ty") — tx é o índice 4
+      const tx = parseFloat(matrix.split(",")[4]) || 0;
+      // Aplica a translação atual como scrollLeft equivalente,
+      // zerando o transform para evitar conflito
+      track.style.animationPlayState = "paused";
+      track.style.transform = `translateX(${tx}px)`;
+    } else {
+      track.style.animationPlayState = "paused";
+    }
+
     startX = e.pageX - container.offsetLeft;
     scrollLeft = container.scrollLeft;
   });
@@ -214,7 +235,7 @@ function iniciarCarrosselInterativo() {
     isDown = false;
     container.classList.remove("grabbing");
     container.classList.add("grab");
-    // Retoma a animação após soltar
+    // Retoma a animação a partir da posição atual
     track.style.animationPlayState = "";
   });
 
@@ -351,7 +372,7 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
   grid.innerHTML = "";
 
   const visibleApps = APPS.filter((app) => {
-    if (app.id === "protocol" && !canAccessProtocol) return false;
+    if (app.requiresPermission && !canAccessProtocol) return false;
     return true;
   });
 
@@ -376,7 +397,7 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
     }
 
     const imgTag = app.image
-      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}">`
+      ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}" width="340" height="460" loading="lazy">`
       : "";
 
     card.innerHTML = `
@@ -394,6 +415,8 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
 // -------------------------
 // Focus Trap (acessibilidade do modal)
 // -------------------------
+const _focusTrapHandlers = new WeakMap();
+
 function createFocusTrap(modal) {
   const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -420,25 +443,30 @@ function createFocusTrap(modal) {
   }
 
   modal.addEventListener("keydown", handler);
-  modal._focusTrapHandler = handler;
+  _focusTrapHandlers.set(modal, handler);
 }
 
 function removeFocusTrap(modal) {
-  if (modal._focusTrapHandler) {
-    modal.removeEventListener("keydown", modal._focusTrapHandler);
-    delete modal._focusTrapHandler;
+  const handler = _focusTrapHandlers.get(modal);
+  if (handler) {
+    modal.removeEventListener("keydown", handler);
+    _focusTrapHandlers.delete(modal);
   }
 }
 
 // -------------------------
 // Modal
 // -------------------------
+let _modalListenersInit = false;
+
 function initAppModal() {
   const backdrop = document.getElementById("app-modal-backdrop");
   const modal = document.getElementById("app-modal");
   const closeBtn = document.getElementById("app-modal-close");
 
   if (!backdrop || !modal || !closeBtn) return;
+  if (_modalListenersInit) return;
+  _modalListenersInit = true;
 
   closeBtn.addEventListener("click", closeAppModal);
 
@@ -450,6 +478,8 @@ function initAppModal() {
     if (e.target === backdrop) closeAppModal();
   });
 }
+
+let _lastFocusedBeforeModal = null;
 
 function openAppModal(appId) {
   const app = APPS.find((a) => a.id === appId);
@@ -464,6 +494,9 @@ function openAppModal(appId) {
   const videoEl = document.getElementById("app-modal-video");
 
   if (!backdrop || !modal) return;
+
+  // Guarda o elemento que tinha foco para restaurar depois
+  _lastFocusedBeforeModal = document.activeElement;
 
   if (badgeEl) badgeEl.textContent = app.badge || "";
   if (titleEl) titleEl.textContent = app.title || "";
@@ -525,6 +558,9 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
+  // Dispara a animação CSS no próximo frame (hidden precisa sair do DOM antes)
+  requestAnimationFrame(() => modal.classList.add("is-open"));
+
   createFocusTrap(modal);
   modal.setAttribute("tabindex", "-1");
   modal.focus();
@@ -539,10 +575,23 @@ function closeAppModal() {
 
   if (modal) {
     removeFocusTrap(modal);
-    modal.hidden = true;
+    modal.classList.remove("is-open");
+
+    // Aguarda a transição CSS antes de ocultar
+    const onTransitionEnd = () => {
+      modal.hidden = true;
+      modal.removeEventListener("transitionend", onTransitionEnd);
+    };
+    modal.addEventListener("transitionend", onTransitionEnd);
   }
   if (backdrop) backdrop.hidden = true;
   document.body.classList.remove("modal-open");
+
+  // Restaura o foco no elemento que estava ativo antes do modal abrir
+  if (_lastFocusedBeforeModal) {
+    _lastFocusedBeforeModal.focus();
+    _lastFocusedBeforeModal = null;
+  }
 }
 
 // -------------------------
@@ -550,6 +599,10 @@ function closeAppModal() {
 // -------------------------
 function initSettingsMenu(btn, menu) {
   if (!btn || !menu) return;
+
+  // Guard: evita acumulação de listeners se chamado mais de uma vez
+  if (btn._settingsMenuInit) return;
+  btn._settingsMenuInit = true;
 
   const close = () => {
     menu.hidden = true;
@@ -633,13 +686,18 @@ function initTheme(themeToggle) {
 }
 
 function updateThemeIcon(btn, isDark) {
-  const icon = btn?.querySelector("i");
-  const text = btn?.querySelector("span");
+  if (!btn) return;
+  const icon = btn.querySelector("i");
 
-  if (icon && text) {
+  if (icon) {
     icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
-    text.textContent = isDark ? "Modo claro" : "Modo escuro";
   }
+
+  // aria-label descreve a AÇÃO (o que vai acontecer ao clicar), não o estado atual
+  btn.setAttribute(
+    "aria-label",
+    isDark ? "Ativar modo claro" : "Ativar modo escuro"
+  );
 }
 
 // -------------------------
@@ -735,6 +793,9 @@ function initNavbarEffect() {
 // ANIMAÇÃO DE PARTÍCULAS
 // ==========================================================
 function initParticles() {
+  // Respeita preferência de movimento reduzido do sistema operacional
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
   let canvas = document.getElementById("global-particles");
 
   if (!canvas) {
@@ -752,15 +813,48 @@ function initParticles() {
 
   const ctx = canvas.getContext("2d");
   let particlesArray = [];
+  let rafId = null;
+
+  // Pré-renderiza a partícula com glow em um canvas offscreen.
+  // Isso evita recalcular ctx.shadowBlur por partícula por frame,
+  // que é a operação mais cara do Canvas 2D.
+  function createParticleSprite(size) {
+    const diameter = Math.ceil((size + 15) * 2); // raio + blur + margem
+    const oc = document.createElement("canvas");
+    oc.width = diameter;
+    oc.height = diameter;
+    const octx = oc.getContext("2d");
+    const center = diameter / 2;
+
+    octx.shadowBlur = 15;
+    octx.shadowColor = "rgba(87, 197, 234, 1)";
+    octx.fillStyle = "rgba(87, 197, 234, 1)";
+    octx.beginPath();
+    octx.arc(center, center, size, 0, Math.PI * 2);
+    octx.fill();
+
+    return oc;
+  }
+
+  // Cache de sprites por tamanho (arredondado a 0.5px para limitar variantes)
+  const spriteCache = new Map();
+
+  function getSprite(size) {
+    const key = Math.round(size * 2) / 2;
+    if (!spriteCache.has(key)) {
+      spriteCache.set(key, createParticleSprite(key));
+    }
+    return spriteCache.get(key);
+  }
 
   function setCanvasSize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    spriteCache.clear(); // Limpa cache ao redimensionar (DPR pode mudar)
   }
 
   setCanvasSize();
 
-  // Debounce: espera 200ms após parar o resize antes de reinicializar
   let resizeTimer;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
@@ -778,6 +872,7 @@ function initParticles() {
       this.speedX = (Math.random() - 0.5) * 1.2;
       this.speedY = (Math.random() - 0.5) * 1.2;
       this.opacity = Math.random() * 0.7 + 0.3;
+      this.sprite = getSprite(this.size);
     }
 
     update() {
@@ -789,12 +884,10 @@ function initParticles() {
     }
 
     draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(87, 197, 234, ${this.opacity})`;
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = "rgba(87, 197, 234, 1)";
-      ctx.fill();
+      // drawImage é muito mais rápido que arc + shadowBlur por frame
+      const half = this.sprite.width / 2;
+      ctx.globalAlpha = this.opacity;
+      ctx.drawImage(this.sprite, this.x - half, this.y - half);
     }
   }
 
@@ -808,6 +901,7 @@ function initParticles() {
   }
 
   function animate() {
+    ctx.globalAlpha = 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < particlesArray.length; i++) {
@@ -815,9 +909,31 @@ function initParticles() {
       particlesArray[i].draw();
     }
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
+  function startAnimation() {
+    if (!rafId) {
+      rafId = requestAnimationFrame(animate);
+    }
+  }
+
+  function stopAnimation() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  // Pausa o loop quando a aba fica inativa — economiza CPU/GPU sem benefício visual
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopAnimation();
+    } else {
+      startAnimation();
+    }
+  });
+
   init();
-  animate();
+  startAnimation();
 }

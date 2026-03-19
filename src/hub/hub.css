@@ -17,6 +17,7 @@
   --text-primary: #0F2C58;
   --text-secondary: #5AC3E8;
   --border-subtle: rgba(173, 229, 242, 0.4);
+  --border-color: rgba(87, 197, 234, 0.3);
   --shadow-color: rgba(19, 56, 104, 0.08);
 }
 
@@ -27,11 +28,12 @@ body.dark-mode {
   --text-primary: #FAFEFF;
   --text-secondary: #ADE5F2;
   --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(87, 197, 234, 0.2);
   --shadow-color: rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================
-   ESTRUTURA BASE E LAYOUT (SIDEBAR + MAIN)
+   ESTRUTURA BASE E LAYOUT
    ========================================================== */
 * {
   box-sizing: border-box;
@@ -41,65 +43,13 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-color: var(--bg-main);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
-}
-
-/* Lista de navegação (Menu) */
-.chat-list {
-  flex: 1;
-  /* Empurra o footer lá para baixo */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.chat-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  color: var(--text-primary);
-  transition: background 0.2s;
-}
-
-.chat-item:hover {
-  background-color: rgba(87, 197, 234, 0.1);
-}
-
-.chat-item.active {
-  background-color: rgba(19, 56, 104, 0.08);
-  color: var(--brand-primary);
-  font-weight: 600;
-}
-
-body.dark-mode .chat-item.active {
-  background-color: rgba(87, 197, 234, 0.15);
-  color: var(--brand-accent);
-}
-
-.chat-item i {
-  font-size: 24px;
-}
-
-.chat-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-title {
-  font-size: 15px;
-}
-
-.chat-date {
-  font-size: 12px;
-  opacity: 0.7;
 }
 
 /* --- CONTEÚDO PRINCIPAL --- */
@@ -117,83 +67,9 @@ body.dark-mode .chat-item.active {
 /* ==========================================================
    RESPONSIVIDADE (MOBILE)
    ========================================================== */
-@media (max-width: 900px) {
-  /* 1. Reduz o espaçamento geral da barra */
-  .top-navbar {
-    padding: 12px 16px !important;
-  }
-
-  /* 2. Força o logótipo a diminuir no telemóvel */
-  .company-logo {
-    max-width: 120px !important; 
-  }
-  
-  .navbar-logo {
-    height: 26px !important; 
-  }
-
-  /* 3. Aproxima os botões do lado direito à força */
-  .navbar-right {
-    gap: 8px !important; 
-  }
-
-  /* 4. Deixa os botões mais compactos */
-  .user-profile-btn {
-    padding: 6px 10px !important;
-  }
-  
-  .theme-toggle-top {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 18px !important;
-  }
-
-  /* Botão hambúrguer */
-  .mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    font-size: 26px;
-    color: var(--text-primary);
-    cursor: pointer;
-    padding: 4px;
-    transition: transform 0.2s ease;
-  }
-
-  /* Menu suspenso */
-  .navbar-links {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: var(--bg-main);
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 0;
-    gap: 24px;
-    border-bottom: 1px solid var(--border-subtle);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transform: none;
-    z-index: 999;
-  }
-
-  .navbar-links.active {
-    display: flex !important;
-  }
-}
 /* ==========================================================
    2. LAYOUT GERAL, GRID E CARDS (Novo Design)
    ========================================================== */
-body {
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  font-family: 'Inter', system-ui, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
 .hub-container {
   padding: 40px 20px;
   max-width: 1100px;
@@ -241,7 +117,7 @@ body.dark-mode .hub-title {
   padding: 20px;
   position: relative;
   margin-bottom: 0px;
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
 .hero-content {
@@ -270,27 +146,30 @@ body.dark-mode .hub-title {
   margin: 0 0 28px 0;
   position: relative;
   overflow: hidden;
-
-  /* Glow pulsante */
-  animation: badgeGlow 2.8s ease-in-out infinite;
 }
 
-/* Faixa de shimmer que passa por cima */
-.hero-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.25) 50%,
-    transparent 100%
-  );
-  animation: badgeShimmer 3s ease-in-out infinite;
-  pointer-events: none;
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge {
+    animation: badgeGlow 2.8s ease-in-out infinite;
+  }
+
+  /* Faixa de shimmer que passa por cima */
+  .hero-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 100%
+    );
+    animation: badgeShimmer 3s ease-in-out infinite;
+    pointer-events: none;
+  }
 }
 
 @keyframes badgeGlow {
@@ -551,6 +430,13 @@ body.dark-mode .hub-card {
   box-shadow: 0 20px 50px rgba(87, 197, 234, 0.2);
 }
 
+/* Cards desativados */
+.hub-card-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ==========================
    SKELETON LOADER (cards de espera)
    ========================== */
@@ -580,7 +466,12 @@ body.dark-mode .hub-card-skeleton {
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hub-card-skeleton::after {
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
 }
 
 @keyframes shimmer {
@@ -588,28 +479,6 @@ body.dark-mode .hub-card-skeleton {
   100% { background-position:  200% 0; }
 }
 
-@media (max-width: 680px) {
-  .hub-card-skeleton {
-    width: 100%;
-    max-width: 340px;
-    height: 400px;
-  }
-}
-
-/* Responsividade para telas menores (Mobile) */
-@media (max-width: 680px) {
-  .hub-grid {
-    gap: 20px;
-    padding: 0 16px 60px;
-  }
-
-  .hub-card {
-    width: 100%;
-    /* No celular o card ocupa a tela toda */
-    max-width: 340px;
-    height: 400px;
-  }
-}
 
 /* ==========================================================
    3. BOTÕES
@@ -663,8 +532,11 @@ body.dark-mode .hub-card-skeleton {
   inset: 0;
   z-index: 9998;
   background: rgba(250, 254, 255, 0.95);
-  /* Branco gelo com opacidade */
-  transition: background 0.3s ease;
+  transition: opacity 0.25s ease;
+}
+
+.app-modal-backdrop[hidden] {
+  display: none;
 }
 
 /* Fundo quando ativar o Modo Escuro */
@@ -677,21 +549,34 @@ body.dark-mode .app-modal-backdrop {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.96);
   z-index: 9999;
   width: min(1000px, 92vw);
   max-height: 90vh;
-  /* Evita que o modal passe do tamanho da tela */
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
-
-  /* Sombra 3D com um leve brilho ciano */
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(87, 197, 234, 0.1);
   background: var(--bg-card);
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.app-modal.is-open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-modal {
+    transition: opacity 0.15s ease;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /* --- Cabeçalho do Modal --- */
@@ -834,10 +719,52 @@ body.dark-mode .app-modal-close {
   box-shadow: 0 12px 25px rgba(87, 197, 234, 0.5);
 }
 
+/* ==========================================================
+   OTIMIZAÇÕES DE PERFORMANCE DURANTE O MODAL
+   ========================================================== */
+
 /* Esconde as partículas e economiza 100% de processamento enquanto o modal está aberto */
 body.modal-open #global-particles,
 body.modal-open #hero-particles {
   display: none !important;
+}
+
+/* Remove o backdrop-filter da navbar enquanto o modal está aberto.
+   O backdrop já cobre a tela inteira — manter o blur da navbar atrás
+   força o GPU a compor duas camadas de blur ao mesmo tempo. */
+body.modal-open .top-navbar {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Pausa animações de box-shadow e marquee — são as operações mais
+   custosas do CSS (forçam repaint em cada frame). */
+body.modal-open .showcase-wrapper {
+  animation-play-state: paused !important;
+}
+
+body.modal-open .testimonials-track {
+  animation-play-state: paused !important;
+}
+
+body.modal-open .hero-badge {
+  animation: none !important;
+}
+
+body.modal-open .hero-badge::before {
+  animation: none !important;
+}
+
+/* Promove o modal e o backdrop para suas próprias camadas de composição,
+   isolando os repaints e evitando que afetem o resto da página. */
+.app-modal {
+  will-change: transform, opacity;
+}
+
+.app-modal-backdrop {
+  will-change: opacity;
+  /* Isola o contexto de renderização do backdrop do restante da página */
+  contain: strict;
 }
 
 /* ==========================================================
@@ -863,11 +790,6 @@ body.dark-mode .hub-footer {
 /* ==========================================================
    TOP NAVBAR (BARRA DE TOPO)
    ========================================================== */
-body {
-  /* Garante que o conteúdo flua de cima para baixo agora */
-  flex-direction: column;
-}
-
 .top-navbar {
   display: flex;
   align-items: center;
@@ -905,8 +827,8 @@ body.dark-mode .top-navbar {
 .top-navbar.scrolled,
 .top-navbar.hover-active,
 .top-navbar:hover {
-  transform: translateY(0) !important;
-  opacity: 1 !important;
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .navbar-left,
@@ -1127,7 +1049,7 @@ body.dark-mode .dropdown-item.reset-action:hover {
 }
 
 /* ==========================================================
-   RESPONSIVIDADE (MOBILE)
+   RESPONSIVIDADE (MOBILE) — CONSOLIDADO
    ========================================================== */
 .mobile-menu-btn {
   display: none;
@@ -1141,22 +1063,95 @@ body.dark-mode .dropdown-item.reset-action:hover {
 }
 
 @media (max-width: 900px) {
+  .top-navbar {
+    padding: 12px 16px;
+  }
+
+  .company-logo {
+    max-width: 120px;
+  }
+
+  .navbar-logo {
+    height: 26px;
+  }
+
+  .navbar-right {
+    gap: 8px;
+  }
+
+  .user-profile-btn {
+    padding: 6px 10px;
+  }
+
+  .theme-toggle-top {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  /* Botão hambúrguer */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  /* Links de navegação: dropdown mobile */
   .navbar-links {
     display: none;
-    /* Esconde links centrais no cel */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-main);
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    gap: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+
+  .navbar-links.active {
+    display: flex;
   }
 
   .nav-user-email {
     display: none;
-    /* Esconde email no cel */
   }
 
-  .top-navbar {
-    padding: 16px 20px;
+  /* Reduz o cálculo do efeito vidro em celulares */
+  body.dark-mode .hub-card,
+  .top-navbar,
+  .app-modal-backdrop {
+    backdrop-filter: blur(4px);
+  }
+}
+
+@media (max-width: 680px) {
+  .hub-grid {
+    gap: 20px;
+    padding: 0 16px 60px;
   }
 
-  .mobile-menu-btn {
-    display: block;
+  .hub-card {
+    width: 100%;
+    max-width: 340px;
+    height: 400px;
+  }
+
+  .hub-card-skeleton {
+    width: 100%;
+    max-width: 340px;
+    height: 400px;
   }
 }
 
@@ -1181,15 +1176,10 @@ body.dark-mode .dropdown-item.reset-action:hover {
   z-index: 2;
 }
 
-/* O body reassume o controle das cores (Claro/Escuro) */
-body {
-  background-color: var(--bg-main) !important;
-}
-
 /* Apenas as seções de conteúdo ficam transparentes para mostrar as estrelas */
 .main-content,
 .hero-section {
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
 /* =========================================
@@ -1200,21 +1190,18 @@ body {
   width: 98%;
   max-width: 1600px;
   margin: 40px auto 100px auto;
-  /* Afasta o bloco do topo e do rodapé */
   border-radius: 20px;
   overflow: visible;
-  /* IMPORTANTE: Deixa a luz "vazar" para fora da borda */
-
-  /* 1. Sombra de profundidade (Deixa o bloco parecendo saltado da tela) */
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
   z-index: 10;
-
-  /* 2. O BLOOM NEON PULSANTE */
-  animation: pulseNeonLED 4s ease-in-out infinite;
-
-  /* ADICIONADO: Aceleração de Hardware para não travar o site */
   will-change: box-shadow;
   transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .showcase-wrapper {
+    animation: pulseNeonLED 4s ease-in-out infinite;
+  }
 }
 
 /* O pseudo-element ::before agora vira apenas um "borda de metal" fina */
@@ -1411,7 +1398,13 @@ body:not(.dark-mode) .logo-claro {
 }
 
 .testimonials-track.iniciada {
-  animation: marquee 150s linear infinite;
+  /* A animação só roda se o usuário não tiver pedido movimento reduzido */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .testimonials-track.iniciada {
+    animation: marquee 150s linear infinite;
+  }
 }
 
 /* Pausa a rolagem ao passar o mouse */
