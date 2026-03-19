@@ -719,10 +719,52 @@ body.dark-mode .app-modal-close {
   box-shadow: 0 12px 25px rgba(87, 197, 234, 0.5);
 }
 
+/* ==========================================================
+   OTIMIZAÇÕES DE PERFORMANCE DURANTE O MODAL
+   ========================================================== */
+
 /* Esconde as partículas e economiza 100% de processamento enquanto o modal está aberto */
 body.modal-open #global-particles,
 body.modal-open #hero-particles {
   display: none !important;
+}
+
+/* Remove o backdrop-filter da navbar enquanto o modal está aberto.
+   O backdrop já cobre a tela inteira — manter o blur da navbar atrás
+   força o GPU a compor duas camadas de blur ao mesmo tempo. */
+body.modal-open .top-navbar {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Pausa animações de box-shadow e marquee — são as operações mais
+   custosas do CSS (forçam repaint em cada frame). */
+body.modal-open .showcase-wrapper {
+  animation-play-state: paused !important;
+}
+
+body.modal-open .testimonials-track {
+  animation-play-state: paused !important;
+}
+
+body.modal-open .hero-badge {
+  animation: none !important;
+}
+
+body.modal-open .hero-badge::before {
+  animation: none !important;
+}
+
+/* Promove o modal e o backdrop para suas próprias camadas de composição,
+   isolando os repaints e evitando que afetem o resto da página. */
+.app-modal {
+  will-change: transform, opacity;
+}
+
+.app-modal-backdrop {
+  will-change: opacity;
+  /* Isola o contexto de renderização do backdrop do restante da página */
+  contain: strict;
 }
 
 /* ==========================================================
