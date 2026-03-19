@@ -565,22 +565,25 @@ function initNavbarEffect() {
   if (!navbar) return;
 
   const scrollable = document.querySelector('.main-content');
-  
-  // A CORREÇÃO ESTÁ AQUI: Adicionar o ouvinte de evento no elemento que realmente rola (scrollable)
-  const target = scrollable || window;
 
-  target.addEventListener('scroll', () => {
-    // Pega o valor da rolagem corretamente
-    const scrollY = scrollable ? scrollable.scrollTop : window.scrollY;
+  // Função que verifica a rolagem, não importa quem esteja rolando
+  const handleScroll = () => {
+    const scrollY = window.scrollY || (scrollable ? scrollable.scrollTop : 0);
 
     if (scrollY > 50) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
     }
-  }, { passive: true });
+  };
 
-  // Evento do mouse para quando o usuário levar a seta lá no topo da tela
+  // Adiciona o "espião" de rolagem nos dois lugares para garantir!
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  if (scrollable) {
+    scrollable.addEventListener('scroll', handleScroll, { passive: true });
+  }
+
+  // Comportamento do mouse no desktop
   document.addEventListener('mousemove', (e) => {
     if (e.clientY <= 30) {
       navbar.classList.add('hover-active');
