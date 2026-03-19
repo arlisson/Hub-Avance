@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produtos | AVANCE Telecom</title>
+
+  <link rel="preconnect" href="https://unpkg.com" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <link rel="stylesheet" href="./produtos.css" />
+</head>
+
+<body>
+  <!-- Aplica o tema ANTES de qualquer renderização para evitar o flash de tema claro -->
+  <script>
+    (function () {
+      if (localStorage.getItem('theme') !== 'light') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+  </script>
+
+  <header class="top-navbar">
+    <div class="logo-container">
+      <a href="/hub/hub.html">
+        <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" width="200" height="60" />
+        <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-claro" width="200" height="60" />
+      </a>
+    </div>
+
+    <nav class="navbar-links">
+      <a href="#" class="nav-link active">Início</a>
+      <a href="#planos" class="nav-link">Planos</a>
+      <a href="#beneficios" class="nav-link">Por que a Avance</a>
+    </nav>
+
+    <div class="navbar-right">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu" type="button">
+        <i class="ph ph-list"></i>
+      </button>
+      <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Ativar modo claro">
+        <i class="ph ph-moon"></i>
+      </button>
+      <a href="#contato" class="nav-cta-btn">
+        <i class="ph ph-chat-circle-dots"></i>
+        Fale Conosco
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <p class="hero-badge">Avance Telecom</p>
+        <h1 class="hero-title">Conecte o que<br>importa pra você.</h1>
+        <p class="hero-subtitle">Internet ultrarrápida, telefonia móvel com cobertura nacional e linha fixa para o seu negócio. Tudo em um só lugar, com suporte 24 horas.</p>
+
+        <button class="hero-btn"
+          onclick="document.getElementById('planos').scrollIntoView({behavior: 'smooth'})"
+          type="button">
+          Ver planos <i class="ph ph-arrow-down"></i>
+        </button>
+      </div>
+
+      <!-- Barra de métricas flutuante -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-number" data-target="50000" data-suffix="k+">0</span>
+          <span class="stat-label">Clientes ativos</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="stat-number" data-target="999" data-suffix="%" data-decimal="1">0</span>
+          <span class="stat-label">Uptime garantido</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="stat-number" data-static="24h">24h</span>
+          <span class="stat-label">Suporte técnico</span>
+        </div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="stat-number" data-static="1 Gbps">1 Gbps</span>
+          <span class="stat-label">Velocidade máxima</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PLANOS ===================== -->
+    <div class="showcase-wrapper" id="planos">
+      <div class="showcase-content">
+
+        <div class="hub-section-title">
+          <h2>Escolha o seu plano</h2>
+          <p class="section-subtitle">Soluções para cada necessidade, com a qualidade que só a Avance oferece.</p>
+        </div>
+
+        <!-- Tabs de categoria com indicador deslizante -->
+        <div class="plan-tabs-wrapper">
+          <div class="plan-tabs" id="plan-tabs" role="tablist" aria-label="Categoria de planos">
+            <div class="plan-tab-indicator" id="tab-indicator" aria-hidden="true"></div>
+
+            <button class="plan-tab active" data-category="internet" role="tab"
+              aria-selected="true" type="button" id="tab-internet">
+              <i class="ph ph-wifi-high" aria-hidden="true"></i>
+              <span>Internet</span>
+            </button>
+            <button class="plan-tab" data-category="movel" role="tab"
+              aria-selected="false" type="button" id="tab-movel">
+              <i class="ph ph-device-mobile" aria-hidden="true"></i>
+              <span>Móvel</span>
+            </button>
+            <button class="plan-tab" data-category="fixa" role="tab"
+              aria-selected="false" type="button" id="tab-fixa">
+              <i class="ph ph-phone" aria-hidden="true"></i>
+              <span>Fixa</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Toggle Mensal / Anual -->
+        <div class="billing-toggle-wrap">
+          <span class="billing-label billing-active" id="label-mensal">Mensal</span>
+          <button class="billing-toggle" id="billing-toggle" type="button"
+            aria-label="Alternar para cobrança anual" aria-pressed="false">
+            <span class="billing-toggle-thumb"></span>
+          </button>
+          <span class="billing-label" id="label-anual">Anual</span>
+          <span class="billing-discount-badge" id="billing-badge">Economize até 20%</span>
+        </div>
+
+        <!-- Grid de planos -->
+        <div class="plans-grid" id="plans-grid" role="region" aria-live="polite"
+          aria-label="Planos disponíveis">
+          <!-- Renderizado via JS -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== BENEFÍCIOS ===================== -->
+    <section class="benefits-section" id="beneficios">
+      <div class="hub-section-title">
+        <h2>Por que escolher a Avance?</h2>
+        <p class="section-subtitle">Mais do que um serviço — uma parceria que faz sua operação crescer.</p>
+      </div>
+      <div class="benefits-grid" id="benefits-grid">
+        <!-- Renderizado via JS -->
+      </div>
+    </section>
+
+    <!-- ===================== CTA FINAL ===================== -->
+    <section class="cta-section" id="contato">
+      <div class="cta-showcase-wrapper">
+        <div class="cta-content">
+          <p class="hero-badge cta-badge-small">Pronto para começar?</p>
+          <h2 class="cta-title">Fale com um especialista agora.</h2>
+          <p class="cta-subtitle">Nossa equipe está disponível para te ajudar a escolher o melhor plano para o seu perfil e negócio.</p>
+          <div class="cta-actions">
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer"
+              class="hero-btn cta-btn-whatsapp">
+              <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+              WhatsApp
+            </a>
+            <a href="tel:08001234567" class="cta-btn-phone">
+              <i class="ph ph-phone" aria-hidden="true"></i>
+              0800 123 4567
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="hub-footer">
+      <span>AVANCE • Telecomunicações</span>
+    </footer>
+  </main>
+
+  <script src="./produtos.js" defer></script>
+</body>
+
+</html>
