@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await sb.auth.getSession();
 
   if (data?.session) {
-    window.location.href = "../hub/hub2.html";
+    window.location.href = "../hub/hub.html";
     return;
   }
 
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (error) throw error;
 
-      window.location.href = "../hub/hub2.html";
+      window.location.href = "../hub/hub.html";
     } catch (error) {
       alert(`Erro: ${error?.message || "Falha no login."}`);
     } finally {
