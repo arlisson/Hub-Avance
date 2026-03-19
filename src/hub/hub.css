@@ -1411,7 +1411,7 @@ body:not(.dark-mode) .logo-claro {
 }
 
 .testimonials-track.iniciada {
-  animation: marquee 60s linear infinite;
+  animation: marquee 100s linear infinite;
 }
 
 /* Pausa a rolagem ao passar o mouse */
