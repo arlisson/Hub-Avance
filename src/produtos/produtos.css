@@ -191,14 +191,16 @@ body.dark-mode .theme-toggle-top {
   margin-top: -5vh;
 }
 
-/* Badge "Consultoria Premium" */
+/* ==========================
+   BADGE "AVANCE VIP"
+   ========================== */
 .hero-badge {
   display: inline-block;
-  font-size: 14px;
+  font-size: 22px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 5px;
-  padding: 12px 36px;
+  padding: 16px 44px;
   border-radius: 50px;
   background: rgba(87, 197, 234, 0.12);
   color: var(--brand-action);
@@ -209,14 +211,24 @@ body.dark-mode .theme-toggle-top {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hero-badge { animation: badgeGlow 2.8s ease-in-out infinite; }
+  .hero-badge {
+    animation: badgeGlow 2.8s ease-in-out infinite;
+  }
 
+  /* Faixa de shimmer que passa por cima */
   .hero-badge::before {
     content: '';
     position: absolute;
-    top: 0; left: -100%;
-    width: 60%; height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 100%
+    );
     animation: badgeShimmer 3s ease-in-out infinite;
     pointer-events: none;
   }
