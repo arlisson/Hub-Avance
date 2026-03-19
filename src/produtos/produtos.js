@@ -299,8 +299,9 @@ function openModal(product) {
   document.body.classList.add('modal-open');
   renderStep();
 
-  // Fechar com Escape
+  // Fechar com Escape + focus trap
   document.addEventListener('keydown', _onEscKey);
+  document.addEventListener('keydown', _onFocusTrap);
 
   // Fechar clicando no backdrop
   backdrop.addEventListener('click', _onBackdropClick);
@@ -320,11 +321,29 @@ function closeModal() {
   }, 280);
 
   document.removeEventListener('keydown', _onEscKey);
+  document.removeEventListener('keydown', _onFocusTrap);
   backdrop.removeEventListener('click', _onBackdropClick);
 }
 
 function _onEscKey(e) {
   if (e.key === 'Escape') closeModal();
+}
+
+function _onFocusTrap(e) {
+  if (e.key !== 'Tab') return;
+  const modal = document.getElementById('prod-modal');
+  if (!modal) return;
+  const focusable = Array.from(
+    modal.querySelectorAll('button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')
+  ).filter((el) => !el.closest('[hidden]'));
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last  = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+  }
 }
 
 function _onBackdropClick(e) {
@@ -561,9 +580,10 @@ function bindModalEvents(product, stepIndex, isReview) {
   }
 
   // Chips: seleção e toggle de classe
-  document.querySelectorAll('.step-chip').forEach((chip) => {
+  const modal = document.getElementById('prod-modal');
+  modal.querySelectorAll('.step-chip').forEach((chip) => {
     chip.addEventListener('click', () => {
-      document.querySelectorAll('.step-chip').forEach((c) => {
+      modal.querySelectorAll('.step-chip').forEach((c) => {
         c.classList.remove('selected');
         c.setAttribute('aria-pressed', 'false');
       });
@@ -602,11 +622,14 @@ function handleNext(product, stepIndex) {
       return;
     }
     // Número mínimo
-    if (step.type === 'number' && parseInt(val, 10) < (step.min ?? 1)) {
-      if (errEl) errEl.textContent = `O valor mínimo é ${step.min ?? 1}.`;
-      errEl?.classList.add('visible');
-      input?.focus();
-      return;
+    if (step.type === 'number') {
+      const num = parseInt(val, 10);
+      if (isNaN(num) || num < (step.min ?? 1)) {
+        if (errEl) errEl.textContent = `O valor mínimo é ${step.min ?? 1}.`;
+        errEl?.classList.add('visible');
+        input?.focus();
+        return;
+      }
     }
   }
 

@@ -817,10 +817,6 @@ function initNavbarEffect() {
 // ANIMAÇÃO DE PARTÍCULAS
 // ==========================================================
 function initParticles() {
-  // Detecta preferência de movimento reduzido (comum no iOS com "Reduzir Movimento" ativo).
-  // Em vez de abortar, exibe as partículas estáticas — o efeito de fundo continua visível
-  // sem causar movimento que incomode o usuário.
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let canvas = document.getElementById("global-particles");
 
@@ -905,9 +901,6 @@ function initParticles() {
     }
 
     update() {
-      // Não move as partículas se o usuário preferiu menos movimento
-      if (reducedMotion) return;
-
       this.x += this.speedX;
       this.y += this.speedY;
 
@@ -925,7 +918,13 @@ function initParticles() {
 
   function init() {
     particlesArray = [];
-    const numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000);
+    const isMobile = window.innerWidth <= 768;
+    const divisor = isMobile ? 14000 : 8000; // menos partículas em telas menores
+    const max = isMobile ? 60 : 150;          // teto absoluto por categoria
+    const numberOfParticles = Math.min(
+      Math.floor((canvas.width * canvas.height) / divisor),
+      max
+    );
 
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle());

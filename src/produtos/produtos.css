@@ -434,7 +434,6 @@ body.dark-mode .section-subtitle { color: var(--brand-light); opacity: 0.8; }
               border-color 0.3s ease,
               box-shadow 0.38s ease;
   box-shadow: 0 8px 24px var(--shadow-color);
-  role: listitem;
 }
 
 body.dark-mode .product-card {
@@ -1162,8 +1161,7 @@ body.modal-open .hero-badge::before { animation: none !important; }
 
   .navbar-links.active { display: flex; }
 
-  .top-navbar,
-  .app-modal-backdrop {
+  .top-navbar {
     backdrop-filter: blur(4px) !important;
     -webkit-backdrop-filter: blur(4px) !important;
   }
