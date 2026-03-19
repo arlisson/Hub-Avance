@@ -1395,9 +1395,19 @@ body:not(.dark-mode) .logo-claro {
   cursor: grabbing;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* Animação ativa por padrão — desativada apenas para quem preferiu menos movimento */
+.testimonials-track.iniciada {
+  animation: marquee 150s linear infinite;
+}
+
+/* Para iOS/dispositivos com "Reduzir Movimento" ativo: para a animação
+   e deixa o carrossel rolável manualmente pelo toque */
+@media (prefers-reduced-motion: reduce) {
   .testimonials-track.iniciada {
-    animation: marquee 150s linear infinite;
+    animation: none;
+  }
+  .testimonials-container {
+    overflow-x: auto;
   }
 }
 

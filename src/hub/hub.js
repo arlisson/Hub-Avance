@@ -817,8 +817,10 @@ function initNavbarEffect() {
 // ANIMAÇÃO DE PARTÍCULAS
 // ==========================================================
 function initParticles() {
-  // Respeita preferência de movimento reduzido do sistema operacional
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Detecta preferência de movimento reduzido (comum no iOS com "Reduzir Movimento" ativo).
+  // Em vez de abortar, exibe as partículas estáticas — o efeito de fundo continua visível
+  // sem causar movimento que incomode o usuário.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let canvas = document.getElementById("global-particles");
 
@@ -830,7 +832,10 @@ function initParticles() {
     canvas.style.left = "0";
     canvas.style.width = "100vw";
     canvas.style.height = "100vh";
-    canvas.style.zIndex = "-10";
+    // z-index 0 em vez de -10: evita o bug do Safari/iOS onde z-index negativo
+    // some atrás do background do body quando há overflow-x: hidden no elemento pai.
+    // O conteúdo fica acima porque todos os elementos relevantes têm z-index >= 1.
+    canvas.style.zIndex = "0";
     canvas.style.pointerEvents = "none";
     document.body.prepend(canvas);
   }
@@ -900,6 +905,9 @@ function initParticles() {
     }
 
     update() {
+      // Não move as partículas se o usuário preferiu menos movimento
+      if (reducedMotion) return;
+
       this.x += this.speedX;
       this.y += this.speedY;
 
