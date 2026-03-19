@@ -558,15 +558,19 @@ function initBenefitsObserver() {
 }
 
 // ==========================================================
-// NAVBAR EFFECT — idêntico ao hub
+// NAVBAR EFFECT
 // ==========================================================
 function initNavbarEffect() {
   const navbar = document.querySelector('.top-navbar');
   if (!navbar) return;
 
-  window.addEventListener('scroll', () => {
-    // Usa scrollTop do .main-content (overflow-y: auto), não do window
-    const scrollable = document.querySelector('.main-content');
+  const scrollable = document.querySelector('.main-content');
+  
+  // A CORREÇÃO ESTÁ AQUI: Adicionar o ouvinte de evento no elemento que realmente rola (scrollable)
+  const target = scrollable || window;
+
+  target.addEventListener('scroll', () => {
+    // Pega o valor da rolagem corretamente
     const scrollY = scrollable ? scrollable.scrollTop : window.scrollY;
 
     if (scrollY > 50) {
@@ -576,6 +580,7 @@ function initNavbarEffect() {
     }
   }, { passive: true });
 
+  // Evento do mouse para quando o usuário levar a seta lá no topo da tela
   document.addEventListener('mousemove', (e) => {
     if (e.clientY <= 30) {
       navbar.classList.add('hover-active');
