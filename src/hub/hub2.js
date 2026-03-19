@@ -458,6 +458,7 @@ function removeFocusTrap(modal) {
 // Modal
 // -------------------------
 let _modalListenersInit = false;
+let _pendingCloseHandler = null; // Rastreia o listener de fechamento pendente para poder cancelá-lo
 
 function initAppModal() {
   const backdrop = document.getElementById("app-modal-backdrop");
@@ -475,7 +476,7 @@ function initAppModal() {
   });
 
   backdrop.addEventListener("click", (e) => {
-    if (e.target === backdrop) closeAppModal();
+    if (e.target === backdrop && modal.classList.contains("is-open")) closeAppModal();
   });
 }
 
@@ -494,6 +495,16 @@ function openAppModal(appId) {
   const videoEl = document.getElementById("app-modal-video");
 
   if (!backdrop || !modal) return;
+
+  // Cancela qualquer listener de fechamento pendente para evitar que o
+  // transitionend da abertura feche o modal indevidamente
+  if (_pendingCloseHandler) {
+    modal.removeEventListener("transitionend", _pendingCloseHandler);
+    _pendingCloseHandler = null;
+  }
+
+  // Garante que o modal não esteja oculto por um fechamento anterior incompleto
+  modal.hidden = false;
 
   // Guarda o elemento que tinha foco para restaurar depois
   _lastFocusedBeforeModal = document.activeElement;
@@ -555,7 +566,7 @@ function openAppModal(appId) {
   }
 
   backdrop.hidden = false;
-  modal.hidden = false;
+  // modal.hidden já foi definido como false no início da função
   document.body.classList.add("modal-open");
 
   // Dispara a animação CSS no próximo frame (hidden precisa sair do DOM antes)
@@ -577,12 +588,23 @@ function closeAppModal() {
     removeFocusTrap(modal);
     modal.classList.remove("is-open");
 
-    // Aguarda a transição CSS antes de ocultar
-    const onTransitionEnd = () => {
+    // Remove qualquer listener pendente anterior antes de criar um novo,
+    // evitando acúmulo caso closeAppModal seja chamado mais de uma vez
+    if (_pendingCloseHandler) {
+      modal.removeEventListener("transitionend", _pendingCloseHandler);
+    }
+
+    // Aguarda a transição CSS antes de ocultar.
+    // O check e.target === modal garante que só respondemos à transição
+    // do próprio modal, ignorando eventos que borbulham dos filhos
+    // (ex: .hub-btn, .app-modal-close também têm transitions)
+    _pendingCloseHandler = (e) => {
+      if (e.target !== modal) return;
       modal.hidden = true;
-      modal.removeEventListener("transitionend", onTransitionEnd);
+      modal.removeEventListener("transitionend", _pendingCloseHandler);
+      _pendingCloseHandler = null;
     };
-    modal.addEventListener("transitionend", onTransitionEnd);
+    modal.addEventListener("transitionend", _pendingCloseHandler);
   }
   if (backdrop) backdrop.hidden = true;
   document.body.classList.remove("modal-open");
