@@ -17,7 +17,7 @@ let CURRENT_USER_ID = "";
  * - actions: botões exibidos no modal
  * - enabled: se false, o card fica indisponível
  * - app: nome do app para enviar ao contador
- * - metric: "access" | "download
+ * - metric: "access" | "download"
  */
 const APPS = [
   {
@@ -154,12 +154,12 @@ function renderTestimonials(avaliacoes) {
     html += `
       <div class="testimonial-card">
         <div class="stars">★★★★★</div>
-        <p class="testimonial-text">"${escapeHtml(t.texto)}"</p>
+        <p class="testimonial-text">"${escapeHtml(t.TextoComentario)}"</p>
         <div class="testimonial-author">
-          <div class="author-avatar" style="background: linear-gradient(135deg, ${cor1}, ${cor2});">${escapeHtml(t.iniciais)}</div>
+          <div class="author-avatar" style="background: linear-gradient(135deg, ${cor1}, ${cor2});">${escapeHtml(t.Iniciais)}</div>
           <div>
-            <div class="author-name">${escapeHtml(t.autor)}</div>
-            <div class="author-role">${escapeHtml(t.cargo)}</div>
+            <div class="author-name">${escapeHtml(t.Nome)}</div>
+            <div class="author-role">${escapeHtml(t.Cargo)}</div>
           </div>
         </div>
       </div>
