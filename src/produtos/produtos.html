@@ -26,28 +26,59 @@
     <div class="logo-container">
       <a href="/hub/hub.html">
         <img src="../img/LogoEscuroSemFundo.png" alt="Logo Avance" class="company-logo logo-escuro" width="200" height="60" />
+
         <img src="../img/LogoClaraSemFundo.png" alt="Logo Avance" class="company-logo logo-claro" width="200" height="60" />
       </a>
     </div>
 
     <nav class="navbar-links">
-      <a href="../hub/hub.html" class="nav-link">Início</a>
-      <a href="../hub/hub.html#hub-grid" class="nav-link">Aplicações</a>
+      <a href="#" class="nav-link active">Início</a>
+      <a href="#hub-grid" class="nav-link">Aplicações</a>
       <a href="../sobre/sobre.html" class="nav-link">Sobre</a>
-      <a href="../produtos/produtos.html" class="nav-link active">Produtos</a>
+      <a href="../produtos/produtos.html" class="nav-link">Produtos</a>
     </nav>
 
     <div class="navbar-right">
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu" type="button">
         <i class="ph ph-list"></i>
       </button>
+      
       <button class="theme-toggle-top" id="theme-toggle" type="button" aria-label="Ativar modo claro">
         <i class="ph ph-moon"></i>
       </button>
-      <a href="#contato" class="nav-cta-btn">
-        <i class="ph ph-chat-circle-dots"></i>
-        Fale Conosco
-      </a>
+      <div class="user-menu-container">
+        <button class="user-profile-btn" id="settings-btn" type="button">
+          <i class="ph ph-user-circle"></i>
+          <span id="user-email" class="nav-user-email">Carregando...</span>
+          <i class="ph ph-caret-down" style="font-size: 14px;"></i>
+        </button>
+
+        <div class="settings-dropdown" id="settings-menu" hidden>
+
+          <a href="../perfil/perfil.html" class="dropdown-item reset-action" id="perfil-user"
+            style="text-decoration: none;">
+            <i class="ph ph-user"></i>
+            <span>Perfil</span>
+          </a>
+
+          <a href="../usuarios/usuarios.html" class="dropdown-item reset-action" id="menu-users"
+            style="text-decoration: none;" hidden>
+            <i class="ph ph-users-three"></i>
+            <span>Usuários</span>
+          </a>
+
+          <a href="/redefinirSenha/redefinirSenha.html" class="dropdown-item reset-action"
+            style="text-decoration: none;">
+            <i class="ph ph-lock-key"></i>
+            <span>Alterar Senha</span>
+          </a>
+
+          <button type="button" class="dropdown-item danger" id="menu-logout">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
