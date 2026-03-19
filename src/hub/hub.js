@@ -558,8 +558,13 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
-  // Dispara a animação CSS no próximo frame (hidden precisa sair do DOM antes)
-  requestAnimationFrame(() => modal.classList.add("is-open"));
+  // Dois requestAnimationFrame são necessários quando o elemento vem de display:none.
+  // O primeiro frame registra o estado inicial (opacity:0), o segundo dispara a transição.
+  // Com apenas um RAF o browser às vezes colapsa os dois estados no mesmo paint e
+  // a transição não acontece.
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => modal.classList.add("is-open"))
+  );
 
   createFocusTrap(modal);
   modal.setAttribute("tabindex", "-1");
@@ -577,14 +582,33 @@ function closeAppModal() {
     removeFocusTrap(modal);
     modal.classList.remove("is-open");
 
-    // Aguarda a transição CSS antes de ocultar
-    const onTransitionEnd = () => {
+    // backdrop.hidden e modal.hidden só são setados DEPOIS que a transição termina.
+    // Se fizermos backdrop.hidden = true antes, o modal (que é filho do backdrop no HTML)
+    // some imediatamente com display:none, cortando a animação e nunca disparando transitionend.
+    const hideAll = () => {
       modal.hidden = true;
-      modal.removeEventListener("transitionend", onTransitionEnd);
+      if (backdrop) backdrop.hidden = true;
     };
+
+    // Escuta apenas a transição de opacity para não disparar duas vezes
+    // (opacity + transform são duas propriedades que transitam)
+    const onTransitionEnd = (e) => {
+      if (e.propertyName !== "opacity") return;
+      modal.removeEventListener("transitionend", onTransitionEnd);
+      clearTimeout(fallbackTimer);
+      hideAll();
+    };
+
+    // Fallback: se transitionend não disparar (ex: prefers-reduced-motion, tab inativa),
+    // esconde depois de 300ms de qualquer forma
+    const fallbackTimer = setTimeout(() => {
+      modal.removeEventListener("transitionend", onTransitionEnd);
+      hideAll();
+    }, 300);
+
     modal.addEventListener("transitionend", onTransitionEnd);
   }
-  if (backdrop) backdrop.hidden = true;
+
   document.body.classList.remove("modal-open");
 
   // Restaura o foco no elemento que estava ativo antes do modal abrir
