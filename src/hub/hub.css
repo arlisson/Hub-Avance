@@ -1395,10 +1395,6 @@ body:not(.dark-mode) .logo-claro {
   cursor: grabbing;
 }
 
-.testimonials-track.iniciada {
-  /* A animação só roda se o usuário não tiver pedido movimento reduzido */
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .testimonials-track.iniciada {
     animation: marquee 150s linear infinite;
