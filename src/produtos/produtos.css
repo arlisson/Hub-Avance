@@ -204,6 +204,120 @@ body.dark-mode .theme-toggle-top {
 }
 
 /* ==========================================================
+   MENU DO UTILIZADOR
+   ========================================================== */
+.user-menu-container {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+}
+
+.user-profile-btn:focus,
+.user-profile-btn:active {
+  outline: none;
+  border-color: var(--brand-action);
+  box-shadow: 0 0 0 2px rgba(87, 197, 234, 0.3);
+}
+
+.user-profile-btn:hover {
+  background: rgba(87, 197, 234, 0.05);
+}
+
+.nav-user-email {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+  min-width: 140px;
+  z-index: 9999;
+  display: block;
+  height: auto;
+  min-height: 48px;
+}
+
+.settings-dropdown[hidden] {
+  display: none;
+}
+
+.settings-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 24px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--bg-card);
+  border-left: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-subtle);
+  transform: rotate(45deg);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(87, 197, 234, 0.1);
+}
+
+.dropdown-item.danger {
+  color: #ef4444;
+}
+
+.dropdown-item.danger:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.dropdown-item.reset-action:hover {
+  background: rgba(87, 197, 234, 0.12);
+  color: #133868;
+}
+
+body.dark-mode .dropdown-item.reset-action:hover {
+  background: rgba(87, 197, 234, 0.18);
+  color: #ADE5F2;
+}
+
+
+/* ==========================================================
    4. HERO — mesmo esquema do hub
    ========================================================== */
 .hero-section {
@@ -1213,6 +1327,14 @@ body.dark-mode .hub-footer {
     gap: 8px;
   }
 
+  .user-profile-btn {
+    padding: 6px 10px;
+  }
+
+  .nav-user-email {
+    display: none;
+  }
+
   .mobile-menu-btn {
     display: flex;
     align-items: center;
@@ -1220,6 +1342,8 @@ body.dark-mode .hub-footer {
     font-size: 26px;
     padding: 4px;
     border: none;
+    background: transparent;
+    color: var(--text-primary);
     transition: transform 0.2s ease;
   }
 
@@ -1229,6 +1353,7 @@ body.dark-mode .hub-footer {
     top: 100%;
     left: 0;
     width: 100%;
+    transform: none !important; /* ISSO FIXA O BUG DO HAMBÚRGUER */
     background-color: var(--bg-main);
     flex-direction: column;
     align-items: center;

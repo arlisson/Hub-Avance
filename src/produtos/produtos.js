@@ -254,6 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme(document.getElementById('theme-toggle'));
   initMobileSidebar();
 
+  // NOVO: Faz o menu do usuário funcionar igual ao Hub
+  const settingsBtn = document.getElementById("settings-btn");
+  const settingsMenu = document.getElementById("settings-menu");
+  initSettingsMenu(settingsBtn, settingsMenu);
+
   renderPlanSkeletons();
   renderBenefits();
   initPlanTabs();
@@ -264,6 +269,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // Primeira renderização dos cards
   renderPlanCards(currentCategory, isAnnual);
 });
+
+// ==========================================================
+// CONTROLE DO MENU DE USUÁRIO
+// ==========================================================
+function initSettingsMenu(btn, menu) {
+  if (!btn || !menu) return;
+
+  if (btn._settingsMenuInit) return;
+  btn._settingsMenuInit = true;
+
+  const close = () => { menu.hidden = true; };
+  const open = () => { menu.hidden = false; };
+  const toggle = () => { if (menu.hidden) open(); else close(); };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+
+  document.addEventListener("click", (e) => {
+    const container = document.querySelector(".user-menu-container");
+    if (!container) { close(); return; }
+    if (!container.contains(e.target)) { close(); }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+}
 
 // ==========================================================
 // RENDERIZAÇÃO: SKELETONS
@@ -558,17 +592,18 @@ function initBenefitsObserver() {
 }
 
 // ==========================================================
-// NAVBAR EFFECT
+// NAVBAR EFFECT (CORRIGIDO PARA O SCROLL DA DIV PRINCIPAL)
 // ==========================================================
 function initNavbarEffect() {
   const navbar = document.querySelector('.top-navbar');
   if (!navbar) return;
 
+  // A área que rola no seu site é a div main-content
   const scrollable = document.querySelector('.main-content');
 
-  // Função que verifica a rolagem, não importa quem esteja rolando
   const handleScroll = () => {
-    const scrollY = window.scrollY || (scrollable ? scrollable.scrollTop : 0);
+    // Lê o scroll a partir da main-content
+    const scrollY = scrollable ? scrollable.scrollTop : window.scrollY;
 
     if (scrollY > 50) {
       navbar.classList.add('scrolled');
@@ -577,13 +612,11 @@ function initNavbarEffect() {
     }
   };
 
-  // Adiciona o "espião" de rolagem nos dois lugares para garantir!
-  window.addEventListener('scroll', handleScroll, { passive: true });
   if (scrollable) {
     scrollable.addEventListener('scroll', handleScroll, { passive: true });
   }
 
-  // Comportamento do mouse no desktop
+  // Desce ao levar o mouse ao teto da tela
   document.addEventListener('mousemove', (e) => {
     if (e.clientY <= 30) {
       navbar.classList.add('hover-active');
