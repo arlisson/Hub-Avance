@@ -399,11 +399,11 @@ body.dark-mode .dropdown-item.reset-action:hover {
 /* --- Badge --- */
 .hero-badge {
   display: inline-block;
-  font-size: 16px;
+  font-size: 32px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 4px;
-  padding: 18px 48px;
+  padding: 36px 96px;
   border-radius: 50px;
   background: rgba(87, 197, 234, 0.08);
   color: var(--brand-action);
