@@ -2818,14 +2818,14 @@ body:not(.dark-mode) .hero-section::before {
 /* Refined about-eyebrow */
 .about-eyebrow {
   display: inline-block;
-  font-size: 11px;
+  font-size: 25px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 3px;
   color: var(--brand-action);
   background: rgba(87, 197, 234, 0.08);
   border: 1px solid rgba(87, 197, 234, 0.2);
-  padding: 7px 20px;
+  padding: 10px 25px;
   border-radius: 50px;
   margin-bottom: 28px;
 }
