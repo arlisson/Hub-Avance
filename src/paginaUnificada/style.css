@@ -2967,3 +2967,77 @@ body:not(.dark-mode) .top-navbar .user-profile-btn:hover {
 body:not(.dark-mode) .hub-card-short-desc {
   color: #64748b !important; /* Cinza médio-escuro legível para o parágrafo */
 }
+
+/* ============================================================
+   CORREÇÕES ADICIONAIS DE TEMA CLARO (FEEDBACK, BOTÕES E DEPOIMENTOS)
+   ============================================================ */
+
+/* 1. Corrige o Fundo e Texto da Seção "Dúvida, sugestão ou feedback?" (hub-cta-section) */
+body:not(.dark-mode) .hub-cta-section {
+  background-color: #f8fafc !important; /* Fundo cinza bem claro */
+  border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+body:not(.dark-mode) .hub-cta-section .hub-section-title h2,
+body:not(.dark-mode) .hub-cta-section .step-hint {
+  color: #1e293b !important; /* Texto escuro legível */
+}
+
+/* 2. Corrige a Textarea de Feedback */
+body:not(.dark-mode) .hub-cta-section .feedback-textarea {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important; /* Borda cinza clara */
+}
+
+body:not(.dark-mode) .hub-cta-section .feedback-textarea::placeholder {
+  color: #94a3b8 !important; /* Placeholder legível */
+}
+
+/* 3. Corrige o Botão "Enviar Feedback" */
+body:not(.dark-mode) .hub-cta-section #btn-submit-feedback {
+  background-color: #2563eb !important; /* Azul primário */
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode) .hub-cta-section #btn-submit-feedback:hover {
+  background-color: #1d4ed8 !important; /* Azul mais escuro no hover */
+}
+
+/* 4. Corrige os Botões "Começar" (product-card-cta) nos Cards de Produto */
+body:not(.dark-mode) .product-card-cta {
+  background-color: #f1f5f9 !important; /* Fundo cinza bem claro */
+  color: #1e293b !important; /* Texto escuro */
+  border: 1px solid #cbd5e1 !important; /* Borda cinza clara */
+}
+
+body:not(.dark-mode) .product-card-cta:hover {
+  background-color: #e2e8f0 !important; /* Fundo um pouco mais escuro no hover */
+  border-color: #94a3b8 !important; /* Borda mais escura no hover */
+}
+
+/* 5. Corrige o Botão de WhatsApp "Falar com um consultor" */
+body:not(.dark-mode) .whatsapp-btn {
+  background-color: #25d366 !important; /* Verde WhatsApp */
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body:not(.dark-mode) .whatsapp-btn:hover {
+  background-color: #20b858 !important;
+}
+
+/* 6. Corrige o Texto das Avaliações (Testimonials) */
+body:not(.dark-mode) .testimonial-card .testimonial-text,
+body:not(.dark-mode) .testimonial-card .author-name {
+  color: #1e293b !important; /* Texto escuro legível */
+}
+
+body:not(.dark-mode) .testimonial-card .author-role {
+  color: #64748b !important; /* Cinza médio-escuro para o cargo */
+}
+
+body:not(.dark-mode) .testimonial-card .stars {
+  color: #f59e0b !important; /* Estrelas em ouro/amarelo */
+}
