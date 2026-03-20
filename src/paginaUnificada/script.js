@@ -963,37 +963,66 @@ function closeAppModal() {
 }
 
 // ============================================================
-// DEPOIMENTOS (Hub)
+// DEPOIMENTOS (Hub - Separado em 2 Blocos)
 // ============================================================
 
 async function carregarAvaliacoes(sb) {
-  const section = document.querySelector(".hub-testimonials-section");
-  const track = document.getElementById("testimonials-track");
-  if (!track || !section) return;
+  const track1 = document.getElementById("testimonials-track-1");
+  const track2 = document.getElementById("testimonials-track-2");
 
-  track.innerHTML =
-    '<div style="padding:20px;color:var(--text-primary);opacity:.6;font-weight:500">Buscando avaliações...</div>';
+  if (track1)
+    track1.innerHTML =
+      '<div style="padding:20px;color:var(--text-primary);opacity:.6;font-weight:500">Buscando avaliações...</div>';
+  if (track2)
+    track2.innerHTML =
+      '<div style="padding:20px;color:var(--text-primary);opacity:.6;font-weight:500">Buscando avaliações...</div>';
 
   try {
     const { data: avaliacoes, error } = await sb.from("avaliacoes").select("*");
     if (error) throw error;
+
     if (avaliacoes?.length > 0) {
-      renderTestimonials(avaliacoes);
+      // Opcional: Embaralha os comentários para sempre mostrar novidades
+      const shuffled = avaliacoes.sort(() => 0.5 - Math.random());
+
+      // Pega os 15 primeiros para o Bloco 1, e os próximos 15 para o Bloco 2
+      const avaliacoesBloco1 = shuffled.slice(0, 15);
+      const avaliacoesBloco2 = shuffled.slice(15, 30);
+
+      // Renderiza Bloco 1
+      if (track1 && avaliacoesBloco1.length > 0) {
+        renderTestimonials(avaliacoesBloco1, track1);
+      } else if (track1) {
+        track1.closest(".hub-testimonials-section").style.display = "none";
+      }
+
+      // Renderiza Bloco 2
+      if (track2 && avaliacoesBloco2.length > 0) {
+        renderTestimonials(avaliacoesBloco2, track2);
+      } else if (track2) {
+        track2.closest(".hub-testimonials-section").style.display = "none";
+      }
     } else {
-      section.style.display = "none";
+      // Se o banco vier vazio, oculta as duas seções
+      document
+        .querySelectorAll(".hub-testimonials-section")
+        .forEach((sec) => (sec.style.display = "none"));
     }
   } catch (e) {
     console.error("Falha na conexão com avaliações:", e);
-    section.style.display = "none";
+    document
+      .querySelectorAll(".hub-testimonials-section")
+      .forEach((sec) => (sec.style.display = "none"));
   }
 }
 
-function renderTestimonials(avaliacoes) {
-  const track = document.getElementById("testimonials-track");
-  if (!track) return;
+function renderTestimonials(avaliacoes, trackElement) {
+  if (!trackElement) return;
 
+  // Duplica para o loop infinito de marquee CSS em -50% funcionar perfeitamente
   const allItems = [...avaliacoes, ...avaliacoes];
-  track.innerHTML = allItems
+
+  trackElement.innerHTML = allItems
     .map((t) => {
       const cor1 = t.cor1 || "#00d4ff";
       const cor2 = t.cor2 || "#0066ff";
@@ -1013,13 +1042,14 @@ function renderTestimonials(avaliacoes) {
     })
     .join("");
 
-  requestAnimationFrame(() => track.classList.add("iniciada"));
-  iniciarCarrosselInterativo();
+  requestAnimationFrame(() => trackElement.classList.add("iniciada"));
+
+  // Inicia a função de arrastar (grab) específica para este container
+  const container = trackElement.closest(".testimonials-container");
+  iniciarCarrosselInterativo(container, trackElement);
 }
 
-function iniciarCarrosselInterativo() {
-  const container = document.querySelector(".testimonials-container");
-  const track = document.getElementById("testimonials-track");
+function iniciarCarrosselInterativo(container, track) {
   if (!container || !track) return;
 
   let isDown = false,
