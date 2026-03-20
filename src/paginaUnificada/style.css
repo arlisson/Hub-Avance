@@ -3041,3 +3041,41 @@ body:not(.dark-mode) .testimonial-card .author-role {
 body:not(.dark-mode) .testimonial-card .stars {
   color: #f59e0b !important; /* Estrelas em ouro/amarelo */
 }
+
+/* ============================================================
+   CORREÇÕES DO TEMA CLARO: BANNER DE DÚVIDAS E BOTÕES "COMEÇAR"
+   ============================================================ */
+
+/* 1. Corrige o banner "Ainda tem dúvida?" */
+body:not(.dark-mode) .mid-cta-banner {
+  background: #f6fafe !important; /* Fundo bem claro, no tom da paleta */
+  border: 1px solid rgba(87, 197, 234, 0.4) !important; /* Borda azul suave */
+  box-shadow: 0 10px 30px rgba(19, 56, 104, 0.05) !important; /* Sombra leve */
+}
+
+body:not(.dark-mode) .mid-cta-title {
+  color: #133868 !important; /* Azul escuro primário para o título */
+}
+
+body:not(.dark-mode) .mid-cta-desc {
+  color: #0f2c58 !important; /* Azul escuro para a descrição */
+  opacity: 0.75 !important;
+}
+
+/* 2. Corrige os botões "Começar" nos cards de Soluções */
+body:not(.dark-mode) .product-card-cta {
+  background-color: #ffffff !important; /* Fundo branco/claro */
+  color: #133868 !important; /* Texto azul escuro */
+  border: 1px solid rgba(87, 197, 234, 0.4) !important;
+}
+
+body:not(.dark-mode) .product-card-cta:hover {
+  background-color: #57c5ea !important; /* Azul ciano brilhante no hover */
+  color: #0f2c58 !important; /* Texto escuro no hover */
+  border-color: #57c5ea !important;
+}
+
+/* Garante que o ícone do botão acompanhe a cor do texto */
+body:not(.dark-mode) .product-card-cta i {
+  color: inherit !important;
+}
