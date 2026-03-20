@@ -11,10 +11,10 @@ let currentPage = 1;
 let totalUsers = 0;
 
 // Filtros
-let filterClienteEl   = null;
+let filterClienteEl = null;
 let filterTelefoniaEl = null;
-let filterLinhasEl    = null;
-let filterContratoEl  = null;
+let filterLinhasEl = null;
+let filterContratoEl = null;
 let filterOperadoraEl = null;
 
 // Debounce do campo de busca
@@ -66,16 +66,19 @@ async function withLoading(title, message, task) {
 // Monta os query params com base nos filtros e busca ativos
 function buildQueryParams(page, limit) {
   const params = new URLSearchParams();
-  params.set("page",  String(page));
+  params.set("page", String(page));
   params.set("limit", String(limit));
 
   const search = (searchEl?.value || "").trim();
-  if (search)                          params.set("search",            search);
-  if (filterClienteEl?.value)          params.set("cliente_avance",    filterClienteEl.value);
-  if (filterTelefoniaEl?.value)        params.set("has_mobile_service", filterTelefoniaEl.value);
-  if (filterLinhasEl?.value)           params.set("active_lines",       filterLinhasEl.value);
-  if (filterContratoEl?.value)         params.set("contract_type",      filterContratoEl.value);
-  if (filterOperadoraEl?.value)        params.set("operator",           filterOperadoraEl.value);
+  if (search) params.set("search", search);
+  if (filterClienteEl?.value)
+    params.set("cliente_avance", filterClienteEl.value);
+  if (filterTelefoniaEl?.value)
+    params.set("has_mobile_service", filterTelefoniaEl.value);
+  if (filterLinhasEl?.value) params.set("active_lines", filterLinhasEl.value);
+  if (filterContratoEl?.value)
+    params.set("contract_type", filterContratoEl.value);
+  if (filterOperadoraEl?.value) params.set("operator", filterOperadoraEl.value);
 
   return params;
 }
@@ -95,12 +98,12 @@ function updateResultCount(total, page, pageSize) {
     return;
   }
   const from = (page - 1) * pageSize + 1;
-  const to   = Math.min(page * pageSize, total);
+  const to = Math.min(page * pageSize, total);
   el.textContent = `Exibindo ${from}–${to} de ${total.toLocaleString("pt-BR")} usuário${total !== 1 ? "s" : ""}`;
 }
 
 function updateFilterBadge() {
-  const countEl  = document.getElementById("filter-active-count");
+  const countEl = document.getElementById("filter-active-count");
   const clearBtn = document.getElementById("btn-clear-filters");
 
   const active = [
@@ -112,9 +115,10 @@ function updateFilterBadge() {
   ].filter(Boolean).length;
 
   if (countEl) {
-    countEl.textContent = active > 0
-      ? `${active} filtro${active > 1 ? "s" : ""} ativo${active > 1 ? "s" : ""}`
-      : "";
+    countEl.textContent =
+      active > 0
+        ? `${active} filtro${active > 1 ? "s" : ""} ativo${active > 1 ? "s" : ""}`
+        : "";
     countEl.hidden = active === 0;
   }
   if (clearBtn) clearBtn.hidden = active === 0;
@@ -147,12 +151,18 @@ function renderPagination(total, page, pageSize) {
     return btn;
   };
 
-  wrap.appendChild(mkBtn('<i class="ph ph-caret-left"></i>', page - 1, page === 1));
+  wrap.appendChild(
+    mkBtn('<i class="ph ph-caret-left"></i>', page - 1, page === 1),
+  );
 
   // Janela de páginas
   const delta = 2;
   const range = [];
-  for (let i = Math.max(1, page - delta); i <= Math.min(totalPages, page + delta); i++) {
+  for (
+    let i = Math.max(1, page - delta);
+    i <= Math.min(totalPages, page + delta);
+    i++
+  ) {
     range.push(i);
   }
   if (range[0] > 1) {
@@ -164,7 +174,9 @@ function renderPagination(total, page, pageSize) {
       wrap.appendChild(dots);
     }
   }
-  range.forEach((p) => wrap.appendChild(mkBtn(String(p), p, false, p === page)));
+  range.forEach((p) =>
+    wrap.appendChild(mkBtn(String(p), p, false, p === page)),
+  );
   if (range[range.length - 1] < totalPages) {
     if (range[range.length - 1] < totalPages - 1) {
       const dots = document.createElement("span");
@@ -175,13 +187,15 @@ function renderPagination(total, page, pageSize) {
     wrap.appendChild(mkBtn(String(totalPages), totalPages, false));
   }
 
-  wrap.appendChild(mkBtn('<i class="ph ph-caret-right"></i>', page + 1, page === totalPages));
+  wrap.appendChild(
+    mkBtn('<i class="ph ph-caret-right"></i>', page + 1, page === totalPages),
+  );
   container.appendChild(wrap);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
-  const HUB_URL = "/hub/hub.html";
+  const HUB_URL = "../paginaUnificada/index.html";
 
   searchEl = document.getElementById("search");
   errorBox = document.getElementById("errorBox");
@@ -247,7 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         initSettingsMenu(
           document.getElementById("settings-btn"),
-          document.getElementById("settings-menu")
+          document.getElementById("settings-menu"),
         );
         initMobileSidebar(document.getElementById("mobile-menu-btn"));
         initTheme(document.getElementById("theme-toggle"));
@@ -284,40 +298,56 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         // Inicializa referências dos filtros
-        filterClienteEl   = document.getElementById("filter-cliente");
+        filterClienteEl = document.getElementById("filter-cliente");
         filterTelefoniaEl = document.getElementById("filter-telefonia");
-        filterLinhasEl    = document.getElementById("filter-linhas");
-        filterContratoEl  = document.getElementById("filter-contrato");
+        filterLinhasEl = document.getElementById("filter-linhas");
+        filterContratoEl = document.getElementById("filter-contrato");
         filterOperadoraEl = document.getElementById("filter-operadora");
 
-        [filterClienteEl, filterTelefoniaEl, filterLinhasEl, filterContratoEl, filterOperadoraEl]
-          .forEach((el) => el?.addEventListener("change", () => applyFiltersAndReload()));
+        [
+          filterClienteEl,
+          filterTelefoniaEl,
+          filterLinhasEl,
+          filterContratoEl,
+          filterOperadoraEl,
+        ].forEach((el) =>
+          el?.addEventListener("change", () => applyFiltersAndReload()),
+        );
 
-        document.getElementById("btn-clear-filters")?.addEventListener("click", () => {
-          if (filterClienteEl)   filterClienteEl.value   = "";
-          if (filterTelefoniaEl) filterTelefoniaEl.value = "";
-          if (filterLinhasEl)    filterLinhasEl.value    = "";
-          if (filterContratoEl)  filterContratoEl.value  = "";
-          if (filterOperadoraEl) filterOperadoraEl.value = "";
-          applyFiltersAndReload();
-        });
+        document
+          .getElementById("btn-clear-filters")
+          ?.addEventListener("click", () => {
+            if (filterClienteEl) filterClienteEl.value = "";
+            if (filterTelefoniaEl) filterTelefoniaEl.value = "";
+            if (filterLinhasEl) filterLinhasEl.value = "";
+            if (filterContratoEl) filterContratoEl.value = "";
+            if (filterOperadoraEl) filterOperadoraEl.value = "";
+            applyFiltersAndReload();
+          });
 
-        document.getElementById("btn-export-excel")?.addEventListener("click", () => {
-          exportFilteredUsersToExcel();
-        });
+        document
+          .getElementById("btn-export-excel")
+          ?.addEventListener("click", () => {
+            exportFilteredUsersToExcel();
+          });
 
-        document.getElementById("filter-bar-toggle")?.addEventListener("click", () => {
-          const body  = document.getElementById("filter-bar-body");
-          const caret = document.getElementById("filter-caret");
-          if (!body) return;
-          const open = body.hidden;
-          body.hidden = !open;
-          if (caret) caret.className = open ? "ph ph-caret-up filter-caret" : "ph ph-caret-down filter-caret";
-        });
+        document
+          .getElementById("filter-bar-toggle")
+          ?.addEventListener("click", () => {
+            const body = document.getElementById("filter-bar-body");
+            const caret = document.getElementById("filter-caret");
+            if (!body) return;
+            const open = body.hidden;
+            body.hidden = !open;
+            if (caret)
+              caret.className = open
+                ? "ph ph-caret-up filter-caret"
+                : "ph ph-caret-down filter-caret";
+          });
 
         await loadUsers(currentSession.access_token, 1, false);
         await loadAppUsageDashboard(false);
-      }
+      },
     );
   } catch (err) {
     console.error(err);
@@ -331,7 +361,7 @@ async function loadUsers(token, page = 1, showLoader = true) {
       setError(errorBox, "", true);
 
       const params = buildQueryParams(page, PAGE_SIZE);
-      const resp   = await fetch(`/api/admin/users?${params.toString()}`, {
+      const resp = await fetch(`/api/admin/users?${params.toString()}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -348,7 +378,9 @@ async function loadUsers(token, page = 1, showLoader = true) {
         ? data.total
         : page === 1 && users.length < PAGE_SIZE
           ? users.length
-          : (page - 1) * PAGE_SIZE + users.length + (users.length === PAGE_SIZE ? 1 : 0);
+          : (page - 1) * PAGE_SIZE +
+            users.length +
+            (users.length === PAGE_SIZE ? 1 : 0);
 
       currentPage = page;
 
@@ -367,26 +399,26 @@ async function loadUsers(token, page = 1, showLoader = true) {
   return await withLoading(
     "Carregando usuários",
     "Buscando dados no banco...",
-    task
+    task,
   );
 }
 
 // Busca TODAS as páginas com os filtros ativos (usado apenas no export)
 async function fetchAllFilteredUsers(token) {
-  const limit   = 500;
-  let   page    = 1;
+  const limit = 500;
+  let page = 1;
   const results = [];
 
   while (true) {
     const params = buildQueryParams(page, limit);
-    const resp   = await fetch(`/api/admin/users?${params.toString()}`, {
-      method:  "GET",
+    const resp = await fetch(`/api/admin/users?${params.toString()}`, {
+      method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!resp.ok) throw new Error("Falha ao buscar usuários para exportação.");
 
-    const data  = await resp.json();
+    const data = await resp.json();
     const users = Array.isArray(data?.users) ? data.users : [];
     results.push(...users);
 
@@ -408,7 +440,7 @@ async function loadAppUsageDashboard(showLoader = true) {
     } catch (e) {
       setError(
         appUsageErrorBox,
-        e?.message || "Erro ao carregar uso dos aplicativos."
+        e?.message || "Erro ao carregar uso dos aplicativos.",
       );
       renderAppUsageDashboard([]);
     }
@@ -421,7 +453,7 @@ async function loadAppUsageDashboard(showLoader = true) {
   return await withLoading(
     "Carregando painel",
     "Consultando uso dos aplicativos...",
-    task
+    task,
   );
 }
 
@@ -456,7 +488,9 @@ async function tryFetchAppUsageTable() {
 
 function normalizeTableRows(rows) {
   return rows.map((row) => {
-    const key = String(row?.name || "").trim().toLowerCase();
+    const key = String(row?.name || "")
+      .trim()
+      .toLowerCase();
 
     return {
       key,
@@ -490,7 +524,7 @@ function aggregateUsageFromUsers(users) {
   });
 
   return Array.from(totals.values()).sort((a, b) =>
-    a.label.localeCompare(b.label, "pt-BR")
+    a.label.localeCompare(b.label, "pt-BR"),
   );
 }
 
@@ -553,49 +587,49 @@ function renderUsers(users) {
             <div class="field">
               <label>Nome</label>
               <input class="input-dark-lite edit-name" value="${escapeAttr(
-                u.name || ""
+                u.name || "",
               )}" readonly />
             </div>
 
             <div class="field">
               <label>E-mail</label>
               <input class="input-dark-lite edit-email" value="${escapeAttr(
-                u.email || ""
+                u.email || "",
               )}" readonly />
             </div>
 
             <div class="field">
               <label>CPF/CNPJ</label>
               <input class="input-dark-lite edit-cpf" value="${escapeAttr(
-                u.cpf || ""
+                u.cpf || "",
               )}" readonly />
             </div>
 
             <div class="field">
               <label>WhatsApp</label>
               <input class="input-dark-lite edit-whatsapp" value="${escapeAttr(
-                u.whatsapp || ""
+                u.whatsapp || "",
               )}" readonly />
             </div>
 
             <div class="field">
               <label>CEP</label>
               <input class="input-dark-lite edit-cep" value="${escapeAttr(
-                cep
+                cep,
               )}" readonly />
             </div>
 
             <div class="field">
               <label>Cidade</label>
               <input class="input-dark-lite edit-cidade" value="${escapeAttr(
-                cidade
+                cidade,
               )}" readonly />
             </div>
 
             <div class="field">
               <label>Estado</label>
               <input class="input-dark-lite edit-estado" value="${escapeAttr(
-                estado
+                estado,
               )}" readonly />
             </div>
 
@@ -609,14 +643,14 @@ function renderUsers(users) {
             <div class="field">
               <label>Tipo de contrato</label>
               <input class="input-dark-lite edit-contract-type" value="${escapeAttr(
-                u.contract_type || ""
+                u.contract_type || "",
               )}" readonly />
             </div>
 
             <div class="field">
               <label>Operadora</label>
               <input class="input-dark-lite edit-operator" value="${escapeAttr(
-                u.operator || ""
+                u.operator || "",
               )}" readonly />
             </div>
 
@@ -661,7 +695,7 @@ function renderUsers(users) {
 
     summaryRow.addEventListener("click", (e) => {
       const clickedFormElement = e.target.closest(
-        "button, input, textarea, select, label"
+        "button, input, textarea, select, label",
       );
       if (clickedFormElement) return;
 
@@ -701,9 +735,7 @@ function renderUsers(users) {
             contract_type: (contractTypeEl?.value || "").trim(),
             operator: (operatorEl?.value || "").trim(),
             active_lines:
-              activeLinesEl?.value === ""
-                ? null
-                : Number(activeLinesEl.value),
+              activeLinesEl?.value === "" ? null : Number(activeLinesEl.value),
             protocol: !!protocolEl?.checked,
             cliente_avance: !!clienteEl?.checked,
           }),
@@ -739,7 +771,7 @@ function renderUsers(users) {
       const confirmed = window.confirm(
         `Tem certeza que deseja excluir o usuário "${
           u.name || u.email || u.id
-        }"?\n\nEssa ação não pode ser desfeita.`
+        }"?\n\nEssa ação não pode ser desfeita.`,
       );
 
       if (!confirmed) return;
@@ -761,7 +793,7 @@ function renderUsers(users) {
 
         if (!resp.ok) {
           throw new Error(
-            data?.detail || data?.error || "Falha ao excluir usuário."
+            data?.detail || data?.error || "Falha ao excluir usuário.",
           );
         }
 
@@ -786,9 +818,12 @@ function renderUserAppUsageBlock(appUsage) {
   const usage = appUsage && typeof appUsage === "object" ? appUsage : {};
   const knownKeys = Object.keys(APP_CATALOG);
   const unknownKeys = Object.keys(usage).filter(
-    (key) => !knownKeys.includes(key)
+    (key) => !knownKeys.includes(key),
   );
-  const orderedKeys = [...knownKeys.filter((key) => usage[key]), ...unknownKeys];
+  const orderedKeys = [
+    ...knownKeys.filter((key) => usage[key]),
+    ...unknownKeys,
+  ];
 
   if (!orderedKeys.length) {
     return `
@@ -811,9 +846,7 @@ function renderUserAppUsageBlock(appUsage) {
         const value = Number(appData?.[metric.key] || 0);
         return `
           <div class="usage-metric">
-            <span class="usage-metric-label">${escapeHtml(
-              metric.label
-            )}</span>
+            <span class="usage-metric-label">${escapeHtml(metric.label)}</span>
             <span class="usage-metric-value">${formatNumber(value)}</span>
           </div>
         `;
@@ -912,7 +945,7 @@ function orderUsageRecords(records) {
   });
 
   return Array.from(map.values()).sort((a, b) =>
-    a.label.localeCompare(b.label, "pt-BR")
+    a.label.localeCompare(b.label, "pt-BR"),
   );
 }
 
@@ -962,7 +995,13 @@ function parseRegion(regiao) {
 }
 
 function getAppMeta(appKey) {
-  return APP_CATALOG[String(appKey || "").trim().toLowerCase()] || null;
+  return (
+    APP_CATALOG[
+      String(appKey || "")
+        .trim()
+        .toLowerCase()
+    ] || null
+  );
 }
 
 function formatNumber(value) {
@@ -984,16 +1023,18 @@ function setError(element, message, hidden = false) {
   element.hidden = hidden || !message;
 }
 
-
 async function exportFilteredUsersToExcel() {
   const exportBtn = document.getElementById("btn-export-excel");
   if (exportBtn) {
     exportBtn.disabled = true;
-    exportBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Buscando dados…';
+    exportBtn.innerHTML =
+      '<i class="ph ph-spinner ph-spin"></i> Buscando dados…';
   }
 
   try {
-    const users = await fetchAllFilteredUsers(window.__USER_ACCESS_TOKEN__ || "");
+    const users = await fetchAllFilteredUsers(
+      window.__USER_ACCESS_TOKEN__ || "",
+    );
 
     if (!users.length) {
       alert("Nenhum usuário encontrado com os filtros atuais.");
@@ -1003,33 +1044,37 @@ async function exportFilteredUsersToExcel() {
     const buildRow = (u) => {
       const regiao = parseRegion(u.regiao);
       return {
-        "Nome":             u.name               || "",
-        "E-mail":           u.email              || "",
-        "CPF/CNPJ":         u.cpf                || "",
-        "WhatsApp":         u.whatsapp           || "",
-        "CEP":              regiao.cep           || u.cep || "",
-        "Cidade":           regiao.cidade        || "",
-        "Estado":           regiao.estado        || "",
-        "Acesso Protocolo": u.protocol           ? "Sim" : "Não",
-        "Cliente Avance":   u.cliente_avance     ? "Sim" : "Não",
-        "Telefonia ativa":  u.has_mobile_service ? "Sim" : "Não",
-        "Tipo de contrato": u.contract_type      || "",
-        "Operadora":        u.operator           || "",
-        "Linhas ativas":    Number.isFinite(u.active_lines) ? u.active_lines : "",
+        Nome: u.name || "",
+        "E-mail": u.email || "",
+        "CPF/CNPJ": u.cpf || "",
+        WhatsApp: u.whatsapp || "",
+        CEP: regiao.cep || u.cep || "",
+        Cidade: regiao.cidade || "",
+        Estado: regiao.estado || "",
+        "Acesso Protocolo": u.protocol ? "Sim" : "Não",
+        "Cliente Avance": u.cliente_avance ? "Sim" : "Não",
+        "Telefonia ativa": u.has_mobile_service ? "Sim" : "Não",
+        "Tipo de contrato": u.contract_type || "",
+        Operadora: u.operator || "",
+        "Linhas ativas": Number.isFinite(u.active_lines) ? u.active_lines : "",
       };
     };
 
-    const rows      = users.map(buildRow);
-    const ws        = XLSX.utils.json_to_sheet(rows);
+    const rows = users.map(buildRow);
+    const ws = XLSX.utils.json_to_sheet(rows);
     const colWidths = Object.keys(rows[0]).map((key) => ({
-      wch: Math.min(Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2, 40),
+      wch: Math.min(
+        Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) +
+          2,
+        40,
+      ),
     }));
     ws["!cols"] = colWidths;
 
-    const wb    = XLSX.utils.book_new();
+    const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Usuários");
 
-    const now   = new Date();
+    const now = new Date();
     const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
     XLSX.writeFile(wb, `usuarios_avance_${stamp}.xlsx`);
   } catch (e) {
@@ -1037,7 +1082,8 @@ async function exportFilteredUsersToExcel() {
   } finally {
     if (exportBtn) {
       exportBtn.disabled = false;
-      exportBtn.innerHTML = '<i class="ph ph-microsoft-excel-logo"></i> Exportar para Excel';
+      exportBtn.innerHTML =
+        '<i class="ph ph-microsoft-excel-logo"></i> Exportar para Excel';
     }
   }
 }

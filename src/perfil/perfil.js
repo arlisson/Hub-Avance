@@ -1,5 +1,5 @@
 const LOGIN_URL = "/login/login.html";
-const HUB_URL = "/hub/hub.html";
+const HUB_URL = "../paginaUnificada/index.html";
 
 let CURRENT_PROFILE = null;
 let cepLookupController = null;
@@ -33,7 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await sb.auth.getSession();
 
     if (sessionError || !sessionData?.session) {
       window.location.href = LOGIN_URL;
@@ -59,7 +60,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const { data: profile, error } = await sb
       .from("profiles")
-      .select(`
+      .select(
+        `
         id,
         name,
         email,
@@ -72,7 +74,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         contract_type,
         operator,
         active_lines
-      `)
+      `,
+      )
       .eq("id", user.id)
       .single();
 
@@ -100,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   initSettingsMenu(
     document.getElementById("settings-btn"),
-    document.getElementById("settings-menu")
+    document.getElementById("settings-menu"),
   );
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
@@ -158,7 +161,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const cidadeValue = (cidadeInput?.value || "").trim();
     const estadoValue = (estadoInput?.value || "").trim();
     const hasMobileRaw = hasMobileInput?.value || "";
-    const contractTypeValue = (contractTypeInput?.value || "").trim().toUpperCase();
+    const contractTypeValue = (contractTypeInput?.value || "")
+      .trim()
+      .toUpperCase();
     const operatorValue = (operatorInput?.value || "").trim();
     const activeLinesRaw = String(activeLinesInput?.value || "").trim();
 
@@ -211,7 +216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const regiaoPayload = {
-      ...(parseRegiao(CURRENT_PROFILE?.regiao)),
+      ...parseRegiao(CURRENT_PROFILE?.regiao),
       cep: cepValue,
       cidade: cidadeValue,
       estado: estadoValue,
@@ -338,7 +343,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (nameInput) nameInput.value = profile?.name || "";
     if (emailInput) emailInput.value = profile?.email || email || "";
     if (cpfInput) cpfInput.value = profile?.cpf || "";
-    if (whatsappInput) whatsappInput.value = formatWhatsapp(profile?.whatsapp || "");
+    if (whatsappInput)
+      whatsappInput.value = formatWhatsapp(profile?.whatsapp || "");
     if (cepInput) cepInput.value = formatCep(regiao?.cep || profile?.cep || "");
     if (cidadeInput) cidadeInput.value = regiao?.cidade || "";
     if (estadoInput) estadoInput.value = regiao?.estado || "";
@@ -354,15 +360,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (contractTypeInput) {
-      const contract = String(profile?.contract_type || "").trim().toUpperCase();
-      contractTypeInput.value = contract === "CPF" || contract === "CNPJ" ? contract : "";
+      const contract = String(profile?.contract_type || "")
+        .trim()
+        .toUpperCase();
+      contractTypeInput.value =
+        contract === "CPF" || contract === "CNPJ" ? contract : "";
     }
 
     if (operatorInput) operatorInput.value = profile?.operator || "";
 
     if (activeLinesInput) {
-      activeLinesInput.value =
-        Number.isFinite(profile?.active_lines) ? String(profile.active_lines) : "";
+      activeLinesInput.value = Number.isFinite(profile?.active_lines)
+        ? String(profile.active_lines)
+        : "";
     }
   }
 });
