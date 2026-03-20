@@ -403,7 +403,7 @@ body.dark-mode .dropdown-item.reset-action:hover {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 4px;
-  padding: 36px 96px;
+  padding: 25px 96px;
   border-radius: 50px;
   background: rgba(87, 197, 234, 0.08);
   color: var(--brand-action);
