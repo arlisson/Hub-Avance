@@ -2919,3 +2919,51 @@ body.modal-open .floating-whatsapp {
     font-size: 28px;
   }
 }
+
+/* ============================================================
+   CORREÇÕES DE CONTRASTE — TEMA CLARO
+   ============================================================ */
+
+/* 1. Corrige o texto e links da Navbar Superior */
+body:not(.dark-mode) .top-navbar .nav-logo {
+  color: #0f172a !important; /* Azul escuro quase preto para o logo */
+}
+
+body:not(.dark-mode) .top-navbar .nav-subtitle {
+  color: #64748b !important; /* Cinza médio-escuro para o subtítulo */
+  border-left-color: rgba(15, 23, 42, 0.1) !important; /* Borda sutil escura */
+}
+
+body:not(.dark-mode) .top-navbar .nav-link {
+  color: #1e293b !important; /* Azul ardósia escuro para os links padrão */
+}
+
+body:not(.dark-mode) .top-navbar .nav-link:hover,
+body:not(.dark-mode) .top-navbar .nav-link.active {
+  color: #2563eb !important; /* Azul primário para hover e link ativo */
+}
+
+/* 2. Corrige o Botão de Perfil/E-mail (settings-btn) na Navbar */
+body:not(.dark-mode) .top-navbar .user-profile-btn {
+  color: #1e293b !important; /* Ícone e texto escuros */
+  background-color: rgba(
+    15,
+    23,
+    42,
+    0.05
+  ) !important; /* Fundo levemente escuro para dar forma ao botão */
+}
+
+body:not(.dark-mode) .top-navbar .user-profile-btn:hover {
+  background-color: rgba(
+    15,
+    23,
+    42,
+    0.1
+  ) !important; /* Fundo um pouco mais escuro no hover */
+}
+
+/* 3. Corrige a Descrição Curta nos Cards do Hub */
+body:not(.dark-mode) .hub-card-short-desc {
+  color: #64748b !important; /* Cinza médio-escuro legível para o parágrafo */
+}
