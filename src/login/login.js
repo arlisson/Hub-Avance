@@ -60,20 +60,20 @@ function setValid(inputEl) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   // --- TEMA (padrão: escuro, igual ao Hub) ---
-  const themeToggle = document.getElementById('theme-toggle');
+  const themeToggle = document.getElementById("theme-toggle");
 
   function updateThemeIcon(isDark) {
-    const icon = themeToggle?.querySelector('i');
-    if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+    const icon = themeToggle?.querySelector("i");
+    if (icon) icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
   }
 
-  const isDarkOnLoad = localStorage.getItem('theme') !== 'light';
-  document.body.classList.toggle('dark-mode', isDarkOnLoad);
+  const isDarkOnLoad = localStorage.getItem("theme") !== "light";
+  document.body.classList.toggle("dark-mode", isDarkOnLoad);
   updateThemeIcon(isDarkOnLoad);
 
-  themeToggle?.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  themeToggle?.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
     updateThemeIcon(isDark);
   });
 
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { data } = await sb.auth.getSession();
 
   if (data?.session) {
-    window.location.href = "../hub/hub.html";
+    window.location.href = "../paginaUnificada/index.html";
     return;
   }
 
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (error) throw error;
 
-      window.location.href = "../hub/hub.html";
+      window.location.href = "../paginaUnificada/index.html";
     } catch (error) {
       alert(`Erro: ${error?.message || "Falha no login."}`);
     } finally {
@@ -224,7 +224,9 @@ if (forgotLink) {
 
     const email = (document.getElementById("identifier")?.value || "").trim();
     if (!validarEmail(email)) {
-      alert("Digite seu e-mail no campo acima para receber o link de redefinição.");
+      alert(
+        "Digite seu e-mail no campo acima para receber o link de redefinição.",
+      );
       return;
     }
 
@@ -238,6 +240,8 @@ if (forgotLink) {
       return;
     }
 
-    alert("Se esse e-mail existir e estiver cadastrado no sistema, enviaremos um link para redefinir a senha.");
+    alert(
+      "Se esse e-mail existir e estiver cadastrado no sistema, enviaremos um link para redefinir a senha.",
+    );
   });
 }
