@@ -3079,3 +3079,22 @@ body:not(.dark-mode) .product-card-cta:hover {
 body:not(.dark-mode) .product-card-cta i {
   color: inherit !important;
 }
+
+/* ============================================================
+   CORREÇÃO DO BADGE "AVANCE VIP" NO MOBILE
+   ============================================================ */
+
+/* Impede que o texto quebre de linha em qualquer tamanho de tela */
+.hero-badge {
+  white-space: nowrap !important;
+}
+
+/* Ajusta o tamanho da fonte e as margens no celular para caber na tela */
+@media (max-width: 768px) {
+  .hero-badge {
+    font-size: 18px !important; /* Fonte menor e elegante no mobile */
+    padding: 14px 40px !important; /* Reduz as "gorduras" laterais */
+    letter-spacing: 2px !important; /* Ajusta o espaçamento das letras */
+    margin-bottom: 24px !important;
+  }
+}

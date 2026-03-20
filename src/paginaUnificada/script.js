@@ -1511,11 +1511,11 @@ async function loadPublicAgentConfig() {
 }
 
 // ============================================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO — BLOQUEIO TOTAL PARA NÃO LOGADOS
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // ── 1. UI imediata ──────────────────────
+  // ── 1. UI imediata (sem dependências) ──────────────────────
   initNavbarEffect();
   initParticles();
   initTheme(document.getElementById("theme-toggle"));
@@ -1532,50 +1532,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // ── 2. Renderização estática ──────────────────────
   renderSkeletonCards();
   renderProductCards();
   initCtaGeral();
 
-  // ── 3. Config pública ─────────────
+  // ── 2. Config pública (Descobre a URL de login) ─────────────
   await loadPublicAgentConfig();
 
-  // ── 4. Autenticação e Lógica Híbrida ────────────────
+  // ── 3. Autenticação Supabase — TRAVA DE SEGURANÇA ────────────
   let sb;
   try {
     sb = await window.getSupabaseClient();
   } catch (e) {
+    // Se o banco falhar, chuta pro login por segurança imediatamente
     console.error("Supabase client não carregado:", e);
-
-    // Fallback: modo visitante
-    const loginBtnVisitor = document.getElementById("login-btn-visitor");
-    if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
-
-    initAppModal();
-    renderHubCards({ canAccessProtocol: false });
+    window.location.href = normalizeLoginUrl(LOGIN_URL);
     return;
   }
 
   try {
     const { data: sessionData } = await sb.auth.getSession();
 
-    const userMenuContainer = document.getElementById("user-menu-container");
-    const loginBtnVisitor = document.getElementById("login-btn-visitor");
-
+    // NÃO TEM SESSÃO? CHUTA PRO LOGIN NA HORA!
     if (!sessionData?.session) {
-      // Sem sessão: mostra o botão de login e esconde o menu de usuário
-      if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
-      if (userMenuContainer) userMenuContainer.hidden = true;
-
-      initAppModal();
-      renderHubCards({ canAccessProtocol: false });
+      window.location.href = normalizeLoginUrl(LOGIN_URL);
       return;
     }
 
-    // ── Usuário autenticado ────────────────────────────────────
-    if (loginBtnVisitor) loginBtnVisitor.style.display = "none";
-    if (userMenuContainer) userMenuContainer.hidden = false;
-
+    // ── Usuário autenticado (Pode ficar na página) ─────────────
     CURRENT_USER_ID = sessionData.session.user.id;
     const email = sessionData.session.user?.email || "";
 
@@ -1589,6 +1573,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const canAccessProtocol = !!profile?.protocol;
 
+    // Configura menu de usuário
     const menuUsers = document.getElementById("menu-users");
     if (menuUsers) menuUsers.hidden = !canAccessProtocol;
 
@@ -1616,17 +1601,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
+    // Garante que o botão de login de visitante fique invisível, caso exista
+    const loginBtnVisitor = document.getElementById("login-btn-visitor");
+    if (loginBtnVisitor) loginBtnVisitor.style.display = "none";
+
+    const userMenuContainer = document.getElementById("user-menu-container");
+    if (userMenuContainer) userMenuContainer.hidden = false;
+
+    // Libera o carregamento dos conteúdos do Hub restrito
     initAppModal();
     renderHubCards({ canAccessProtocol });
     await carregarAvaliacoes(sb);
   } catch (e) {
+    // Qualquer erro inesperado na verificação de sessão? Chuta pro login!
     console.error("Erro ao inicializar Hub:", e);
-
-    // Fallback erro inesperado
-    const loginBtnVisitor = document.getElementById("login-btn-visitor");
-    if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
-
-    initAppModal();
-    renderHubCards({ canAccessProtocol: false });
+    window.location.href = normalizeLoginUrl(LOGIN_URL);
   }
 });
