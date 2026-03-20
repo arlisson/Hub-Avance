@@ -13,10 +13,10 @@
 // ============================================================
 
 /** Número do WhatsApp do consultor (com DDI, sem espaços ou símbolos). */
-const WHATSAPP_NUMBER = '5511999999999'; // ← Substitua pelo número real
+const WHATSAPP_NUMBER = "5511999999999"; // ← Substitua pelo número real
 
-let LOGIN_URL = '/login/login.html';
-let CURRENT_USER_ID = '';
+let LOGIN_URL = "/login/login.html";
+let CURRENT_USER_ID = "";
 
 // ============================================================
 // CATÁLOGO DE APPS (Hub)
@@ -26,86 +26,87 @@ let CURRENT_USER_ID = '';
 // ============================================================
 const APPS = [
   {
-    id: 'agent',
-    badge: 'Mentor estratégico de vendas',
-    image: '../img/Apolo.png',
-    title: 'Mentor estratégico de vendas',
-    shortDesc: 'Acesse o sistema online. Ideal para uso em qualquer dispositivo.',
+    id: "agent",
+    badge: "Mentor estratégico de vendas",
+    image: "../img/Apolo.png",
+    title: "Mentor estratégico de vendas",
+    shortDesc:
+      "Acesse o sistema online. Ideal para uso em qualquer dispositivo.",
     longDesc:
-      'Este é o agente mentor estratégico de vendas. Ele permite atendimento diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.',
-    youtubeId: 'CNFqPBAdglE',
+      "Este é o agente mentor estratégico de vendas. Ele permite atendimento diretamente no navegador, com experiência adaptada para desktop e mobile. Use este produto quando precisar operar de qualquer lugar, sem depender de instalação local.",
+    youtubeId: "CNFqPBAdglE",
     enabled: true,
     requiresPermission: false,
     actions: [
       {
-        label: 'Acessar',
-        icon: 'ph-arrow-square-out',
-        app: 'agent',
-        metric: 'access',
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        app: "agent",
+        metric: "access",
         primary: true,
         targetBlank: false,
       },
     ],
   },
   {
-    id: 'desktop',
-    badge: 'Preenche Fácil',
-    image: '../img/PreencheFacil.png',
-    title: 'Preenche Fácil',
+    id: "desktop",
+    badge: "Preenche Fácil",
+    image: "../img/PreencheFacil.png",
+    title: "Preenche Fácil",
     shortDesc:
-      'O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.',
+      "O Preenche Fácil organiza automaticamente no Excel, funcionando offline na sua máquina.",
     longDesc:
-      'O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. O programa funciona na sua máquina, sem internet — suas informações ficam com você. Depois de baixar, ele é seu para sempre.',
-    youtubeId: '',
+      "O Preenche Fácil é uma ferramenta simples de usar, feita para facilitar sua rotina. Você preenche os dados pelo programa e ele organiza tudo automaticamente no Excel. O programa funciona na sua máquina, sem internet — suas informações ficam com você. Depois de baixar, ele é seu para sempre.",
+    youtubeId: "",
     enabled: true,
     requiresPermission: false,
     actions: [
       {
-        label: 'Baixar',
-        icon: 'ph-download-simple',
-        app: 'desktop',
-        metric: 'download',
+        label: "Baixar",
+        icon: "ph-download-simple",
+        app: "desktop",
+        metric: "download",
         primary: true,
         targetBlank: true,
       },
     ],
   },
   {
-    id: 'protocol',
-    badge: 'Gerador de Protocolo Agendor',
-    image: '../img/Protocolo.png',
-    title: 'Gerador de Protocolo Agendor',
-    shortDesc: 'Gera e registra protocolos com um clique.',
-    longDesc: 'Ferramenta para geração, registro e envio de protocolos.',
-    youtubeId: '',
+    id: "protocol",
+    badge: "Gerador de Protocolo Agendor",
+    image: "../img/Protocolo.png",
+    title: "Gerador de Protocolo Agendor",
+    shortDesc: "Gera e registra protocolos com um clique.",
+    longDesc: "Ferramenta para geração, registro e envio de protocolos.",
+    youtubeId: "",
     enabled: true,
     requiresPermission: true,
     actions: [
       {
-        label: 'Acessar',
-        icon: 'ph-arrow-square-out',
-        href: '../protocolo/protocolo.html',
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        href: "../protocolo/protocolo.html",
         primary: true,
         targetBlank: false,
       },
     ],
   },
   {
-    id: 'static-protocol',
-    badge: 'Gerador de Protocolo',
-    image: '../img/Protocolo.png',
-    title: 'Gerador de Protocolo',
-    shortDesc: 'Gera novos protocolos.',
-    longDesc: 'Ferramenta para geração de novos protocolos.',
-    youtubeId: '',
+    id: "static-protocol",
+    badge: "Gerador de Protocolo",
+    image: "../img/Protocolo.png",
+    title: "Gerador de Protocolo",
+    shortDesc: "Gera novos protocolos.",
+    longDesc: "Ferramenta para geração de novos protocolos.",
+    youtubeId: "",
     enabled: true,
     requiresPermission: false,
     actions: [
       {
-        label: 'Acessar',
-        icon: 'ph-arrow-square-out',
-        app: 'protocol',
-        metric: 'access',
+        label: "Acessar",
+        icon: "ph-arrow-square-out",
+        app: "protocol",
+        metric: "access",
         primary: true,
         targetBlank: false,
       },
@@ -118,51 +119,66 @@ const APPS = [
 // ============================================================
 const PRODUCTS = [
   {
-    id: 'movel',
-    icon: 'ph-device-mobile',
-    badge: 'Telefonia Móvel',
-    title: 'Linhas empresariais com as melhores operadoras do Brasil.',
-    tagline: 'Linha nova ou portabilidade sem burocracia',
+    id: "movel",
+    icon: "ph-device-mobile",
+    badge: "Telefonia Móvel",
+    title: "Linhas empresariais com as melhores operadoras do Brasil.",
+    tagline: "Linha nova ou portabilidade sem burocracia",
     description:
-      'Trabalhamos com as principais operadoras do país. Você nos conta quantas linhas novas precisa ou quer fazer a portabilidade e qual operadora prefere — nós garantimos a melhor oferta disponível e cuidamos de tudo: contrato, portabilidade, ativação e suporte.',
+      "Trabalhamos com as principais operadoras do país. Você nos conta quantas linhas novas precisa ou quer fazer a portabilidade e qual operadora prefere — nós garantimos a melhor oferta disponível e cuidamos de tudo: contrato, portabilidade, ativação e suporte.",
     benefits: [
-      { icon: 'ph-buildings',         text: 'Para empresas de qualquer porte e MEI' },
-      { icon: 'ph-arrows-left-right', text: 'Linha nova ou portabilidade sem burocracia' },
-      { icon: 'ph-handshake',         text: 'A operadora que você escolher, nós cuidamos de tudo' },
+      { icon: "ph-buildings", text: "Para empresas de qualquer porte e MEI" },
+      {
+        icon: "ph-arrows-left-right",
+        text: "Linha nova ou portabilidade sem burocracia",
+      },
+      {
+        icon: "ph-handshake",
+        text: "A operadora que você escolher, nós cuidamos de tudo",
+      },
     ],
     steps: [
       {
-        id: 'linhas',
-        title: 'Quantas linhas você precisa?',
-        hint: 'Pode ser para você, para a sua equipe, ou para toda a empresa.',
-        type: 'number',
-        placeholder: 'Ex: 5',
+        id: "linhas",
+        title: "Quantas linhas você precisa?",
+        hint: "Pode ser para você, para a sua equipe, ou para toda a empresa.",
+        type: "number",
+        placeholder: "Ex: 5",
         min: 1,
         required: true,
       },
       {
-        id: 'modalidade',
-        title: 'Como você prefere prosseguir?',
-        hint: 'A portabilidade mantém o seu número atual.',
-        type: 'chips',
+        id: "modalidade",
+        title: "Como você prefere prosseguir?",
+        hint: "A portabilidade mantém o seu número atual.",
+        type: "chips",
         required: true,
         options: [
-          { value: 'nova',   label: 'Contratar linha nova',     icon: 'ph-plus-circle' },
-          { value: 'portar', label: 'Portar de outra operadora', icon: 'ph-arrows-left-right' },
+          {
+            value: "nova",
+            label: "Contratar linha nova",
+            icon: "ph-plus-circle",
+          },
+          {
+            value: "portar",
+            label: "Portar de outra operadora",
+            icon: "ph-arrows-left-right",
+          },
         ],
       },
       {
-        id: 'operadora',
-        title: 'Qual operadora você prefere?',
-        hint: 'Sem preferência? Sem problema — apresentaremos as melhores opções disponíveis.',
-        type: 'text',
-        placeholder: 'Escreva aqui, ou deixe em branco...',
+        id: "operadora",
+        title: "Qual operadora você prefere?",
+        hint: "Sem preferência? Sem problema — apresentaremos as melhores opções disponíveis.",
+        type: "text",
+        placeholder: "Escreva aqui, ou deixe em branco...",
         required: false,
       },
     ],
     buildMessage(a) {
-      const op  = a.operadora?.trim() || 'sem preferência';
-      const mod = a.modalidade === 'nova' ? 'Contratação nova' : 'Portabilidade';
+      const op = a.operadora?.trim() || "sem preferência";
+      const mod =
+        a.modalidade === "nova" ? "Contratação nova" : "Portabilidade";
       return (
         `Olá! Tenho interesse em *Telefonia Móvel Empresarial*.\n\n` +
         `📱 *Linhas desejadas:* ${a.linhas}\n` +
@@ -174,60 +190,70 @@ const PRODUCTS = [
   },
 
   {
-    id: 'internet',
-    icon: 'ph-wifi-high',
-    badge: 'Internet Empresarial',
-    title: 'Internet rápida e estável. Do jeito que a sua empresa precisa.',
-    tagline: 'Conexão de alta velocidade para o seu negócio',
+    id: "internet",
+    icon: "ph-wifi-high",
+    badge: "Internet Empresarial",
+    title: "Internet rápida e estável. Do jeito que a sua empresa precisa.",
+    tagline: "Conexão de alta velocidade para o seu negócio",
     description:
-      'Sabemos qual tipo de conexão cada negócio precisa. Você nos conta como sua empresa funciona e nós indicamos a solução certa — garantimos que você não vai pagar por algo que não precisa.',
+      "Sabemos qual tipo de conexão cada negócio precisa. Você nos conta como sua empresa funciona e nós indicamos a solução certa — garantimos que você não vai pagar por algo que não precisa.",
     benefits: [
-      { icon: 'ph-lightning', text: 'Alta velocidade para o dia a dia da empresa' },
-      { icon: 'ph-buildings', text: 'Atende escritórios, lojas e múltiplas unidades' },
-      { icon: 'ph-headset',   text: 'Atendimento dedicado do início ao fim' },
+      {
+        icon: "ph-lightning",
+        text: "Alta velocidade para o dia a dia da empresa",
+      },
+      {
+        icon: "ph-buildings",
+        text: "Atende escritórios, lojas e múltiplas unidades",
+      },
+      { icon: "ph-headset", text: "Atendimento dedicado do início ao fim" },
     ],
     steps: [
       {
-        id: 'perfil',
-        title: 'Qual é o perfil do seu negócio?',
-        hint: 'Isso nos ajuda a indicar a solução mais adequada para a sua realidade.',
-        type: 'chips',
+        id: "perfil",
+        title: "Qual é o perfil do seu negócio?",
+        hint: "Isso nos ajuda a indicar a solução mais adequada para a sua realidade.",
+        type: "chips",
         required: true,
         options: [
-          { value: 'escritorio', label: 'Escritório',        icon: 'ph-buildings' },
-          { value: 'loja',       label: 'Loja / Comércio',   icon: 'ph-storefront' },
-          { value: 'homeoffice', label: 'Home Office',        icon: 'ph-house' },
-          { value: 'multiplas',  label: 'Múltiplas unidades', icon: 'ph-map-pin' },
+          { value: "escritorio", label: "Escritório", icon: "ph-buildings" },
+          { value: "loja", label: "Loja / Comércio", icon: "ph-storefront" },
+          { value: "homeoffice", label: "Home Office", icon: "ph-house" },
+          {
+            value: "multiplas",
+            label: "Múltiplas unidades",
+            icon: "ph-map-pin",
+          },
         ],
       },
       {
-        id: 'velocidade',
-        title: 'Qual velocidade aproximada você precisa?',
-        hint: 'Não sabe? Tudo bem — nosso consultor vai ajudar a descobrir.',
-        type: 'chips',
+        id: "velocidade",
+        title: "Qual velocidade aproximada você precisa?",
+        hint: "Não sabe? Tudo bem — nosso consultor vai ajudar a descobrir.",
+        type: "chips",
         required: true,
         options: [
-          { value: 'nao-sei', label: 'Não sei ainda' },
-          { value: '100mb',   label: 'Até 100 MB' },
-          { value: '300mb',   label: 'Até 300 MB' },
-          { value: '500mb',   label: 'Até 500 MB' },
-          { value: '1gb',     label: '1 GB ou mais' },
+          { value: "nao-sei", label: "Não sei ainda" },
+          { value: "100mb", label: "Até 100 MB" },
+          { value: "300mb", label: "Até 300 MB" },
+          { value: "500mb", label: "Até 500 MB" },
+          { value: "1gb", label: "1 GB ou mais" },
         ],
       },
     ],
     buildMessage(a) {
       const perfilMap = {
-        escritorio: 'Escritório',
-        loja:       'Loja / Comércio',
-        homeoffice: 'Home Office',
-        multiplas:  'Múltiplas unidades',
+        escritorio: "Escritório",
+        loja: "Loja / Comércio",
+        homeoffice: "Home Office",
+        multiplas: "Múltiplas unidades",
       };
       const velMap = {
-        'nao-sei': 'Ainda não sei',
-        '100mb':   'Até 100 MB',
-        '300mb':   'Até 300 MB',
-        '500mb':   'Até 500 MB',
-        '1gb':     '1 GB ou mais',
+        "nao-sei": "Ainda não sei",
+        "100mb": "Até 100 MB",
+        "300mb": "Até 300 MB",
+        "500mb": "Até 500 MB",
+        "1gb": "1 GB ou mais",
       };
       return (
         `Olá! Tenho interesse em *Internet Empresarial*.\n\n` +
@@ -239,42 +265,59 @@ const PRODUCTS = [
   },
 
   {
-    id: 'fixa',
-    icon: 'ph-phone',
-    badge: 'Telefonia Fixa',
-    title: 'Ligue para qualquer lugar do Brasil sem se preocupar com a conta.',
-    tagline: 'Ligações ilimitadas para todo o Brasil',
+    id: "fixa",
+    icon: "ph-phone",
+    badge: "Telefonia Fixa",
+    title: "Ligue para qualquer lugar do Brasil sem se preocupar com a conta.",
+    tagline: "Ligações ilimitadas para todo o Brasil",
     description:
-      'Oferecemos planos de telefonia fixa com ligações ilimitadas para todo o Brasil. Linha nova ou portabilidade (para você não perder o seu número), sem burocracia, sem surpresa no bolso, com suporte dedicado do começo ao fim.',
+      "Oferecemos planos de telefonia fixa com ligações ilimitadas para todo o Brasil. Linha nova ou portabilidade (para você não perder o seu número), sem burocracia, sem surpresa no bolso, com suporte dedicado do começo ao fim.",
     benefits: [
-      { icon: 'ph-infinity',          text: 'Ligações ilimitadas para fixo e celular de todo o Brasil' },
-      { icon: 'ph-arrows-left-right', text: 'Linha nova ou portabilidade, sem burocracia' },
-      { icon: 'ph-check-circle',      text: 'Para empresas de qualquer porte' },
+      {
+        icon: "ph-infinity",
+        text: "Ligações ilimitadas para fixo e celular de todo o Brasil",
+      },
+      {
+        icon: "ph-arrows-left-right",
+        text: "Linha nova ou portabilidade, sem burocracia",
+      },
+      { icon: "ph-check-circle", text: "Para empresas de qualquer porte" },
     ],
     steps: [
       {
-        id: 'situacao',
-        title: 'Qual é a sua situação atual?',
-        hint: 'Isso nos ajuda a direcionar o processo de forma correta.',
-        type: 'chips',
+        id: "situacao",
+        title: "Qual é a sua situação atual?",
+        hint: "Isso nos ajuda a direcionar o processo de forma correta.",
+        type: "chips",
         required: true,
         options: [
-          { value: 'nova',   label: 'Quero uma linha nova',          icon: 'ph-plus-circle' },
-          { value: 'migrar', label: 'Já tenho linha e quero migrar', icon: 'ph-arrows-left-right' },
+          {
+            value: "nova",
+            label: "Quero uma linha nova",
+            icon: "ph-plus-circle",
+          },
+          {
+            value: "migrar",
+            label: "Já tenho linha e quero migrar",
+            icon: "ph-arrows-left-right",
+          },
         ],
       },
       {
-        id: 'linhas',
-        title: 'Quantas linhas você precisa?',
-        hint: 'Informe o número de linhas de telefone fixo desejadas.',
-        type: 'number',
-        placeholder: 'Ex: 2',
+        id: "linhas",
+        title: "Quantas linhas você precisa?",
+        hint: "Informe o número de linhas de telefone fixo desejadas.",
+        type: "number",
+        placeholder: "Ex: 2",
         min: 1,
         required: true,
       },
     ],
     buildMessage(a) {
-      const sit = a.situacao === 'nova' ? 'Contratação nova' : 'Migração de linha existente';
+      const sit =
+        a.situacao === "nova"
+          ? "Contratação nova"
+          : "Migração de linha existente";
       return (
         `Olá! Tenho interesse em *Telefonia Fixa*.\n\n` +
         `☎️ *Situação:* ${sit}\n` +
@@ -289,8 +332,8 @@ const PRODUCTS = [
 // ESTADO GLOBAL DO MODAL DE PRODUTOS
 // ============================================================
 let _activeProduct = null;
-let _currentStep   = 0;
-let _answers       = {};
+let _currentStep = 0;
+let _answers = {};
 
 // ============================================================
 // UTILITÁRIOS COMPARTILHADOS
@@ -298,12 +341,12 @@ let _answers       = {};
 
 /** Escapa caracteres HTML para prevenir XSS. */
 function escapeHtml(s) {
-  return String(s ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 /** Monta URL de link para o WhatsApp com mensagem pré-preenchida. */
@@ -312,24 +355,29 @@ function buildWhatsAppUrl(message) {
 }
 
 /** Monta URL do contador de acessos/downloads do hub. */
-function buildCounterUrl(app, metric = 'access') {
-  if (!CURRENT_USER_ID || !app) return '#';
+function buildCounterUrl(app, metric = "access") {
+  if (!CURRENT_USER_ID || !app) return "#";
   const params = new URLSearchParams({ app, user_id: CURRENT_USER_ID, metric });
   return `/api/contador?${params.toString()}`;
 }
 
 /** Normaliza uma URL de login para sempre começar com /. */
 function normalizeLoginUrl(url) {
-  if (!url) return '/login/login.html';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url;
-  return '/' + url.replace(/^\.?\//, '');
+  if (!url) return "/login/login.html";
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("/")
+  )
+    return url;
+  return "/" + url.replace(/^\.?\//, "");
 }
 
 /** Remove chaves de sessão do agente do sessionStorage. */
 function clearAgentChatSessionStorage() {
   try {
     Object.keys(sessionStorage)
-      .filter((k) => k.startsWith('agente_chat_state:'))
+      .filter((k) => k.startsWith("agente_chat_state:"))
       .forEach((k) => sessionStorage.removeItem(k));
   } catch {
     // ignora
@@ -347,28 +395,31 @@ function initTheme(themeToggle) {
   if (!themeToggle) return;
 
   // Aplica preferência salva (padrão: dark)
-  if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.remove('dark-mode');
+  if (localStorage.getItem("theme") === "light") {
+    document.body.classList.remove("dark-mode");
     updateThemeIcon(themeToggle, false);
   } else {
-    document.body.classList.add('dark-mode');
+    document.body.classList.add("dark-mode");
     updateThemeIcon(themeToggle, true);
   }
 
-  themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
     updateThemeIcon(themeToggle, isDark);
   });
 }
 
 function updateThemeIcon(btn, isDark) {
   if (!btn) return;
-  const icon = btn.querySelector('i');
-  if (icon) icon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+  const icon = btn.querySelector("i");
+  if (icon) icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
   // aria-label descreve a AÇÃO futura, não o estado atual
-  btn.setAttribute('aria-label', isDark ? 'Ativar modo claro' : 'Ativar modo escuro');
+  btn.setAttribute(
+    "aria-label",
+    isDark ? "Ativar modo claro" : "Ativar modo escuro",
+  );
 }
 
 // ============================================================
@@ -376,18 +427,22 @@ function updateThemeIcon(btn, isDark) {
 // ============================================================
 
 function initNavbarEffect() {
-  const navbar = document.querySelector('.top-navbar');
+  const navbar = document.querySelector(".top-navbar");
   if (!navbar) {
-    console.warn('Navbar não encontrada pelo script!');
+    console.warn("Navbar não encontrada pelo script!");
     return;
   }
 
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 50);
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 50);
+    },
+    { passive: true },
+  );
 
-  document.addEventListener('mousemove', (e) => {
-    navbar.classList.toggle('hover-active', e.clientY <= 30);
+  document.addEventListener("mousemove", (e) => {
+    navbar.classList.toggle("hover-active", e.clientY <= 30);
   });
 }
 
@@ -398,9 +453,10 @@ function initNavbarEffect() {
 // ============================================================
 
 function initMobileMenu() {
-  const btn   = document.getElementById('mobile-menu-btn');
-  const links = document.getElementById('navbar-links')
-             || document.querySelector('.navbar-links');
+  const btn = document.getElementById("mobile-menu-btn");
+  const links =
+    document.getElementById("navbar-links") ||
+    document.querySelector(".navbar-links");
 
   if (!btn || !links) return;
 
@@ -408,19 +464,19 @@ function initMobileMenu() {
   if (btn._mobileMenuInit) return;
   btn._mobileMenuInit = true;
 
-  btn.addEventListener('click', () => {
-    const isOpen = links.classList.toggle('active');
-    const icon   = btn.querySelector('i');
-    if (icon) icon.className = isOpen ? 'ph ph-x' : 'ph ph-list';
-    btn.setAttribute('aria-label', isOpen ? 'Fechar Menu' : 'Abrir Menu');
+  btn.addEventListener("click", () => {
+    const isOpen = links.classList.toggle("active");
+    const icon = btn.querySelector("i");
+    if (icon) icon.className = isOpen ? "ph ph-x" : "ph ph-list";
+    btn.setAttribute("aria-label", isOpen ? "Fechar Menu" : "Abrir Menu");
   });
 
-  links.querySelectorAll('.nav-link').forEach((link) => {
-    link.addEventListener('click', () => {
-      links.classList.remove('active');
-      const icon = btn.querySelector('i');
-      if (icon) icon.className = 'ph ph-list';
-      btn.setAttribute('aria-label', 'Abrir Menu');
+  links.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      links.classList.remove("active");
+      const icon = btn.querySelector("i");
+      if (icon) icon.className = "ph ph-list";
+      btn.setAttribute("aria-label", "Abrir Menu");
     });
   });
 }
@@ -430,58 +486,71 @@ function initMobileMenu() {
 // ============================================================
 
 function initScrollReveal() {
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReduced = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
   if (prefersReduced) {
     // Show everything immediately
-    document.querySelectorAll('[data-reveal], .about-block, .posvenda-pillar, .product-card, .hub-card').forEach(el => {
-      el.classList.add('is-visible');
-    });
+    document
+      .querySelectorAll(
+        "[data-reveal], .about-block, .posvenda-pillar, .product-card, .hub-card",
+      )
+      .forEach((el) => {
+        el.classList.add("is-visible");
+      });
     return;
   }
 
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+  );
 
   // Observe [data-reveal] sections
-  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+  document
+    .querySelectorAll("[data-reveal]")
+    .forEach((el) => revealObserver.observe(el));
 
   // Observe about-blocks with stagger
-  document.querySelectorAll('.about-block').forEach((el, i) => {
+  document.querySelectorAll(".about-block").forEach((el, i) => {
     el.style.transitionDelay = `${i * 0.1}s`;
     revealObserver.observe(el);
   });
 
   // Observe posvenda pillars with stagger
-  document.querySelectorAll('.posvenda-pillar').forEach((el, i) => {
+  document.querySelectorAll(".posvenda-pillar").forEach((el, i) => {
     el.style.transitionDelay = `${i * 0.12}s`;
     revealObserver.observe(el);
   });
 
   // Product cards are rendered dynamically — observe via MutationObserver
-  const productsGrid = document.getElementById('products-grid');
+  const productsGrid = document.getElementById("products-grid");
   if (productsGrid) {
     const mutObs = new MutationObserver(() => {
-      productsGrid.querySelectorAll('.product-card:not(.observed)').forEach((el, i) => {
-        el.classList.add('observed');
-        el.style.transitionDelay = `${i * 0.08}s`;
-        revealObserver.observe(el);
-      });
+      productsGrid
+        .querySelectorAll(".product-card:not(.observed)")
+        .forEach((el, i) => {
+          el.classList.add("observed");
+          el.style.transitionDelay = `${i * 0.08}s`;
+          revealObserver.observe(el);
+        });
     });
     mutObs.observe(productsGrid, { childList: true });
   }
 
   // Hub cards are also dynamic
-  const hubGrid = document.getElementById('hub-grid');
+  const hubGrid = document.getElementById("hub-grid");
   if (hubGrid) {
     const hubMutObs = new MutationObserver(() => {
-      hubGrid.querySelectorAll('.hub-card:not(.observed)').forEach((el, i) => {
-        el.classList.add('observed');
+      hubGrid.querySelectorAll(".hub-card:not(.observed)").forEach((el, i) => {
+        el.classList.add("observed");
         el.style.transitionDelay = `${i * 0.1}s`;
         revealObserver.observe(el);
       });
@@ -495,23 +564,26 @@ function initScrollReveal() {
 // ============================================================
 
 function initActiveNavTracking() {
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
   if (!sections.length || !navLinks.length) return;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
-        navLinks.forEach(link => {
-          const href = link.getAttribute('href');
-          link.classList.toggle('active', href === `#${id}`);
-        });
-      }
-    });
-  }, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            const href = link.getAttribute("href");
+            link.classList.toggle("active", href === `#${id}`);
+          });
+        }
+      });
+    },
+    { threshold: 0.3, rootMargin: "-80px 0px -40% 0px" },
+  );
 
-  sections.forEach(sec => observer.observe(sec));
+  sections.forEach((sec) => observer.observe(sec));
 }
 
 // ============================================================
@@ -520,36 +592,39 @@ function initActiveNavTracking() {
 // ============================================================
 
 function initParticles() {
-  let canvas = document.getElementById('global-particles');
+  let canvas = document.getElementById("global-particles");
   if (!canvas) {
-    canvas = document.createElement('canvas');
-    canvas.id = 'global-particles';
+    canvas = document.createElement("canvas");
+    canvas.id = "global-particles";
     Object.assign(canvas.style, {
-      position: 'fixed', top: '0', left: '0',
-      width: '100vw', height: '100vh',
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100vw",
+      height: "100vh",
       // z-index 1 garante que o canvas fique acima do fundo do body mas abaixo
       // de todo o conteúdo relevante (hero-content: z-index 2, showcase: z-index 10).
-      zIndex: '1',
-      pointerEvents: 'none',
+      zIndex: "1",
+      pointerEvents: "none",
     });
     document.body.prepend(canvas);
   }
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   let particles = [];
   let rafId = null;
 
   // Pré-renderiza a partícula com glow num canvas offscreen para evitar
   // recalcular ctx.shadowBlur por partícula por frame (operação cara).
   function createSprite(size) {
-    const d  = Math.ceil((size + 15) * 2);
-    const oc = document.createElement('canvas');
+    const d = Math.ceil((size + 15) * 2);
+    const oc = document.createElement("canvas");
     oc.width = oc.height = d;
-    const oc2 = oc.getContext('2d');
-    const c   = d / 2;
-    oc2.shadowBlur  = 10;
-    oc2.shadowColor = 'rgba(87,197,234,0.7)';
-    oc2.fillStyle   = 'rgba(87,197,234,0.8)';
+    const oc2 = oc.getContext("2d");
+    const c = d / 2;
+    oc2.shadowBlur = 10;
+    oc2.shadowColor = "rgba(87,197,234,0.7)";
+    oc2.fillStyle = "rgba(87,197,234,0.8)";
     oc2.beginPath();
     oc2.arc(c, c, size, 0, Math.PI * 2);
     oc2.fill();
@@ -565,7 +640,7 @@ function initParticles() {
   }
 
   function setSize() {
-    canvas.width  = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     spriteCache.clear(); // DPR pode mudar ao redimensionar
   }
@@ -573,26 +648,33 @@ function initParticles() {
   setSize();
 
   let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { setSize(); init(); }, 200);
-  }, { passive: true });
+  window.addEventListener(
+    "resize",
+    () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setSize();
+        init();
+      }, 200);
+    },
+    { passive: true },
+  );
 
   class Particle {
     constructor() {
-      this.x       = Math.random() * canvas.width;
-      this.y       = Math.random() * canvas.height;
-      this.size    = Math.random() * 2.5 + 1;
-      this.speedX  = (Math.random() - 0.5) * 0.7;
-      this.speedY  = (Math.random() - 0.5) * 0.7;
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2.5 + 1;
+      this.speedX = (Math.random() - 0.5) * 0.7;
+      this.speedY = (Math.random() - 0.5) * 0.7;
       this.opacity = Math.random() * 0.5 + 0.2;
-      this.sprite  = getSprite(this.size);
+      this.sprite = getSprite(this.size);
     }
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
-      if (this.x < 0 || this.x > canvas.width)  this.speedX *= -1;
-      if (this.y < 0 || this.y > canvas.height)  this.speedY *= -1;
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
     draw() {
       const half = this.sprite.width / 2;
@@ -603,12 +685,12 @@ function initParticles() {
 
   function init() {
     particles = [];
-    const isMobile  = window.innerWidth <= 768;
-    const divisor   = isMobile ? 18000 : 12000;
-    const maxCount  = isMobile ? 40 : 100;
+    const isMobile = window.innerWidth <= 768;
+    const divisor = isMobile ? 18000 : 12000;
+    const maxCount = isMobile ? 40 : 100;
     const n = Math.min(
       Math.floor((canvas.width * canvas.height) / divisor),
-      maxCount
+      maxCount,
     );
     for (let i = 0; i < n; i++) particles.push(new Particle());
   }
@@ -616,15 +698,27 @@ function initParticles() {
   function animate() {
     ctx.globalAlpha = 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach((p) => { p.update(); p.draw(); });
+    particles.forEach((p) => {
+      p.update();
+      p.draw();
+    });
     rafId = requestAnimationFrame(animate);
   }
 
-  const start = () => { if (!rafId) rafId = requestAnimationFrame(animate); };
-  const stop  = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } };
+  const start = () => {
+    if (!rafId) rafId = requestAnimationFrame(animate);
+  };
+  const stop = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
 
   // Pausa quando a aba fica inativa — economiza CPU/GPU
-  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  document.addEventListener("visibilitychange", () =>
+    document.hidden ? stop() : start(),
+  );
 
   init();
   start();
@@ -639,17 +733,26 @@ function initSettingsMenu(btn, menu) {
   if (btn._settingsMenuInit) return;
   btn._settingsMenuInit = true;
 
-  const close  = () => { menu.hidden = true; };
-  const toggle = () => { menu.hidden ? (menu.hidden = false) : close(); };
+  const close = () => {
+    menu.hidden = true;
+  };
+  const toggle = () => {
+    menu.hidden ? (menu.hidden = false) : close();
+  };
 
-  btn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
 
-  document.addEventListener('click', (e) => {
-    const container = document.querySelector('.user-menu-container');
+  document.addEventListener("click", (e) => {
+    const container = document.querySelector(".user-menu-container");
     if (!container || !container.contains(e.target)) close();
   });
 
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
 }
 
 // ============================================================
@@ -657,12 +760,12 @@ function initSettingsMenu(btn, menu) {
 // ============================================================
 
 function renderSkeletonCards(count = 3) {
-  const grid = document.getElementById('hub-grid');
+  const grid = document.getElementById("hub-grid");
   if (!grid) return;
-  grid.innerHTML = '';
+  grid.innerHTML = "";
   for (let i = 0; i < count; i++) {
-    const el = document.createElement('div');
-    el.className = 'hub-card-skeleton';
+    const el = document.createElement("div");
+    el.className = "hub-card-skeleton";
     grid.appendChild(el);
   }
 }
@@ -672,42 +775,45 @@ function renderSkeletonCards(count = 3) {
 // ============================================================
 
 function renderHubCards({ canAccessProtocol = false } = {}) {
-  const grid = document.getElementById('hub-grid');
+  const grid = document.getElementById("hub-grid");
   if (!grid) return;
-  grid.innerHTML = '';
+  grid.innerHTML = "";
 
-  APPS
-    .filter((app) => !(app.requiresPermission && !canAccessProtocol))
-    .forEach((app) => {
-      const card = document.createElement('article');
-      card.className = 'hub-card' + (app.enabled ? '' : ' hub-card-disabled');
-      card.setAttribute('data-app-id', app.id);
+  APPS.filter((app) => !(app.requiresPermission && !canAccessProtocol)).forEach(
+    (app) => {
+      const card = document.createElement("article");
+      card.className = "hub-card" + (app.enabled ? "" : " hub-card-disabled");
+      card.setAttribute("data-app-id", app.id);
 
       if (app.enabled) {
-        card.setAttribute('role', 'button');
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('aria-label', `Abrir detalhes: ${app.title}`);
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `Abrir detalhes: ${app.title}`);
         const openModal = () => openAppModal(app.id);
-        card.addEventListener('click', openModal);
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(); }
+        card.addEventListener("click", openModal);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openModal();
+          }
         });
       }
 
       const imgTag = app.image
-        ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || 'Aplicação')}" width="340" height="460" loading="lazy">`
-        : '';
+        ? `<img src="${escapeHtml(app.image)}" alt="${escapeHtml(app.title || "Aplicação")}" width="340" height="460" loading="lazy">`
+        : "";
 
       card.innerHTML = `
         ${imgTag}
         <div class="hub-card-content">
-          <h2 class="hub-card-title">${escapeHtml(app.title || '')}</h2>
-          ${app.shortDesc ? `<p class="hub-card-short-desc">${escapeHtml(app.shortDesc)}</p>` : ''}
+          <h2 class="hub-card-title">${escapeHtml(app.title || "")}</h2>
+          ${app.shortDesc ? `<p class="hub-card-short-desc">${escapeHtml(app.shortDesc)}</p>` : ""}
         </div>
       `;
 
       grid.appendChild(card);
-    });
+    },
+  );
 }
 
 // ============================================================
@@ -717,30 +823,38 @@ function renderHubCards({ canAccessProtocol = false } = {}) {
 const _focusTrapHandlers = new WeakMap();
 
 function createFocusTrap(modal) {
-  const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const FOCUSABLE =
+    'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
   function handler(e) {
-    if (e.key !== 'Tab') return;
-    const els = Array.from(modal.querySelectorAll(FOCUSABLE))
-      .filter((el) => !el.closest('[hidden]'));
+    if (e.key !== "Tab") return;
+    const els = Array.from(modal.querySelectorAll(FOCUSABLE)).filter(
+      (el) => !el.closest("[hidden]"),
+    );
     if (!els.length) return;
     const first = els[0];
-    const last  = els[els.length - 1];
+    const last = els[els.length - 1];
     if (e.shiftKey) {
-      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
     } else {
-      if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   }
 
-  modal.addEventListener('keydown', handler);
+  modal.addEventListener("keydown", handler);
   _focusTrapHandlers.set(modal, handler);
 }
 
 function removeFocusTrap(modal) {
   const handler = _focusTrapHandlers.get(modal);
   if (handler) {
-    modal.removeEventListener('keydown', handler);
+    modal.removeEventListener("keydown", handler);
     _focusTrapHandlers.delete(modal);
   }
 }
@@ -749,99 +863,111 @@ function removeFocusTrap(modal) {
 // MODAL DO HUB (app-modal)
 // ============================================================
 
-let _modalListenersInit     = false;
+let _modalListenersInit = false;
 let _lastFocusedBeforeModal = null;
 
 function initAppModal() {
-  const backdrop = document.getElementById('app-modal-backdrop');
-  const modal    = document.getElementById('app-modal');
-  const closeBtn = document.getElementById('app-modal-close');
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const closeBtn = document.getElementById("app-modal-close");
 
   if (!backdrop || !modal || !closeBtn || _modalListenersInit) return;
   _modalListenersInit = true;
 
-  closeBtn.addEventListener('click', closeAppModal);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAppModal(); });
-  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeAppModal(); });
+  closeBtn.addEventListener("click", closeAppModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAppModal();
+  });
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) closeAppModal();
+  });
 }
 
 function openAppModal(appId) {
   const app = APPS.find((a) => a.id === appId);
   if (!app || !app.enabled) return;
 
-  const backdrop  = document.getElementById('app-modal-backdrop');
-  const modal     = document.getElementById('app-modal');
-  const badgeEl   = document.getElementById('app-modal-badge');
-  const titleEl   = document.getElementById('app-modal-title');
-  const descEl    = document.getElementById('app-modal-desc');
-  const actionsEl = document.getElementById('app-modal-actions');
-  const videoEl   = document.getElementById('app-modal-video');
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const badgeEl = document.getElementById("app-modal-badge");
+  const titleEl = document.getElementById("app-modal-title");
+  const descEl = document.getElementById("app-modal-desc");
+  const actionsEl = document.getElementById("app-modal-actions");
+  const videoEl = document.getElementById("app-modal-video");
 
   if (!backdrop || !modal) return;
 
   _lastFocusedBeforeModal = document.activeElement;
 
-  if (badgeEl)  badgeEl.textContent  = app.badge   || '';
-  if (titleEl)  titleEl.textContent  = app.title   || '';
-  if (descEl)   descEl.textContent   = app.longDesc || '';
+  if (badgeEl) badgeEl.textContent = app.badge || "";
+  if (titleEl) titleEl.textContent = app.title || "";
+  if (descEl) descEl.textContent = app.longDesc || "";
 
   if (actionsEl) {
-    actionsEl.innerHTML = '';
+    actionsEl.innerHTML = "";
     (app.actions || []).forEach((a) => {
-      const el = document.createElement('a');
-      el.className = 'hub-btn' + (a.primary ? ' hub-btn-primary' : '');
+      const el = document.createElement("a");
+      el.className = "hub-btn" + (a.primary ? " hub-btn-primary" : "");
       el.innerHTML = `
-        <i class="ph ${escapeHtml(a.icon || 'ph-arrow-square-out')}"></i>
-        <span>${escapeHtml(a.label || 'Abrir')}</span>
+        <i class="ph ${escapeHtml(a.icon || "ph-arrow-square-out")}"></i>
+        <span>${escapeHtml(a.label || "Abrir")}</span>
       `;
-      el.href = a.app ? buildCounterUrl(a.app, a.metric || 'access') : (a.href || '#');
-      if (a.targetBlank) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+      el.href = a.app
+        ? buildCounterUrl(a.app, a.metric || "access")
+        : a.href || "#";
+      if (a.targetBlank) {
+        el.target = "_blank";
+        el.rel = "noopener noreferrer";
+      }
       actionsEl.appendChild(el);
     });
   }
 
   if (videoEl) {
-    videoEl.innerHTML = '';
+    videoEl.innerHTML = "";
     if (app.youtubeId) {
-      const iframe = document.createElement('iframe');
-      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share';
+      const iframe = document.createElement("iframe");
+      iframe.allow =
+        "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
-      iframe.loading = 'lazy';
-      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
       iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(app.youtubeId)}`;
       videoEl.appendChild(iframe);
     } else {
-      const div = document.createElement('div');
-      div.style.cssText = 'padding:14px;opacity:.85';
-      div.textContent = 'Vídeo de apresentação não disponível.';
+      const div = document.createElement("div");
+      div.style.cssText = "padding:14px;opacity:.85";
+      div.textContent = "Vídeo de apresentação não disponível.";
       videoEl.appendChild(div);
     }
   }
 
   backdrop.hidden = false;
-  modal.hidden    = false;
-  document.body.classList.add('modal-open');
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
 
   // Dois RAFs necessários: o primeiro registra o estado inicial (opacity:0),
   // o segundo dispara a transição CSS. Com um só RAF o browser colapsa os dois
   // estados no mesmo paint e a transição não ocorre.
-  requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('is-open')));
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => modal.classList.add("is-open")),
+  );
 
   createFocusTrap(modal);
-  modal.setAttribute('tabindex', '-1');
+  modal.setAttribute("tabindex", "-1");
   modal.focus();
 }
 
 function closeAppModal() {
-  const backdrop = document.getElementById('app-modal-backdrop');
-  const modal    = document.getElementById('app-modal');
-  const videoEl  = document.getElementById('app-modal-video');
+  const backdrop = document.getElementById("app-modal-backdrop");
+  const modal = document.getElementById("app-modal");
+  const videoEl = document.getElementById("app-modal-video");
 
-  if (videoEl) videoEl.innerHTML = '';
+  if (videoEl) videoEl.innerHTML = "";
 
   if (modal) {
     removeFocusTrap(modal);
-    modal.classList.remove('is-open');
+    modal.classList.remove("is-open");
 
     const hideAll = () => {
       modal.hidden = true;
@@ -850,22 +976,22 @@ function closeAppModal() {
 
     // Escuta apenas a transição de opacity para não disparar duas vezes
     const onTransitionEnd = (e) => {
-      if (e.propertyName !== 'opacity') return;
-      modal.removeEventListener('transitionend', onTransitionEnd);
+      if (e.propertyName !== "opacity") return;
+      modal.removeEventListener("transitionend", onTransitionEnd);
       clearTimeout(fallbackTimer);
       hideAll();
     };
 
     // Fallback: prefers-reduced-motion ou aba inativa podem suprimir transitionend
     const fallbackTimer = setTimeout(() => {
-      modal.removeEventListener('transitionend', onTransitionEnd);
+      modal.removeEventListener("transitionend", onTransitionEnd);
       hideAll();
     }, 300);
 
-    modal.addEventListener('transitionend', onTransitionEnd);
+    modal.addEventListener("transitionend", onTransitionEnd);
   }
 
-  document.body.classList.remove('modal-open');
+  document.body.classList.remove("modal-open");
 
   if (_lastFocusedBeforeModal) {
     _lastFocusedBeforeModal.focus();
@@ -878,36 +1004,38 @@ function closeAppModal() {
 // ============================================================
 
 async function carregarAvaliacoes(sb) {
-  const section = document.querySelector('.hub-testimonials-section');
-  const track   = document.getElementById('testimonials-track');
+  const section = document.querySelector(".hub-testimonials-section");
+  const track = document.getElementById("testimonials-track");
   if (!track || !section) return;
 
-  track.innerHTML = '<div style="padding:20px;color:var(--text-primary);opacity:.6;font-weight:500">Buscando avaliações...</div>';
+  track.innerHTML =
+    '<div style="padding:20px;color:var(--text-primary);opacity:.6;font-weight:500">Buscando avaliações...</div>';
 
   try {
-    const { data: avaliacoes, error } = await sb.from('avaliacoes').select('*');
+    const { data: avaliacoes, error } = await sb.from("avaliacoes").select("*");
     if (error) throw error;
     if (avaliacoes?.length > 0) {
       renderTestimonials(avaliacoes);
     } else {
-      section.style.display = 'none';
+      section.style.display = "none";
     }
   } catch (e) {
-    console.error('Falha na conexão com avaliações:', e);
-    section.style.display = 'none';
+    console.error("Falha na conexão com avaliações:", e);
+    section.style.display = "none";
   }
 }
 
 function renderTestimonials(avaliacoes) {
-  const track = document.getElementById('testimonials-track');
+  const track = document.getElementById("testimonials-track");
   if (!track) return;
 
   // Duplica para o loop infinito de marquee CSS em -50%
   const allItems = [...avaliacoes, ...avaliacoes];
-  track.innerHTML = allItems.map((t) => {
-    const cor1 = t.cor1 || '#00d4ff';
-    const cor2 = t.cor2 || '#0066ff';
-    return `
+  track.innerHTML = allItems
+    .map((t) => {
+      const cor1 = t.cor1 || "#00d4ff";
+      const cor2 = t.cor2 || "#0066ff";
+      return `
       <div class="testimonial-card">
         <div class="stars">★★★★★</div>
         <p class="testimonial-text">"${escapeHtml(t.TextoComentario)}"</p>
@@ -920,50 +1048,57 @@ function renderTestimonials(avaliacoes) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join("");
 
-  requestAnimationFrame(() => track.classList.add('iniciada'));
+  requestAnimationFrame(() => track.classList.add("iniciada"));
   iniciarCarrosselInterativo();
 }
 
 function iniciarCarrosselInterativo() {
-  const container = document.querySelector('.testimonials-container');
-  const track     = document.getElementById('testimonials-track');
+  const container = document.querySelector(".testimonials-container");
+  const track = document.getElementById("testimonials-track");
   if (!container || !track) return;
 
-  let isDown = false, startX, scrollLeft;
+  let isDown = false,
+    startX,
+    scrollLeft;
 
-  container.addEventListener('mouseenter', () => container.classList.add('grab'));
+  container.addEventListener("mouseenter", () =>
+    container.classList.add("grab"),
+  );
 
-  container.addEventListener('mouseleave', () => {
+  container.addEventListener("mouseleave", () => {
     isDown = false;
-    container.classList.remove('grabbing', 'grab');
+    container.classList.remove("grabbing", "grab");
   });
 
-  container.addEventListener('mousedown', (e) => {
+  container.addEventListener("mousedown", (e) => {
     isDown = true;
-    container.classList.replace('grab', 'grabbing');
+    container.classList.replace("grab", "grabbing");
 
     // Captura o translateX atual antes de pausar para evitar salto visual
     const matrix = window.getComputedStyle(track).transform;
-    const tx = (matrix && matrix !== 'none') ? (parseFloat(matrix.split(',')[4]) || 0) : 0;
-    track.style.animationPlayState = 'paused';
+    const tx =
+      matrix && matrix !== "none" ? parseFloat(matrix.split(",")[4]) || 0 : 0;
+    track.style.animationPlayState = "paused";
     if (tx) track.style.transform = `translateX(${tx}px)`;
 
-    startX     = e.pageX - container.offsetLeft;
+    startX = e.pageX - container.offsetLeft;
     scrollLeft = container.scrollLeft;
   });
 
-  container.addEventListener('mouseup', () => {
+  container.addEventListener("mouseup", () => {
     isDown = false;
-    container.classList.replace('grabbing', 'grab');
-    track.style.animationPlayState = '';
+    container.classList.replace("grabbing", "grab");
+    track.style.animationPlayState = "";
   });
 
-  container.addEventListener('mousemove', (e) => {
+  container.addEventListener("mousemove", (e) => {
     if (!isDown) return;
     e.preventDefault();
-    container.scrollLeft = scrollLeft - (e.pageX - container.offsetLeft - startX) * 1.5;
+    container.scrollLeft =
+      scrollLeft - (e.pageX - container.offsetLeft - startX) * 1.5;
   });
 }
 
@@ -972,10 +1107,11 @@ function iniciarCarrosselInterativo() {
 // ============================================================
 
 function renderProductCards() {
-  const grid = document.getElementById('products-grid');
+  const grid = document.getElementById("products-grid");
   if (!grid) return;
 
-  grid.innerHTML = PRODUCTS.map((p) => `
+  grid.innerHTML = PRODUCTS.map(
+    (p) => `
     <article
       class="product-card"
       role="listitem"
@@ -994,28 +1130,36 @@ function renderProductCards() {
       <div class="product-card-divider"></div>
 
       <ul class="product-card-benefits" aria-label="Benefícios">
-        ${p.benefits.map((b) => `
+        ${p.benefits
+          .map(
+            (b) => `
           <li>
             <i class="ph ${escapeHtml(b.icon)}" aria-hidden="true"></i>
             ${escapeHtml(b.text)}
           </li>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </ul>
 
       <button type="button" class="product-card-cta" data-product-id="${escapeHtml(p.id)}">
         Começar <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
       </button>
     </article>
-  `).join('');
+  `,
+  ).join("");
 
-  grid.querySelectorAll('[data-product-id]').forEach((el) => {
-    el.addEventListener('click', () => {
+  grid.querySelectorAll("[data-product-id]").forEach((el) => {
+    el.addEventListener("click", () => {
       const product = PRODUCTS.find((p) => p.id === el.dataset.productId);
       if (product) openProductModal(product);
     });
-    if (el.tagName === 'ARTICLE') {
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    if (el.tagName === "ARTICLE") {
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          el.click();
+        }
       });
     }
   });
@@ -1027,60 +1171,74 @@ function renderProductCards() {
 
 function openProductModal(product) {
   _activeProduct = product;
-  _currentStep   = 0;
-  _answers       = {};
+  _currentStep = 0;
+  _answers = {};
 
-  const backdrop = document.getElementById('prod-modal-backdrop');
-  const modal    = document.getElementById('prod-modal');
+  const backdrop = document.getElementById("prod-modal-backdrop");
+  const modal = document.getElementById("prod-modal");
 
   backdrop.hidden = false;
-  modal.hidden    = false;
+  modal.hidden = false;
 
-  requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('is-open')));
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => modal.classList.add("is-open")),
+  );
 
-  document.body.classList.add('modal-open');
+  document.body.classList.add("modal-open");
   renderProductStep();
 
-  document.addEventListener('keydown', _onProdEscKey);
-  document.addEventListener('keydown', _onProdFocusTrap);
-  backdrop.addEventListener('click', _onProdBackdropClick);
+  document.addEventListener("keydown", _onProdEscKey);
+  document.addEventListener("keydown", _onProdFocusTrap);
+  backdrop.addEventListener("click", _onProdBackdropClick);
 }
 
 function closeProductModal() {
-  const backdrop = document.getElementById('prod-modal-backdrop');
-  const modal    = document.getElementById('prod-modal');
+  const backdrop = document.getElementById("prod-modal-backdrop");
+  const modal = document.getElementById("prod-modal");
 
-  modal.classList.remove('is-open');
-  document.body.classList.remove('modal-open');
+  modal.classList.remove("is-open");
+  document.body.classList.remove("modal-open");
 
   setTimeout(() => {
     backdrop.hidden = true;
-    modal.hidden    = true;
-    modal.innerHTML = '';
+    modal.hidden = true;
+    modal.innerHTML = "";
   }, 280);
 
-  document.removeEventListener('keydown', _onProdEscKey);
-  document.removeEventListener('keydown', _onProdFocusTrap);
-  backdrop.removeEventListener('click', _onProdBackdropClick);
+  document.removeEventListener("keydown", _onProdEscKey);
+  document.removeEventListener("keydown", _onProdFocusTrap);
+  backdrop.removeEventListener("click", _onProdBackdropClick);
 }
 
-function _onProdEscKey(e)      { if (e.key === 'Escape') closeProductModal(); }
-function _onProdBackdropClick(e) { if (e.target === e.currentTarget) closeProductModal(); }
+function _onProdEscKey(e) {
+  if (e.key === "Escape") closeProductModal();
+}
+function _onProdBackdropClick(e) {
+  if (e.target === e.currentTarget) closeProductModal();
+}
 
 function _onProdFocusTrap(e) {
-  if (e.key !== 'Tab') return;
-  const modal = document.getElementById('prod-modal');
+  if (e.key !== "Tab") return;
+  const modal = document.getElementById("prod-modal");
   if (!modal) return;
   const focusable = Array.from(
-    modal.querySelectorAll('button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')
-  ).filter((el) => !el.closest('[hidden]'));
+    modal.querySelectorAll(
+      'button:not([disabled]), input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((el) => !el.closest("[hidden]"));
   if (!focusable.length) return;
   const first = focusable[0];
-  const last  = focusable[focusable.length - 1];
+  const last = focusable[focusable.length - 1];
   if (e.shiftKey) {
-    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    if (document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    }
   } else {
-    if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+    if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 }
 
@@ -1089,11 +1247,11 @@ function _onProdFocusTrap(e) {
 // ============================================================
 
 function renderProductStep() {
-  const product    = _activeProduct;
-  const stepIndex  = _currentStep;
+  const product = _activeProduct;
+  const stepIndex = _currentStep;
   const totalSteps = product.steps.length;
-  const isReview   = stepIndex === totalSteps;
-  const modal      = document.getElementById('prod-modal');
+  const isReview = stepIndex === totalSteps;
+  const modal = document.getElementById("prod-modal");
 
   const header = `
     <div class="prod-modal-header">
@@ -1107,15 +1265,20 @@ function renderProductStep() {
     </div>
   `;
 
-  const dots = product.steps.map((_, i) => {
-    const done   = isReview || i < stepIndex;
-    const active = !isReview && i === stepIndex;
-    const inner  = done ? '<i class="ph ph-check" aria-hidden="true"></i>' : i + 1;
-    const line   = i < totalSteps - 1
-      ? `<div class="step-line ${done ? 'done' : ''}" aria-hidden="true"></div>`
-      : '';
-    return `<div class="step-dot ${done ? 'done' : active ? 'active' : ''}" aria-hidden="true">${inner}</div>${line}`;
-  }).join('');
+  const dots = product.steps
+    .map((_, i) => {
+      const done = isReview || i < stepIndex;
+      const active = !isReview && i === stepIndex;
+      const inner = done
+        ? '<i class="ph ph-check" aria-hidden="true"></i>'
+        : i + 1;
+      const line =
+        i < totalSteps - 1
+          ? `<div class="step-line ${done ? "done" : ""}" aria-hidden="true"></div>`
+          : "";
+      return `<div class="step-dot ${done ? "done" : active ? "active" : ""}" aria-hidden="true">${inner}</div>${line}`;
+    })
+    .join("");
 
   const indicator = `
     <div class="step-indicator" aria-label="Passo ${Math.min(stepIndex + 1, totalSteps)} de ${totalSteps}">
@@ -1127,14 +1290,15 @@ function renderProductStep() {
     ? buildProductReviewHTML(product)
     : buildProductStepHTML(product.steps[stepIndex]);
 
-  const navBack = stepIndex > 0 || isReview
-    ? `<button type="button" class="hub-btn" id="btn-back"><i class="ph ph-arrow-left" aria-hidden="true"></i> ${isReview ? 'Revisar' : 'Voltar'}</button>`
-    : `<div></div>`;
+  const navBack =
+    stepIndex > 0 || isReview
+      ? `<button type="button" class="hub-btn" id="btn-back"><i class="ph ph-arrow-left" aria-hidden="true"></i> ${isReview ? "Revisar" : "Voltar"}</button>`
+      : `<div></div>`;
 
   const navNext = isReview
-    ? '' // botão WhatsApp já está no body
+    ? "" // botão WhatsApp já está no body
     : `<button type="button" class="hub-btn hub-btn-primary" id="btn-next">
-         ${stepIndex === totalSteps - 1 ? 'Revisar' : 'Próximo'}
+         ${stepIndex === totalSteps - 1 ? "Revisar" : "Próximo"}
          <i class="ph ph-arrow-right" aria-hidden="true"></i>
        </button>`;
 
@@ -1149,7 +1313,7 @@ function renderProductStep() {
 
   bindProductModalEvents(product, stepIndex, isReview);
 
-  const first = modal.querySelector('button:not([disabled]), input, select');
+  const first = modal.querySelector("button:not([disabled]), input, select");
   if (first) first.focus();
 }
 
@@ -1158,72 +1322,84 @@ function renderProductStep() {
 // ============================================================
 
 function buildProductStepHTML(step) {
-  let inputHtml = '';
-  const val = _answers[step.id] ?? '';
+  let inputHtml = "";
+  const val = _answers[step.id] ?? "";
 
-  if (step.type === 'number') {
+  if (step.type === "number") {
     inputHtml = `
       <input type="number" id="step-input" class="step-number-input"
         value="${escapeHtml(String(val))}"
-        placeholder="${escapeHtml(step.placeholder ?? '')}"
+        placeholder="${escapeHtml(step.placeholder ?? "")}"
         min="${step.min ?? 1}"
         aria-label="${escapeHtml(step.title)}" />
     `;
-  } else if (step.type === 'text') {
+  } else if (step.type === "text") {
     inputHtml = `
       <input type="text" id="step-input" class="step-text-input"
         value="${escapeHtml(String(val))}"
-        placeholder="${escapeHtml(step.placeholder ?? '')}"
+        placeholder="${escapeHtml(step.placeholder ?? "")}"
         aria-label="${escapeHtml(step.title)}"
         maxlength="120" />
     `;
-  } else if (step.type === 'chips') {
-    const selected = _answers[step.id] ?? '';
+  } else if (step.type === "chips") {
+    const selected = _answers[step.id] ?? "";
     inputHtml = `
       <div class="step-chips" role="group" aria-label="${escapeHtml(step.title)}">
-        ${step.options.map((opt) => `
-          <button type="button" class="step-chip ${selected === opt.value ? 'selected' : ''}"
+        ${step.options
+          .map(
+            (opt) => `
+          <button type="button" class="step-chip ${selected === opt.value ? "selected" : ""}"
             data-value="${escapeHtml(opt.value)}"
             aria-pressed="${selected === opt.value}">
-            ${opt.icon ? `<i class="ph ${escapeHtml(opt.icon)}" aria-hidden="true"></i>` : ''}
+            ${opt.icon ? `<i class="ph ${escapeHtml(opt.icon)}" aria-hidden="true"></i>` : ""}
             ${escapeHtml(opt.label)}
           </button>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </div>
     `;
   }
 
   return `
     <h3 class="step-question">${escapeHtml(step.title)}</h3>
-    ${step.hint ? `<p class="step-hint">${escapeHtml(step.hint)}</p>` : ''}
+    ${step.hint ? `<p class="step-hint">${escapeHtml(step.hint)}</p>` : ""}
     ${inputHtml}
     <p class="step-error" id="step-error" role="alert">Por favor, preencha este campo para continuar.</p>
   `;
 }
 
 function buildProductReviewHTML(product) {
-  const rows = product.steps.map((step) => {
-    const rawVal = _answers[step.id];
-    let displayVal = '';
+  const rows = product.steps
+    .map((step) => {
+      const rawVal = _answers[step.id];
+      let displayVal = "";
 
-    if (step.type === 'chips') {
-      const opt = step.options.find((o) => o.value === rawVal);
-      displayVal = opt ? opt.label : '—';
-    } else {
-      displayVal = rawVal?.toString().trim() || (step.required ? '—' : 'Sem preferência');
-    }
+      if (step.type === "chips") {
+        const opt = step.options.find((o) => o.value === rawVal);
+        displayVal = opt ? opt.label : "—";
+      } else {
+        displayVal =
+          rawVal?.toString().trim() ||
+          (step.required ? "—" : "Sem preferência");
+      }
 
-    const icons = { number: 'ph-hash', chips: 'ph-check-square', text: 'ph-pencil-simple' };
-    return `
+      const icons = {
+        number: "ph-hash",
+        chips: "ph-check-square",
+        text: "ph-pencil-simple",
+      };
+      return `
       <div class="summary-row">
-        <i class="ph ${icons[step.type] ?? 'ph-info'}" aria-hidden="true"></i>
+        <i class="ph ${icons[step.type] ?? "ph-info"}" aria-hidden="true"></i>
         <div class="summary-row-content">
           <span class="summary-label">${escapeHtml(step.title)}</span>
           <span class="summary-value">${escapeHtml(displayVal)}</span>
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join("");
 
   const waUrl = buildWhatsAppUrl(product.buildMessage(_answers));
 
@@ -1250,65 +1426,67 @@ function buildProductReviewHTML(product) {
 // ============================================================
 
 function bindProductModalEvents(product, stepIndex, isReview) {
-  document.getElementById('prod-modal-close')?.addEventListener('click', closeProductModal);
+  document
+    .getElementById("prod-modal-close")
+    ?.addEventListener("click", closeProductModal);
 
-  document.getElementById('btn-back')?.addEventListener('click', () => {
+  document.getElementById("btn-back")?.addEventListener("click", () => {
     _currentStep = isReview ? product.steps.length - 1 : stepIndex - 1;
     renderProductStep();
   });
 
-  document.getElementById('btn-next')?.addEventListener('click', () => {
+  document.getElementById("btn-next")?.addEventListener("click", () => {
     handleProductNext(product, stepIndex);
   });
 
-  const input = document.getElementById('step-input');
+  const input = document.getElementById("step-input");
   if (input) {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleProductNext(product, stepIndex);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleProductNext(product, stepIndex);
     });
   }
 
-  const modal = document.getElementById('prod-modal');
-  modal?.querySelectorAll('.step-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      modal.querySelectorAll('.step-chip').forEach((c) => {
-        c.classList.remove('selected');
-        c.setAttribute('aria-pressed', 'false');
+  const modal = document.getElementById("prod-modal");
+  modal?.querySelectorAll(".step-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      modal.querySelectorAll(".step-chip").forEach((c) => {
+        c.classList.remove("selected");
+        c.setAttribute("aria-pressed", "false");
       });
-      chip.classList.add('selected');
-      chip.setAttribute('aria-pressed', 'true');
+      chip.classList.add("selected");
+      chip.setAttribute("aria-pressed", "true");
       _answers[product.steps[stepIndex].id] = chip.dataset.value;
-      document.getElementById('step-error')?.classList.remove('visible');
+      document.getElementById("step-error")?.classList.remove("visible");
     });
   });
 }
 
 function handleProductNext(product, stepIndex) {
-  const step  = product.steps[stepIndex];
-  const errEl = document.getElementById('step-error');
-  const input = document.getElementById('step-input');
+  const step = product.steps[stepIndex];
+  const errEl = document.getElementById("step-error");
+  const input = document.getElementById("step-input");
 
   if (input) _answers[step.id] = input.value;
 
   if (step.required) {
-    const val = (_answers[step.id] ?? '').toString().trim();
+    const val = (_answers[step.id] ?? "").toString().trim();
     if (!val) {
-      errEl?.classList.add('visible');
+      errEl?.classList.add("visible");
       input?.focus();
       return;
     }
-    if (step.type === 'number') {
+    if (step.type === "number") {
       const num = parseInt(val, 10);
       if (isNaN(num) || num < (step.min ?? 1)) {
         if (errEl) errEl.textContent = `O valor mínimo é ${step.min ?? 1}.`;
-        errEl?.classList.add('visible');
+        errEl?.classList.add("visible");
         input?.focus();
         return;
       }
     }
   }
 
-  errEl?.classList.remove('visible');
+  errEl?.classList.remove("visible");
   _currentStep = stepIndex + 1;
   renderProductStep();
 }
@@ -1319,9 +1497,17 @@ function handleProductNext(product, stepIndex) {
 
 function initCtaGeral() {
   const waUrl = buildWhatsAppUrl(
-    'Olá! Gostaria de saber mais sobre as soluções da AVANCE. Poderia me ajudar?'
+    "Olá! Gostaria de saber mais sobre as soluções da AVANCE. Poderia me ajudar?",
   );
-  const ids = ['cta-whatsapp-geral', 'mid-cta-whatsapp', 'posvenda-whatsapp'];
+
+  // Adicionamos o 'floating-whatsapp' na lista abaixo:
+  const ids = [
+    "cta-whatsapp-geral",
+    "mid-cta-whatsapp",
+    "posvenda-whatsapp",
+    "floating-whatsapp",
+  ];
+
   ids.forEach((id) => {
     const btn = document.getElementById(id);
     if (btn) btn.href = waUrl;
@@ -1334,11 +1520,11 @@ function initCtaGeral() {
 
 async function loadPublicAgentConfig() {
   try {
-    const r = await fetch('/api/public-agent-config', { cache: 'no-store' });
+    const r = await fetch("/api/public-agent-config", { cache: "no-store" });
     const j = await r.json().catch(() => null);
     if (r.ok && j?.ok && j.loginUrl) LOGIN_URL = j.loginUrl;
   } catch (e) {
-    console.warn('Falha ao carregar /api/public-agent-config:', e);
+    console.warn("Falha ao carregar /api/public-agent-config:", e);
   }
 }
 
@@ -1346,30 +1532,29 @@ async function loadPublicAgentConfig() {
 // INICIALIZAÇÃO — único DOMContentLoaded
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', async () => {
-
+document.addEventListener("DOMContentLoaded", async () => {
   // ── 1. UI imediata (sem dependências) ──────────────────────
   initNavbarEffect();
   initParticles();
-  initTheme(document.getElementById('theme-toggle'));
+  initTheme(document.getElementById("theme-toggle"));
   initMobileMenu();
   initScrollReveal();
   initActiveNavTracking();
 
   // Smooth scroll nos links âncora (active class handled by IntersectionObserver)
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
+    anchor.addEventListener("click", function (e) {
+      const target = document.querySelector(this.getAttribute("href"));
       if (!target) return;
       e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
+      target.scrollIntoView({ behavior: "smooth" });
     });
   });
 
   // ── 2. Renderização estática imediata ──────────────────────
-  renderSkeletonCards();   // Placeholder dos cards do hub
-  renderProductCards();    // Cards de soluções (seção pública)
-  initCtaGeral();          // Link WhatsApp geral
+  renderSkeletonCards(); // Placeholder dos cards do hub
+  renderProductCards(); // Cards de soluções (seção pública)
+  initCtaGeral(); // Link WhatsApp geral
 
   // ── 3. Config pública (pode alterar LOGIN_URL) ─────────────
   await loadPublicAgentConfig();
@@ -1380,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     sb = await window.getSupabaseClient();
   } catch (e) {
     // Supabase indisponível: exibe hub em modo visitante, sem redirecionar
-    console.error('Supabase client não carregado:', e);
+    console.error("Supabase client não carregado:", e);
     initAppModal();
     renderHubCards({ canAccessProtocol: false });
     return;
@@ -1398,41 +1583,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ── Usuário autenticado ────────────────────────────────────
     CURRENT_USER_ID = sessionData.session.user.id;
-    const email = sessionData.session.user?.email || '';
+    const email = sessionData.session.user?.email || "";
 
     const { data: profile, error: profileError } = await sb
-      .from('profiles')
-      .select('protocol')
-      .eq('id', CURRENT_USER_ID)
+      .from("profiles")
+      .select("protocol")
+      .eq("id", CURRENT_USER_ID)
       .single();
 
-    if (profileError) console.error('Erro ao buscar permissões:', profileError);
+    if (profileError) console.error("Erro ao buscar permissões:", profileError);
 
     const canAccessProtocol = !!profile?.protocol;
 
     // Exibe / oculta menu de gerenciamento de usuários
-    const menuUsers = document.getElementById('menu-users');
+    const menuUsers = document.getElementById("menu-users");
     if (menuUsers) menuUsers.hidden = !canAccessProtocol;
 
     // E-mail na navbar
-    const userEmailEl = document.getElementById('user-email');
+    const userEmailEl = document.getElementById("user-email");
     if (userEmailEl) {
       userEmailEl.textContent = email;
-      userEmailEl.title       = email;
-      userEmailEl.style.cursor = 'default';
+      userEmailEl.title = email;
+      userEmailEl.style.cursor = "default";
     }
 
     // Menu de configurações
     initSettingsMenu(
-      document.getElementById('settings-btn'),
-      document.getElementById('settings-menu')
+      document.getElementById("settings-btn"),
+      document.getElementById("settings-menu"),
     );
 
     // Botão de logout
-    const menuLogout = document.getElementById('menu-logout');
+    const menuLogout = document.getElementById("menu-logout");
     if (menuLogout) {
-      menuLogout.addEventListener('click', async () => {
-        try { await sb.auth.signOut(); } finally {
+      menuLogout.addEventListener("click", async () => {
+        try {
+          await sb.auth.signOut();
+        } finally {
           clearAgentChatSessionStorage();
           window.location.href = normalizeLoginUrl(LOGIN_URL);
         }
@@ -1445,10 +1632,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Depoimentos (assíncrono, não bloqueia nada)
     await carregarAvaliacoes(sb);
-
   } catch (e) {
     // Erro inesperado durante a inicialização: modo visitante
-    console.error('Erro ao inicializar Hub:', e);
+    console.error("Erro ao inicializar Hub:", e);
     initAppModal();
     renderHubCards({ canAccessProtocol: false });
   }
