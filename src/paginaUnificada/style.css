@@ -343,7 +343,7 @@ body.dark-mode .theme-toggle-top {
 }
 
 .dropdown-item:hover {
-  background-color: var(--bg-hover);
+  background-color: rgba(87, 197, 234, 0.08);
 }
 .dropdown-item.danger {
   color: #ef4444;
@@ -1800,7 +1800,6 @@ body.dark-mode .about-text strong {
   line-height: 1.55;
   font-style: italic;
   color: #3dd4f0;
-  border-left: none;
   padding: 12px 20px;
   background: rgba(61, 212, 240, 0.06);
   border-radius: 0 12px 12px 0;
@@ -2234,6 +2233,10 @@ body.dark-mode .product-card {
   z-index: 0;
   pointer-events: none;
 }
+
+/* ============================================================
+   23. RESPONSIVIDADE MOBILE  → ver media queries ao final do arquivo
+   ============================================================ */
 
 /* ============================================================
    24. SOLUÇÕES — HERO INTRO
