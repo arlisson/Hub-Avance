@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
-  const HUB_URL = "/hub/hub.html";
+  const HUB_URL = "../paginaUnificada/index.html";
 
   let sb;
   let session;
@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await sb.auth.getSession();
 
     if (sessionError || !sessionData?.session) {
       window.location.href = LOGIN_URL;
@@ -63,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Menus e tema
   initSettingsMenu(
     document.getElementById("settings-btn"),
-    document.getElementById("settings-menu")
+    document.getElementById("settings-menu"),
   );
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));
@@ -199,7 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const selectedPick =
         orgPicker && orgPickerWrap && !orgPickerWrap.hidden
-          ? (orgPicker.value || "")
+          ? orgPicker.value || ""
           : "";
 
       const payload = {
@@ -213,10 +214,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       AppLoading.show({
         title: "Gerando protocolo",
-        message: "Aguarde..."
+        message: "Aguarde...",
       });
-
-     
 
       const { resp, data } = await callApi(payload);
 
@@ -236,11 +235,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       */
 
       if (!resp.ok) {
-        const maybeProtocol = data?.protocol ? `\nProtocolo gerado: ${data.protocol}` : "";
-        throw new Error((data?.error || "Falha ao gerar protocolo.") + maybeProtocol);
+        const maybeProtocol = data?.protocol
+          ? `\nProtocolo gerado: ${data.protocol}`
+          : "";
+        throw new Error(
+          (data?.error || "Falha ao gerar protocolo.") + maybeProtocol,
+        );
       }
 
-     
       hideOrgPicker();
 
       const protocol = data?.protocol || "";
@@ -252,13 +254,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (sheetStatusEl) {
         sheetStatusEl.textContent = data?.sheets?.ok
           ? "Registrado"
-          : (data?.sheets?.detail || "Falhou");
+          : data?.sheets?.detail || "Falhou";
       }
 
       if (agendorStatusEl) {
         agendorStatusEl.textContent = data?.agendor?.sent
           ? "Enviado"
-          : (data?.agendor?.detail || "Não enviado");
+          : data?.agendor?.detail || "Não enviado";
       }
 
       if (msgEl) {
@@ -376,7 +378,7 @@ function initTheme(themeToggle) {
 function updateThemeIcon(btn) {
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector("span");
-  const logo = document.querySelector(".company-logo"); 
+  const logo = document.querySelector(".company-logo");
 
   if (!icon || !text) return;
 
@@ -394,10 +396,10 @@ function updateThemeIcon(btn) {
     // ATENÇÃO: Substitua os caminhos abaixo pelos nomes corretos dos seus arquivos!
     if (!isLight) {
       // Logo para quando o fundo estiver ESCURO (Geralmente a logo com letras brancas/claras)
-      logo.src = "../img/LogoEscuroSemFundo.png"; 
+      logo.src = "../img/LogoEscuroSemFundo.png";
     } else {
       // Logo para quando o fundo estiver CLARO (Geralmente a logo com letras escuras/pretas)
-      logo.src = "../img/LogoClaraSemFundo.png"; 
+      logo.src = "../img/LogoClaraSemFundo.png";
     }
   }
 }

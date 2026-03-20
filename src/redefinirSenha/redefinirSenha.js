@@ -11,11 +11,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const sb = await window.getSupabaseClient();
     const { data } = await sb.auth.getSession();
-    
+
     if (data?.session) {
       const backLink = document.querySelector(".back-link");
       if (backLink) {
-        backLink.href = "../hub/hub.html";
+        backLink.href = "../paginaUnificada/index.html";
         backLink.textContent = "Voltar para o Início";
       }
     }
@@ -126,8 +126,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       // 1. Pega o email do utilizador com sessão iniciada
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
       if (sessionError || !session) {
         throw new Error("Sessão expirada. Inicie sessão novamente.");
       }
@@ -152,12 +155,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (updateError) throw updateError;
 
-      alert("Senha atualizada com sucesso! Inicie sessão com a sua nova senha.");
-      
+      alert(
+        "Senha atualizada com sucesso! Inicie sessão com a sua nova senha.",
+      );
+
       // Termina a sessão do utilizador e envia para o ecrã de login
       await supabase.auth.signOut();
       window.location.href = "../login/login.html";
-
     } catch (err) {
       alert(err?.message || "Falha ao atualizar a senha.");
     } finally {

@@ -1,7 +1,7 @@
 /**
  * agent.js — Chat responsivo + Menus padrão Hub + Gestão de Sessão
  */
-HUB_URL = "/hub/hub.html";
+HUB_URL = "../paginaUnificada/index.html";
 
 document.addEventListener("DOMContentLoaded", async () => {
   // --- Elementos da Interface  ---
@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Trava de segurança: se faltar algum elemento crucial da interface de chat, para aqui.
   if (!chatMessages || !userInput || !sendBtn || !newChatBtn) {
-      console.warn("Elementos do chat não encontrados na tela.");
-      return;
+    console.warn("Elementos do chat não encontrados na tela.");
+    return;
   }
 
   // --- Configurações Iniciais ---
@@ -156,18 +156,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       removeLoading();
 
       if (!resp.ok) {
-        appendMessage(chatMessages, chatState, storageKey, "bot", formatBackendError(resp.status, raw));
+        appendMessage(
+          chatMessages,
+          chatState,
+          storageKey,
+          "bot",
+          formatBackendError(resp.status, raw),
+        );
         return;
       }
 
       let data;
-      try { data = JSON.parse(raw); } catch { data = { output: raw }; }
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = { output: raw };
+      }
 
-      appendMessage(chatMessages, chatState, storageKey, "bot", data.output || "Desculpe, não entendi.");
+      appendMessage(
+        chatMessages,
+        chatState,
+        storageKey,
+        "bot",
+        data.output || "Desculpe, não entendi.",
+      );
     } catch (err) {
       removeLoading();
       console.error(err);
-      const errorMsg = err.name === "AbortError" ? "Tempo limite excedido." : "Erro de conexão.";
+      const errorMsg =
+        err.name === "AbortError"
+          ? "Tempo limite excedido."
+          : "Erro de conexão.";
       appendMessage(chatMessages, chatState, storageKey, "bot", errorMsg);
     }
   }
@@ -222,7 +241,7 @@ function initTheme(themeToggle) {
   // Aplica as classes iniciais
   document.body.classList.toggle("light-mode", isLight);
   document.body.classList.toggle("dark-mode", !isLight);
-  
+
   // Chama a função passando se está escuro ou não
   updateThemeIcon(themeToggle, !isLight);
 
@@ -230,7 +249,7 @@ function initTheme(themeToggle) {
     const nowLight = document.body.classList.toggle("light-mode");
     document.body.classList.toggle("dark-mode", !nowLight);
     localStorage.setItem("theme", nowLight ? "light" : "dark");
-    
+
     // Passa o estado atualizado para o botão (!nowLight = isDark)
     updateThemeIcon(themeToggle, !nowLight);
   });
@@ -240,8 +259,8 @@ function updateThemeIcon(btn, isDark) {
   // Pega os elementos do botão de tema
   const icon = btn.querySelector("i");
   const text = btn.querySelector("span");
-  
-  // Atualiza apenas o botão (Ícone e Texto). 
+
+  // Atualiza apenas o botão (Ícone e Texto).
   // A logo agora é controlada 100% pelo seu CSS!
   if (icon && text) {
     icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
@@ -261,7 +280,9 @@ function loadState(key) {
   try {
     const raw = sessionStorage.getItem(key);
     return raw ? JSON.parse(raw) : { sessionId: null, messages: [] };
-  } catch { return { sessionId: null, messages: [] }; }
+  } catch {
+    return { sessionId: null, messages: [] };
+  }
 }
 
 function saveState(key, state) {
@@ -270,26 +291,40 @@ function saveState(key, state) {
 
 function renderHistory(chatMessages, messages) {
   chatMessages.innerHTML = "";
-  messages.forEach(msg => appendMessage(chatMessages, null, null, msg.role, msg.text, { persist: false }));
+  messages.forEach((msg) =>
+    appendMessage(chatMessages, null, null, msg.role, msg.text, {
+      persist: false,
+    }),
+  );
 }
 
-function appendMessage(chatMessages, chatState, storageKey, role, text, opts = {}) {
+function appendMessage(
+  chatMessages,
+  chatState,
+  storageKey,
+  role,
+  text,
+  opts = {},
+) {
   const persist = opts.persist !== false;
   const messageDiv = document.createElement("div");
-  
+
   messageDiv.className = `message ${role === "user" ? "message-user" : "message-bot"}`;
 
-  const contentHTML = role === "bot"
-    ? (window.marked ? marked.parse(text) : `<div class="text-content">${escapeHtml(text)}</div>`)
-    : `<div class="text-content">${escapeHtml(text)}</div>`;
+  const contentHTML =
+    role === "bot"
+      ? window.marked
+        ? marked.parse(text)
+        : `<div class="text-content">${escapeHtml(text)}</div>`
+      : `<div class="text-content">${escapeHtml(text)}</div>`;
 
   // Removemos a variável do avatarHTML, deixando apenas a bolha de mensagem
   messageDiv.innerHTML = `<div class="message-bubble">${contentHTML}</div>`;
   chatMessages.appendChild(messageDiv);
-  
+
   chatMessages.scrollTo({
     top: chatMessages.scrollHeight,
-    behavior: "smooth"
+    behavior: "smooth",
   });
 
   if (persist && chatState && storageKey) {
@@ -303,7 +338,7 @@ function showLoading(chatMessages) {
   const loadingDiv = document.createElement("div");
   loadingDiv.className = "message message-bot";
   loadingDiv.id = "loading-indicator";
-  
+
   // Removemos a div do message-avatar daqui também
   loadingDiv.innerHTML = `
     <div class="message-bubble typing-indicator">
@@ -326,10 +361,14 @@ function removeLoading() {
 async function checkAgentApiStatus(sb, email) {
   try {
     // Checa primeiro no banco de dados
-    const { data } = await sb.from('profiles').select('chave_api').eq('email', email).single();
+    const { data } = await sb
+      .from("profiles")
+      .select("chave_api")
+      .eq("email", email)
+      .single();
     // Checa também se há uma chave salva localmente pelo script de cadastro
-    const localKey = localStorage.getItem('gemini_api_key');
-    
+    const localKey = localStorage.getItem("gemini_api_key");
+
     window.atualizarStatusAgente(!!(data?.chave_api || localKey));
   } catch {
     window.atualizarStatusAgente(false);
@@ -351,26 +390,42 @@ window.atualizarStatusAgente = function (isOnline) {
   if (inputBtn) inputBtn.disabled = !isOnline;
   if (inputBox) {
     inputBox.disabled = !isOnline;
-    inputBox.placeholder = isOnline ? "Digite sua mensagem para o Apolo..." : "IA offline. Conecte sua Chave API na barra lateral.";
+    inputBox.placeholder = isOnline
+      ? "Digite sua mensagem para o Apolo..."
+      : "IA offline. Conecte sua Chave API na barra lateral.";
   }
-}
+};
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#039;" }[m]));
+  return String(str).replace(
+    /[&<>"']/g,
+    (m) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[m],
+  );
 }
 
 async function loadAgentConfig() {
   const r = await fetch("/api/public-agent-config", { cache: "no-store" });
-  return r.json().then(j => j.ok ? j : null);
+  return r.json().then((j) => (j.ok ? j : null));
 }
 
 function formatBackendError(status, raw) {
   try {
     const j = JSON.parse(raw);
     return `Erro (${status}): ${j.message || j.error || "Erro desconhecido"}`;
-  } catch { return `Erro no servidor (${status}).`; }
+  } catch {
+    return `Erro no servidor (${status}).`;
+  }
 }
 
 function clearAgentChatSessionStorage() {
-  Object.keys(sessionStorage).filter(k => k.startsWith("agente_chat_state:")).forEach(k => sessionStorage.removeItem(k));
+  Object.keys(sessionStorage)
+    .filter((k) => k.startsWith("agente_chat_state:"))
+    .forEach((k) => sessionStorage.removeItem(k));
 }

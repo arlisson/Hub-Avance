@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
-  const HUB_URL = "/hub/hub.html";
+  const HUB_URL = "../paginaUnificada/index.html";
 
   let sb;
   let session;
@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    const { data: sessionData, error: sessionError } =
+      await sb.auth.getSession();
 
     if (sessionError || !sessionData?.session) {
       window.location.href = LOGIN_URL;
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Menus e tema
   initSettingsMenu(
     document.getElementById("settings-btn"),
-    document.getElementById("settings-menu")
+    document.getElementById("settings-menu"),
   );
   initMobileSidebar(document.getElementById("mobile-menu-btn"));
   initTheme(document.getElementById("theme-toggle"));

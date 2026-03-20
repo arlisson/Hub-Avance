@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
   try {
     const sb = await window.getSupabaseClient();
     const { data } = await sb.auth.getSession();
-    
+
     if (data?.session) {
       const backLink = document.querySelector(".back-link");
       if (backLink) {
-        backLink.href = "../hub/hub.html";
+        backLink.href = "../paginaUnificada/index.html";
         backLink.textContent = "Voltar para o Início";
       }
     }
