@@ -415,16 +415,23 @@ function updateThemeIcon(btn, isDark) {
 
 function initNavbarEffect() {
   const navbar = document.querySelector(".top-navbar");
-  if (!navbar) return;
+  if (!navbar) {
+    console.warn("Navbar não encontrada pelo script!");
+    return;
+  }
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      navbar.classList.toggle("scrolled", window.scrollY > 50);
-    },
-    { passive: true },
-  );
+  // Função que verifica a posição da tela
+  const handleScroll = () => {
+    navbar.classList.toggle("scrolled", window.scrollY > 50);
+  };
 
+  // 1. Executa imediatamente ao carregar a página para definir o estado correto
+  handleScroll();
+
+  // 2. Continua monitorando a rolagem do usuário
+  window.addEventListener("scroll", handleScroll, { passive: true });
+
+  // 3. Monitora o mouse para mostrar a barra se ele encostar no topo
   document.addEventListener("mousemove", (e) => {
     navbar.classList.toggle("hover-active", e.clientY <= 30);
   });
