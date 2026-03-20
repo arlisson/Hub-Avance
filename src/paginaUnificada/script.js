@@ -1,5 +1,5 @@
 /**
- * main.js — AVANCE | Página Unificada
+ * script.js — AVANCE | Página Unificada
  *
  * Fusão de hub.js (apps + autenticação Supabase) e produtos.js
  * (catálogo de soluções + modal consultivo + WhatsApp).
@@ -20,9 +20,6 @@ let CURRENT_USER_ID = "";
 
 // ============================================================
 // CATÁLOGO DE APPS (Hub)
-//
-// - requiresPermission: true → visível apenas para perfis autorizados (UI only;
-//   o acesso real é protegido por RLS no Supabase e/ou autenticação server-side)
 // ============================================================
 const APPS = [
   {
@@ -339,7 +336,6 @@ let _answers = {};
 // UTILITÁRIOS COMPARTILHADOS
 // ============================================================
 
-/** Escapa caracteres HTML para prevenir XSS. */
 function escapeHtml(s) {
   return String(s ?? "")
     .replaceAll("&", "&amp;")
@@ -349,19 +345,16 @@ function escapeHtml(s) {
     .replaceAll("'", "&#039;");
 }
 
-/** Monta URL de link para o WhatsApp com mensagem pré-preenchida. */
 function buildWhatsAppUrl(message) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-/** Monta URL do contador de acessos/downloads do hub. */
 function buildCounterUrl(app, metric = "access") {
   if (!CURRENT_USER_ID || !app) return "#";
   const params = new URLSearchParams({ app, user_id: CURRENT_USER_ID, metric });
   return `/api/contador?${params.toString()}`;
 }
 
-/** Normaliza uma URL de login para sempre começar com /. */
 function normalizeLoginUrl(url) {
   if (!url) return "/login/login.html";
   if (
@@ -373,7 +366,6 @@ function normalizeLoginUrl(url) {
   return "/" + url.replace(/^\.?\//, "");
 }
 
-/** Remove chaves de sessão do agente do sessionStorage. */
 function clearAgentChatSessionStorage() {
   try {
     Object.keys(sessionStorage)
@@ -388,13 +380,9 @@ function clearAgentChatSessionStorage() {
 // TEMA ESCURO / CLARO
 // ============================================================
 
-/**
- * @param {HTMLElement} themeToggle  Botão de alternância de tema.
- */
 function initTheme(themeToggle) {
   if (!themeToggle) return;
 
-  // Aplica preferência salva (padrão: dark)
   if (localStorage.getItem("theme") === "light") {
     document.body.classList.remove("dark-mode");
     updateThemeIcon(themeToggle, false);
@@ -415,7 +403,6 @@ function updateThemeIcon(btn, isDark) {
   if (!btn) return;
   const icon = btn.querySelector("i");
   if (icon) icon.className = isDark ? "ph ph-sun" : "ph ph-moon";
-  // aria-label descreve a AÇÃO futura, não o estado atual
   btn.setAttribute(
     "aria-label",
     isDark ? "Ativar modo claro" : "Ativar modo escuro",
@@ -428,10 +415,7 @@ function updateThemeIcon(btn, isDark) {
 
 function initNavbarEffect() {
   const navbar = document.querySelector(".top-navbar");
-  if (!navbar) {
-    console.warn("Navbar não encontrada pelo script!");
-    return;
-  }
+  if (!navbar) return;
 
   window.addEventListener(
     "scroll",
@@ -447,9 +431,7 @@ function initNavbarEffect() {
 }
 
 // ============================================================
-// MENU MOBILE — unifica initMobileSidebar (hub) e initMobileMenu (produtos)
-// Tenta #navbar-links (ID) e .navbar-links (classe) para compatibilidade
-// com ambas as estruturas HTML.
+// MENU MOBILE
 // ============================================================
 
 function initMobileMenu() {
@@ -460,7 +442,6 @@ function initMobileMenu() {
 
   if (!btn || !links) return;
 
-  // Guard: evita acumulação de listeners se chamado mais de uma vez
   if (btn._mobileMenuInit) return;
   btn._mobileMenuInit = true;
 
@@ -482,7 +463,7 @@ function initMobileMenu() {
 }
 
 // ============================================================
-// SCROLL REVEAL — IntersectionObserver para animações de entrada
+// SCROLL REVEAL
 // ============================================================
 
 function initScrollReveal() {
@@ -490,7 +471,6 @@ function initScrollReveal() {
     "(prefers-reduced-motion: reduce)",
   ).matches;
   if (prefersReduced) {
-    // Show everything immediately
     document
       .querySelectorAll(
         "[data-reveal], .about-block, .posvenda-pillar, .product-card, .hub-card",
@@ -513,24 +493,20 @@ function initScrollReveal() {
     { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
   );
 
-  // Observe [data-reveal] sections
   document
     .querySelectorAll("[data-reveal]")
     .forEach((el) => revealObserver.observe(el));
 
-  // Observe about-blocks with stagger
   document.querySelectorAll(".about-block").forEach((el, i) => {
     el.style.transitionDelay = `${i * 0.1}s`;
     revealObserver.observe(el);
   });
 
-  // Observe posvenda pillars with stagger
   document.querySelectorAll(".posvenda-pillar").forEach((el, i) => {
     el.style.transitionDelay = `${i * 0.12}s`;
     revealObserver.observe(el);
   });
 
-  // Product cards are rendered dynamically — observe via MutationObserver
   const productsGrid = document.getElementById("products-grid");
   if (productsGrid) {
     const mutObs = new MutationObserver(() => {
@@ -545,7 +521,6 @@ function initScrollReveal() {
     mutObs.observe(productsGrid, { childList: true });
   }
 
-  // Hub cards are also dynamic
   const hubGrid = document.getElementById("hub-grid");
   if (hubGrid) {
     const hubMutObs = new MutationObserver(() => {
@@ -560,7 +535,7 @@ function initScrollReveal() {
 }
 
 // ============================================================
-// ACTIVE NAV LINK — highlight based on scroll position
+// ACTIVE NAV LINK
 // ============================================================
 
 function initActiveNavTracking() {
@@ -588,7 +563,6 @@ function initActiveNavTracking() {
 
 // ============================================================
 // ANIMAÇÃO DE PARTÍCULAS
-// Versão unificada: reduced-motion (produtos) + mobile opt (hub)
 // ============================================================
 
 function initParticles() {
@@ -602,8 +576,6 @@ function initParticles() {
       left: "0",
       width: "100vw",
       height: "100vh",
-      // z-index 1 garante que o canvas fique acima do fundo do body mas abaixo
-      // de todo o conteúdo relevante (hero-content: z-index 2, showcase: z-index 10).
       zIndex: "1",
       pointerEvents: "none",
     });
@@ -614,8 +586,6 @@ function initParticles() {
   let particles = [];
   let rafId = null;
 
-  // Pré-renderiza a partícula com glow num canvas offscreen para evitar
-  // recalcular ctx.shadowBlur por partícula por frame (operação cara).
   function createSprite(size) {
     const d = Math.ceil((size + 15) * 2);
     const oc = document.createElement("canvas");
@@ -631,7 +601,6 @@ function initParticles() {
     return oc;
   }
 
-  // Cache por tamanho arredondado a 0.5 px para limitar variantes
   const spriteCache = new Map();
   function getSprite(size) {
     const key = Math.round(size * 2) / 2;
@@ -642,7 +611,7 @@ function initParticles() {
   function setSize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    spriteCache.clear(); // DPR pode mudar ao redimensionar
+    spriteCache.clear();
   }
 
   setSize();
@@ -715,7 +684,6 @@ function initParticles() {
     }
   };
 
-  // Pausa quando a aba fica inativa — economiza CPU/GPU
   document.addEventListener("visibilitychange", () =>
     document.hidden ? stop() : start(),
   );
@@ -946,9 +914,6 @@ function openAppModal(appId) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
 
-  // Dois RAFs necessários: o primeiro registra o estado inicial (opacity:0),
-  // o segundo dispara a transição CSS. Com um só RAF o browser colapsa os dois
-  // estados no mesmo paint e a transição não ocorre.
   requestAnimationFrame(() =>
     requestAnimationFrame(() => modal.classList.add("is-open")),
   );
@@ -974,7 +939,6 @@ function closeAppModal() {
       if (backdrop) backdrop.hidden = true;
     };
 
-    // Escuta apenas a transição de opacity para não disparar duas vezes
     const onTransitionEnd = (e) => {
       if (e.propertyName !== "opacity") return;
       modal.removeEventListener("transitionend", onTransitionEnd);
@@ -982,7 +946,6 @@ function closeAppModal() {
       hideAll();
     };
 
-    // Fallback: prefers-reduced-motion ou aba inativa podem suprimir transitionend
     const fallbackTimer = setTimeout(() => {
       modal.removeEventListener("transitionend", onTransitionEnd);
       hideAll();
@@ -1029,7 +992,6 @@ function renderTestimonials(avaliacoes) {
   const track = document.getElementById("testimonials-track");
   if (!track) return;
 
-  // Duplica para o loop infinito de marquee CSS em -50%
   const allItems = [...avaliacoes, ...avaliacoes];
   track.innerHTML = allItems
     .map((t) => {
@@ -1077,7 +1039,6 @@ function iniciarCarrosselInterativo() {
     isDown = true;
     container.classList.replace("grab", "grabbing");
 
-    // Captura o translateX atual antes de pausar para evitar salto visual
     const matrix = window.getComputedStyle(track).transform;
     const tx =
       matrix && matrix !== "none" ? parseFloat(matrix.split(",")[4]) || 0 : 0;
@@ -1166,7 +1127,7 @@ function renderProductCards() {
 }
 
 // ============================================================
-// MODAL DE PRODUTO — ABRIR / FECHAR (prod-modal)
+// MODAL DE PRODUTO — ABRIR / FECHAR
 // ============================================================
 
 function openProductModal(product) {
@@ -1296,7 +1257,7 @@ function renderProductStep() {
       : `<div></div>`;
 
   const navNext = isReview
-    ? "" // botão WhatsApp já está no body
+    ? ""
     : `<button type="button" class="hub-btn hub-btn-primary" id="btn-next">
          ${stepIndex === totalSteps - 1 ? "Revisar" : "Próximo"}
          <i class="ph ph-arrow-right" aria-hidden="true"></i>
@@ -1316,10 +1277,6 @@ function renderProductStep() {
   const first = modal.querySelector("button:not([disabled]), input, select");
   if (first) first.focus();
 }
-
-// ============================================================
-// MODAL DE PRODUTO — HTML DOS PASSOS
-// ============================================================
 
 function buildProductStepHTML(step) {
   let inputHtml = "";
@@ -1421,10 +1378,6 @@ function buildProductReviewHTML(product) {
   `;
 }
 
-// ============================================================
-// MODAL DE PRODUTO — EVENTOS E VALIDAÇÃO
-// ============================================================
-
 function bindProductModalEvents(product, stepIndex, isReview) {
   document
     .getElementById("prod-modal-close")
@@ -1492,7 +1445,7 @@ function handleProductNext(product, stepIndex) {
 }
 
 // ============================================================
-// CTA GERAL (WhatsApp sem produto específico)
+// CTA GERAL
 // ============================================================
 
 function initCtaGeral() {
@@ -1500,7 +1453,6 @@ function initCtaGeral() {
     "Olá! Gostaria de saber mais sobre as soluções da AVANCE. Poderia me ajudar?",
   );
 
-  // Adicionamos o 'floating-whatsapp' na lista abaixo:
   const ids = [
     "cta-whatsapp-geral",
     "mid-cta-whatsapp",
@@ -1515,7 +1467,7 @@ function initCtaGeral() {
 }
 
 // ============================================================
-// CONFIG PÚBLICA (LOGIN_URL dinâmica)
+// CONFIG PÚBLICA (LOGIN_URL)
 // ============================================================
 
 async function loadPublicAgentConfig() {
@@ -1529,11 +1481,11 @@ async function loadPublicAgentConfig() {
 }
 
 // ============================================================
-// INICIALIZAÇÃO — único DOMContentLoaded
+// INICIALIZAÇÃO
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // ── 1. UI imediata (sem dependências) ──────────────────────
+  // ── 1. UI imediata ──────────────────────
   initNavbarEffect();
   initParticles();
   initTheme(document.getElementById("theme-toggle"));
@@ -1541,7 +1493,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   initScrollReveal();
   initActiveNavTracking();
 
-  // Smooth scroll nos links âncora (active class handled by IntersectionObserver)
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       const target = document.querySelector(this.getAttribute("href"));
@@ -1551,21 +1502,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // ── 2. Renderização estática imediata ──────────────────────
-  renderSkeletonCards(); // Placeholder dos cards do hub
-  renderProductCards(); // Cards de soluções (seção pública)
-  initCtaGeral(); // Link WhatsApp geral
+  // ── 2. Renderização estática ──────────────────────
+  renderSkeletonCards();
+  renderProductCards();
+  initCtaGeral();
 
-  // ── 3. Config pública (pode alterar LOGIN_URL) ─────────────
+  // ── 3. Config pública ─────────────
   await loadPublicAgentConfig();
 
-  // ── 4. Autenticação Supabase + Hub dinâmico ────────────────
+  // ── 4. Autenticação e Lógica Híbrida ────────────────
   let sb;
   try {
     sb = await window.getSupabaseClient();
   } catch (e) {
-    // Supabase indisponível: exibe hub em modo visitante, sem redirecionar
     console.error("Supabase client não carregado:", e);
+
+    // Fallback: modo visitante
+    const loginBtnVisitor = document.getElementById("login-btn-visitor");
+    if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
+
     initAppModal();
     renderHubCards({ canAccessProtocol: false });
     return;
@@ -1574,14 +1529,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const { data: sessionData } = await sb.auth.getSession();
 
+    const userMenuContainer = document.getElementById("user-menu-container");
+    const loginBtnVisitor = document.getElementById("login-btn-visitor");
+
     if (!sessionData?.session) {
-      // Sem sessão: modo visitante (não redireciona — página é pública)
+      // Sem sessão: mostra o botão de login e esconde o menu de usuário
+      if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
+      if (userMenuContainer) userMenuContainer.hidden = true;
+
       initAppModal();
       renderHubCards({ canAccessProtocol: false });
       return;
     }
 
     // ── Usuário autenticado ────────────────────────────────────
+    if (loginBtnVisitor) loginBtnVisitor.style.display = "none";
+    if (userMenuContainer) userMenuContainer.hidden = false;
+
     CURRENT_USER_ID = sessionData.session.user.id;
     const email = sessionData.session.user?.email || "";
 
@@ -1595,11 +1559,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const canAccessProtocol = !!profile?.protocol;
 
-    // Exibe / oculta menu de gerenciamento de usuários
     const menuUsers = document.getElementById("menu-users");
     if (menuUsers) menuUsers.hidden = !canAccessProtocol;
 
-    // E-mail na navbar
     const userEmailEl = document.getElementById("user-email");
     if (userEmailEl) {
       userEmailEl.textContent = email;
@@ -1607,13 +1569,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       userEmailEl.style.cursor = "default";
     }
 
-    // Menu de configurações
     initSettingsMenu(
       document.getElementById("settings-btn"),
       document.getElementById("settings-menu"),
     );
 
-    // Botão de logout
     const menuLogout = document.getElementById("menu-logout");
     if (menuLogout) {
       menuLogout.addEventListener("click", async () => {
@@ -1626,15 +1586,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // Hub de apps
     initAppModal();
     renderHubCards({ canAccessProtocol });
-
-    // Depoimentos (assíncrono, não bloqueia nada)
     await carregarAvaliacoes(sb);
   } catch (e) {
-    // Erro inesperado durante a inicialização: modo visitante
     console.error("Erro ao inicializar Hub:", e);
+
+    // Fallback erro inesperado
+    const loginBtnVisitor = document.getElementById("login-btn-visitor");
+    if (loginBtnVisitor) loginBtnVisitor.style.display = "inline-flex";
+
     initAppModal();
     renderHubCards({ canAccessProtocol: false });
   }

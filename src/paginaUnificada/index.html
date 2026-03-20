@@ -48,7 +48,6 @@
         <a href="#solucoes" class="nav-link">Soluções</a>
       </nav>
 
-      <!-- CORREÇÃO: navbar-right antes estava vazio — botões adicionados -->
       <div class="navbar-right">
         <button
           class="mobile-menu-btn"
@@ -67,6 +66,60 @@
         >
           <i class="ph ph-moon"></i>
         </button>
+
+        <div class="user-menu-container" id="user-menu-container" hidden>
+          <button class="user-profile-btn" id="settings-btn" type="button">
+            <i class="ph ph-user-circle"></i>
+            <span id="user-email" class="nav-user-email">Carregando...</span>
+            <i class="ph ph-caret-down" style="font-size: 14px"></i>
+          </button>
+
+          <div class="settings-dropdown" id="settings-menu" hidden>
+            <a
+              href="../perfil/perfil.html"
+              class="dropdown-item reset-action"
+              id="perfil-user"
+              style="text-decoration: none"
+            >
+              <i class="ph ph-user"></i>
+              <span>Perfil</span>
+            </a>
+
+            <a
+              href="../usuarios/usuarios.html"
+              class="dropdown-item reset-action"
+              id="menu-users"
+              style="text-decoration: none"
+              hidden
+            >
+              <i class="ph ph-users-three"></i>
+              <span>Usuários</span>
+            </a>
+
+            <a
+              href="/redefinirSenha/redefinirSenha.html"
+              class="dropdown-item reset-action"
+              style="text-decoration: none"
+            >
+              <i class="ph ph-lock-key"></i>
+              <span>Alterar Senha</span>
+            </a>
+
+            <button type="button" class="dropdown-item danger" id="menu-logout">
+              <i class="ph ph-sign-out"></i>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
+
+        <a
+          href="/login/login.html"
+          class="hub-btn hub-btn-primary"
+          id="login-btn-visitor"
+          style="padding: 8px 16px; font-size: 14px; display: none"
+        >
+          Entrar <i class="ph ph-sign-in"></i>
+        </a>
       </div>
     </header>
 
