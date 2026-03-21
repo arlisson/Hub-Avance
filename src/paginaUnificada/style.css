@@ -74,6 +74,7 @@ body.dark-mode {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Compensa a navbar fixa para âncoras */
 }
 
 body {

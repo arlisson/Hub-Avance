@@ -562,7 +562,7 @@ function initActiveNavTracking() {
         }
       });
     },
-    { threshold: 0.3, rootMargin: "-80px 0px -40% 0px" },
+    { threshold: 0.15, rootMargin: "-100px 0px -50% 0px" },
   );
 
   sections.forEach((sec) => observer.observe(sec));
@@ -1535,6 +1535,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const target = document.querySelector(this.getAttribute("href"));
       if (!target) return;
       e.preventDefault();
+
+      // Atualiza manualmente a classe active no nav
+      const navLinks = document.querySelectorAll(".nav-link");
+      const clickedHref = this.getAttribute("href");
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === clickedHref);
+      });
+
       target.scrollIntoView({ behavior: "smooth" });
     });
   });
