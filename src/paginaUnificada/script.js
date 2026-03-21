@@ -120,14 +120,14 @@ const PRODUCTS = [
     icon: "ph-device-mobile",
     badge: "Telefonia Móvel",
     title: "Linhas empresariais com as melhores operadoras do Brasil.",
-    tagline: "Linha nova ou portabilidade sem burocracia",
+    tagline: "Linhas novas ou portabilidade sem burocracia",
     description:
-      "Trabalhamos com as principais operadoras do país. Você nos conta quantas linhas novas precisa ou quer fazer a portabilidade e qual operadora prefere — nós garantimos a melhor oferta disponível e cuidamos de tudo: contrato, portabilidade, ativação e suporte.",
+      "Trabalhamos com as principais operadoras do país. Você nos conta quantas linhas novas precisa ou quer fazer a portabilidade e qual operadora prefere, nós garantimos a melhor oferta disponível e cuidamos de tudo: contrato, portabilidade, ativação e suporte.",
     benefits: [
       { icon: "ph-buildings", text: "Para empresas de qualquer porte e MEI" },
       {
         icon: "ph-arrows-left-right",
-        text: "Linha nova ou portabilidade sem burocracia",
+        text: "Linhas novas ou portabilidade sem burocracia",
       },
       {
         icon: "ph-handshake",
@@ -166,7 +166,7 @@ const PRODUCTS = [
       {
         id: "operadora",
         title: "Qual operadora você prefere?",
-        hint: "Sem preferência? Sem problema — apresentaremos as melhores opções disponíveis.",
+        hint: "Sem preferência? Sem problema, apresentaremos as melhores opções disponíveis.",
         type: "text",
         placeholder: "Escreva aqui, ou deixe em branco...",
         required: false,
@@ -193,11 +193,11 @@ const PRODUCTS = [
     title: "Internet rápida e estável. Do jeito que a sua empresa precisa.",
     tagline: "Conexão de alta velocidade para o seu negócio",
     description:
-      "Sabemos qual tipo de conexão cada negócio precisa. Você nos conta como sua empresa funciona e nós indicamos a solução certa — garantimos que você não vai pagar por algo que não precisa.",
+      "Sabemos qual tipo de conexão cada negócio precisa. Você nos conta como sua empresa funciona e nós indicamos a solução certa.",
     benefits: [
       {
         icon: "ph-lightning",
-        text: "Alta velocidade para o dia a dia da empresa",
+        text: "Alta velocidade para o dia a dia do seu negócio",
       },
       {
         icon: "ph-buildings",
@@ -226,7 +226,7 @@ const PRODUCTS = [
       {
         id: "velocidade",
         title: "Qual velocidade aproximada você precisa?",
-        hint: "Não sabe? Tudo bem — nosso consultor vai ajudar a descobrir.",
+        hint: "Não sabe? Tudo bem, nosso consultor vai te ajudar a descobrir.",
         type: "chips",
         required: true,
         options: [
@@ -268,7 +268,7 @@ const PRODUCTS = [
     title: "Ligue para qualquer lugar do Brasil sem se preocupar com a conta.",
     tagline: "Ligações ilimitadas para todo o Brasil",
     description:
-      "Oferecemos planos de telefonia fixa com ligações ilimitadas para todo o Brasil. Linha nova ou portabilidade (para você não perder o seu número), sem burocracia, sem surpresa no bolso, com suporte dedicado do começo ao fim.",
+      "Planos de telefonia fixa com ligações ilimitadas para todo o Brasil. Linha nova ou portabilidade (para você não perder o seu número), sem burocracia, sem surpresa no bolso, com suporte dedicado do começo ao fim.",
     benefits: [
       {
         icon: "ph-infinity",
@@ -1399,7 +1399,7 @@ function buildProductReviewHTML(product) {
 
   return `
     <h3 class="step-question">Tudo certo! Confirme o seu pedido.</h3>
-    <p class="step-hint">Revise as informações abaixo. Um consultor vai receber esses dados e entrar em contato para apresentar as melhores opções.</p>
+    <p class="step-hint">Revise as informações abaixo. Um consultor vai receber esses dados e entrará em contato para apresentar as melhores opções.</p>
     <div class="summary-card">
       <p class="summary-title">Resumo da solicitação</p>
       ${rows}
@@ -1540,7 +1540,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       const navLinks = document.querySelectorAll(".nav-link");
       const clickedHref = this.getAttribute("href");
       navLinks.forEach((link) => {
-        link.classList.toggle("active", link.getAttribute("href") === clickedHref);
+        link.classList.toggle(
+          "active",
+          link.getAttribute("href") === clickedHref,
+        );
       });
 
       target.scrollIntoView({ behavior: "smooth" });
