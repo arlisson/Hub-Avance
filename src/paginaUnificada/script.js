@@ -1255,7 +1255,6 @@ function renderProductStep() {
     <div class="prod-modal-header">
       <div class="prod-modal-meta">
         <span class="app-modal-badge">${escapeHtml(product.badge)}</span>
-        <h2 class="app-modal-title" id="prod-modal-title">${escapeHtml(product.title)}</h2>
       </div>
       <button type="button" class="app-modal-close" id="prod-modal-close" aria-label="Fechar">
         <i class="ph ph-x" aria-hidden="true"></i>
