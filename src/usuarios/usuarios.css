@@ -1047,7 +1047,7 @@ body.light-mode .usage-dashboard-card {
   margin-bottom: 18px;
   border: 1px solid var(--border-color);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
   transition: border-color 0.2s ease;
 }
 
@@ -1058,6 +1058,7 @@ body.light-mode .usage-dashboard-card {
   padding: 10px 14px;
   background: rgba(255, 255, 255, 0.02);
   flex-wrap: wrap;
+  border-radius: 14px 14px 0 0;
 }
 
 body.light-mode .filter-bar-header {
@@ -1139,6 +1140,7 @@ body.light-mode .filter-active-count {
   padding: 14px 14px 16px;
   border-top: 1px solid var(--border-color);
   background: rgba(255, 255, 255, 0.01);
+  border-radius: 0 0 14px 14px;
 }
 
 body.light-mode .filter-bar-body {
