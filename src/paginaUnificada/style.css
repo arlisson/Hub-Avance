@@ -710,7 +710,7 @@ body.dark-mode .hub-title {
   justify-content: center;
   gap: 8px;
   width: 160px;
-  height: 84px;
+  height: 110px;
   background: rgba(87, 197, 234, 0.1);
   border: 1px solid rgba(87, 197, 234, 0.35);
   color: var(--brand-action, #57c5ea);
@@ -737,7 +737,7 @@ body.dark-mode .hub-title {
 }
 
 .hub-coming-soon-count {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
   color: #fff;
