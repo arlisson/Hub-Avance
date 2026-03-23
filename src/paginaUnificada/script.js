@@ -13,7 +13,7 @@
 // ============================================================
 
 /** Número do WhatsApp do consultor (com DDI, sem espaços ou símbolos). */
-const WHATSAPP_NUMBER = "5511999999999"; // ← Substitua pelo número real
+const WHATSAPP_NUMBER = "5522988124656";
 
 let LOGIN_URL = "/login/login.html";
 let CURRENT_USER_ID = "";
@@ -1289,7 +1289,7 @@ function renderProductStep() {
 
   const navBack =
     stepIndex > 0 || isReview
-      ? `<button type="button" class="hub-btn" id="btn-back"><i class="ph ph-arrow-left" aria-hidden="true"></i> ${isReview ? "Revisar" : "Voltar"}</button>`
+      ? `<button type="button" class="hub-btn" id="btn-back"><i class="ph ph-arrow-left" aria-hidden="true"></i> Voltar</button>`
       : `<div></div>`;
 
   const navNext = isReview
