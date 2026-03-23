@@ -636,6 +636,11 @@ body.dark-mode .showcase-wrapper {
 /* Dentro do showcase wrapper (sem margem top) */
 .showcase-content .hub-section-title {
   margin: 0 auto 48px auto;
+  max-width: unset;
+}
+
+.showcase-content .hub-section-title h2 {
+  white-space: nowrap;
 }
 
 .hub-section-title h2 {
@@ -2013,7 +2018,7 @@ body.dark-mode .contact-card {
   line-height: 1.65;
   opacity: 0.65;
   color: var(--text-primary);
-  margin: 0;
+  margin: 16px 0 0;
 }
 
 body.dark-mode .section-subtitle {
@@ -2470,15 +2475,10 @@ body.dark-mode .posvenda-title {
 
 .posvenda-subtitle {
   font-size: 17px;
-  color: var(--text-primary);
-  opacity: 0.6;
+  color: var(--brand-action);
   margin: 16px auto 0;
   max-width: 560px;
   line-height: 1.6;
-}
-
-body.dark-mode .posvenda-subtitle {
-  opacity: 0.55;
 }
 
 .posvenda-body {
