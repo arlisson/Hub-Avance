@@ -17,7 +17,7 @@ const WHATSAPP_NUMBER = "5522988124656";
 
 let LOGIN_URL = "/login/login.html";
 let CURRENT_USER_ID = "";
-let _currentUserProfile = null; // { name, cpf, whatsapp }
+let _currentUserProfile = null; // { name, cpf, whatsapp, operator, active_lines, cidade, estado }
 
 // ============================================================
 // CATÁLOGO DE APPS (Hub)
@@ -1395,7 +1395,18 @@ function buildProductReviewHTML(product) {
     })
     .join("");
 
-  const waUrl = buildWhatsAppUrl(product.buildMessage(_answers));
+  const p = _currentUserProfile;
+  const profileLines = [];
+  if (p?.name)         profileLines.push(` -*Nome:* ${p.name}`);
+  if (p?.whatsapp)     profileLines.push(` -*Telefone:* ${p.whatsapp}`);
+  if (p?.operator)     profileLines.push(` -*Operadora atual:* ${p.operator}`);
+  if (p?.active_lines != null) profileLines.push(` -*Chips ativos:* ${p.active_lines}`);
+  if (p?.cidade || p?.estado)  profileLines.push(` -*Localização:* ${[p.cidade, p.estado].filter(Boolean).join(" - ")}`);
+  const profileSuffix = profileLines.length
+    ? `\n\n---\n${profileLines.join("\n")}`
+    : "";
+
+  const waUrl = buildWhatsAppUrl(product.buildMessage(_answers) + profileSuffix);
 
   return `
     <h3 class="step-question">Tudo certo! Confirme o seu pedido.</h3>
@@ -1615,7 +1626,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const { data: profile, error: profileError } = await sb
       .from("profiles")
-      .select("protocol, name, cpf, whatsapp")
+      .select("protocol, name, cpf, whatsapp, operator, active_lines, regiao")
       .eq("id", CURRENT_USER_ID)
       .single();
 
@@ -1623,9 +1634,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (profile) {
       _currentUserProfile = {
-        name:     profile.name     ?? "",
-        cpf:      profile.cpf      ?? "",
-        whatsapp: profile.whatsapp ?? "",
+        name:         profile.name         ?? "",
+        cpf:          profile.cpf          ?? "",
+        whatsapp:     profile.whatsapp     ?? "",
+        operator:     profile.operator     ?? "",
+        active_lines: profile.active_lines ?? null,
+        cidade:       profile.regiao?.cidade ?? "",
+        estado:       profile.regiao?.estado ?? "",
       };
     }
 
