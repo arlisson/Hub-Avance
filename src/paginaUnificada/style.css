@@ -2433,7 +2433,7 @@ body.dark-mode .posvenda-subtitle {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 64px;
-  align-items: start;
+  align-items: center;
   width: 100%;
   max-width: 960px;
   margin: 0 auto 56px;
