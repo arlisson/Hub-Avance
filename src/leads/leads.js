@@ -1,53 +1,51 @@
 // ── State ──────────────────────────────────────────────────────────────────
-let supabaseClient  = null;
-let currentSession  = null;
-let currentView     = "pendentes"; // "pendentes" | "atendidos"
+let supabaseClient = null;
+let currentSession = null;
+let currentPage    = 1;
+let totalLeads     = 0;
 
-// Paginação — pendentes
+let searchEl       = null;
+let filterStatusEl = null;
+let filterServicoEl = null;
+let errorBox       = null;
+let searchDebounce = null;
+
 const PAGE_SIZE = 25;
-let currentPagePend  = 1;
-let totalPend        = 0;
-let searchElPend     = null;
-let filterServicoEl  = null;
-let errorBoxPend     = null;
-let searchDebounceP  = null;
 
-// Paginação — atendidos
-let currentPageAtend = 1;
-let totalAtend       = 0;
-let searchElAtend    = null;
-let filterServicoAtEl = null;
-let errorBoxAtend    = null;
-let searchDebounceA  = null;
-
-// ── Helpers de loading ─────────────────────────────────────────────────────
-function showLoading(title, message) {
-  window.AppLoading?.show?.({ title, message });
-}
-function hideLoading() {
-  window.AppLoading?.hide?.();
-}
+// ── Loading ────────────────────────────────────────────────────────────────
+function showLoading(title, message) { window.AppLoading?.show?.({ title, message }); }
+function hideLoading() { window.AppLoading?.hide?.(); }
 async function withLoading(title, message, task) {
   showLoading(title, message);
   try { return await task(); } finally { hideLoading(); }
 }
 
 // ── Query params ───────────────────────────────────────────────────────────
-function buildLeadsParams(page, limit, search, servico, atendido) {
+function buildParams(page, limit) {
   const p = new URLSearchParams();
-  p.set("page",     String(page));
-  p.set("limit",    String(limit));
-  p.set("atendido", String(atendido));
-  if (search)  p.set("search",  search);
-  if (servico) p.set("servico", servico);
+  p.set("page",  String(page));
+  p.set("limit", String(limit));
+
+  const search  = (searchEl?.value || "").trim();
+  const status  = filterStatusEl?.value  || "";
+  const servico = filterServicoEl?.value || "";
+
+  if (search)  p.set("search",   search);
+  if (status)  p.set("atendido", status);
+  if (servico) p.set("servico",  servico);
+
   return p;
 }
 
-// ── Badge de filtro ────────────────────────────────────────────────────────
-function updateFilterBadge(countElId, clearBtnId, filters) {
-  const countEl  = document.getElementById(countElId);
-  const clearBtn = document.getElementById(clearBtnId);
-  const active   = filters.filter(Boolean).length;
+// ── Filter badge ───────────────────────────────────────────────────────────
+function updateFilterBadge() {
+  const countEl  = document.getElementById("filter-active-count");
+  const clearBtn = document.getElementById("btn-clear-filters");
+
+  const active = [
+    filterStatusEl?.value,
+    filterServicoEl?.value,
+  ].filter(Boolean).length;
 
   if (countEl) {
     countEl.textContent = active > 0
@@ -59,8 +57,8 @@ function updateFilterBadge(countElId, clearBtnId, filters) {
 }
 
 // ── Result count ───────────────────────────────────────────────────────────
-function updateResultCount(elId, total, page, pageSize) {
-  const el = document.getElementById(elId);
+function updateResultCount(total, page, pageSize) {
+  const el = document.getElementById("filter-result-count");
   if (!el) return;
   if (total === 0) { el.textContent = "Nenhum lead encontrado"; return; }
   const from = (page - 1) * pageSize + 1;
@@ -69,8 +67,8 @@ function updateResultCount(elId, total, page, pageSize) {
 }
 
 // ── Pagination ─────────────────────────────────────────────────────────────
-function renderPagination(containerId, total, page, pageSize, onPageChange) {
-  const container = document.getElementById(containerId);
+function renderPagination(total, page, pageSize) {
+  const container = document.getElementById("pagination-controls");
   if (!container) return;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   container.innerHTML = "";
@@ -85,7 +83,7 @@ function renderPagination(containerId, total, page, pageSize, onPageChange) {
     btn.className = "page-btn" + (active ? " active" : "");
     btn.disabled = disabled;
     btn.innerHTML = label;
-    if (!disabled) btn.addEventListener("click", () => onPageChange(targetPage));
+    if (!disabled) btn.addEventListener("click", () => { currentPage = targetPage; loadLeads(targetPage, false); });
     return btn;
   };
 
@@ -110,8 +108,8 @@ function renderPagination(containerId, total, page, pageSize, onPageChange) {
 }
 
 // ── Render table ───────────────────────────────────────────────────────────
-function renderLeads(leads, tbodyId) {
-  const tbody = document.getElementById(tbodyId);
+function renderLeads(leads) {
+  const tbody = document.getElementById("leads-table-body");
   if (!tbody) return;
   tbody.innerHTML = "";
 
@@ -125,12 +123,14 @@ function renderLeads(leads, tbodyId) {
   leads.forEach((lead) => {
     const summaryRow = document.createElement("tr");
     summaryRow.className = "user-summary-row";
-
     summaryRow.innerHTML = `
       <td>${escapeHtml(lead.nome || "")}</td>
       <td>${escapeHtml(lead.whatsapp || "")}</td>
       <td>${escapeHtml(lead.cpf || "")}</td>
-      <td>${lead.servico ? `<span class="badge-servico">${escapeHtml(lead.servico)}</span>` : `<span style="color:var(--text-secondary);font-size:12px">—</span>`}</td>
+      <td>${lead.servico
+        ? `<span class="badge-servico">${escapeHtml(lead.servico)}</span>`
+        : `<span style="color:var(--text-secondary);font-size:12px">—</span>`}
+      </td>
       <td>${formatDate(lead.created_at)}</td>
       <td>
         <span class="badge ${lead.atendido ? "success" : "warning"}">
@@ -142,9 +142,6 @@ function renderLeads(leads, tbodyId) {
     const detailsRow = document.createElement("tr");
     detailsRow.className = "user-details-row";
     detailsRow.hidden = true;
-
-    const dadosHtml = buildDadosHtml(lead.dados);
-
     detailsRow.innerHTML = `
       <td colspan="6">
         <div class="user-expanded-box">
@@ -168,14 +165,14 @@ function renderLeads(leads, tbodyId) {
             </div>
           </div>
 
-          ${dadosHtml}
+          ${buildDadosHtml(lead.dados)}
 
           <div class="actions-lead">
             ${lead.atendido
-              ? `<button class="btn-desfazer-atendido btn-toggle-atendido" type="button" data-id="${escapeAttr(lead.id)}" data-atendido="true">
+              ? `<button class="btn-desfazer-atendido btn-toggle-atendido" type="button" data-id="${escapeAttr(lead.id)}">
                    <i class="ph ph-arrow-u-up-left"></i> Desfazer atendimento
                  </button>`
-              : `<button class="btn-atendido btn-toggle-atendido" type="button" data-id="${escapeAttr(lead.id)}" data-atendido="false">
+              : `<button class="btn-atendido btn-toggle-atendido" type="button" data-id="${escapeAttr(lead.id)}">
                    <i class="ph ph-check-circle"></i> Marcar como atendido
                  </button>`
             }
@@ -192,30 +189,20 @@ function renderLeads(leads, tbodyId) {
 
     detailsRow.querySelector(".btn-toggle-atendido")?.addEventListener("click", async (e) => {
       const btn        = e.currentTarget;
-      const leadId     = btn.dataset.id;
-      const wasAtendido = btn.dataset.atendido === "true";
-      const newAtendido = !wasAtendido;
-
+      const newAtendido = !lead.atendido;
       btn.disabled = true;
       try {
         const resp = await fetch("/api/admin/leads", {
           method:  "POST",
           headers: {
-            "Content-Type":  "application/json",
-            Authorization:   `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}`,
+            "Content-Type": "application/json",
+            Authorization:  `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}`,
           },
-          body: JSON.stringify({ id: leadId, atendido: newAtendido }),
+          body: JSON.stringify({ id: lead.id, atendido: newAtendido }),
         });
-
         const data = await resp.json();
         if (!resp.ok) throw new Error(data?.error || "Falha ao atualizar.");
-
-        // Recarrega a view atual
-        if (currentView === "pendentes") {
-          await loadLeads("pendentes", currentPagePend, false);
-        } else {
-          await loadLeads("atendidos", currentPageAtend, false);
-        }
+        await loadLeads(currentPage, false);
       } catch (err) {
         alert(err?.message || "Erro ao atualizar o lead.");
         btn.disabled = false;
@@ -254,19 +241,11 @@ function buildDadosHtml(dados) {
 }
 
 // ── Load leads ─────────────────────────────────────────────────────────────
-async function loadLeads(view, page = 1, showLoader = true) {
-  const isPend    = view === "pendentes";
-  const tbodyId   = isPend ? "leads-table-body" : "leads-table-body-atendidos";
-  const countId   = isPend ? "filter-result-count" : "filter-result-count-atendidos";
-  const paginId   = isPend ? "pagination-controls" : "pagination-controls-atendidos";
-  const errBox    = isPend ? errorBoxPend : errorBoxAtend;
-  const searchVal = ((isPend ? searchElPend : searchElAtend)?.value || "").trim();
-  const servico   = (isPend ? filterServicoEl : filterServicoAtEl)?.value || "";
-
+async function loadLeads(page = 1, showLoader = true) {
   const task = async () => {
-    setError(errBox, "", true);
+    setError(errorBox, "", true);
     try {
-      const params = buildLeadsParams(page, PAGE_SIZE, searchVal, servico, !isPend);
+      const params = buildParams(page, PAGE_SIZE);
       const resp   = await fetch(`/api/admin/leads?${params.toString()}`, {
         headers: { Authorization: `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}` },
       });
@@ -274,16 +253,14 @@ async function loadLeads(view, page = 1, showLoader = true) {
       if (!resp.ok) throw new Error(data?.error || "Falha ao carregar leads.");
 
       const leads = Array.isArray(data?.leads) ? data.leads : [];
-      const total = Number.isFinite(data?.total) ? data.total : leads.length;
+      totalLeads  = Number.isFinite(data?.total) ? data.total : leads.length;
+      currentPage = page;
 
-      if (isPend) { currentPagePend = page; totalPend = total; }
-      else        { currentPageAtend = page; totalAtend = total; }
-
-      renderLeads(leads, tbodyId);
-      updateResultCount(countId, total, page, PAGE_SIZE);
-      renderPagination(paginId, total, page, PAGE_SIZE, (p) => loadLeads(view, p, false));
+      renderLeads(leads);
+      updateResultCount(totalLeads, page, PAGE_SIZE);
+      renderPagination(totalLeads, page, PAGE_SIZE);
     } catch (err) {
-      setError(errBox, err?.message || "Erro ao carregar leads.");
+      setError(errorBox, err?.message || "Erro ao carregar leads.");
     }
   };
 
@@ -292,13 +269,13 @@ async function loadLeads(view, page = 1, showLoader = true) {
     : task();
 }
 
-// ── Fetch all for Excel export ─────────────────────────────────────────────
-async function fetchAllLeads(atendido, search, servico) {
+// ── Fetch all for Excel ────────────────────────────────────────────────────
+async function fetchAllLeads() {
   const limit = 500;
   let page = 1;
   const results = [];
   while (true) {
-    const params = buildLeadsParams(page, limit, search, servico, atendido);
+    const params = buildParams(page, limit);
     const resp   = await fetch(`/api/admin/leads?${params.toString()}`, {
       headers: { Authorization: `Bearer ${window.__USER_ACCESS_TOKEN__ || ""}` },
     });
@@ -312,16 +289,11 @@ async function fetchAllLeads(atendido, search, servico) {
   return results;
 }
 
-async function exportLeadsToExcel(atendido, label) {
-  const btn = document.getElementById(atendido ? "btn-export-excel-atendidos" : "btn-export-excel");
+async function exportToExcel() {
+  const btn = document.getElementById("btn-export-excel");
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Buscando dados…'; }
-
   try {
-    const isPend  = !atendido;
-    const search  = ((isPend ? searchElPend : searchElAtend)?.value || "").trim();
-    const servico = (isPend ? filterServicoEl : filterServicoAtEl)?.value || "";
-    const leads   = await fetchAllLeads(atendido, search, servico);
-
+    const leads = await fetchAllLeads();
     if (!leads.length) { alert("Nenhum lead encontrado com os filtros atuais."); return; }
 
     const rows = leads.map((l) => ({
@@ -329,25 +301,23 @@ async function exportLeadsToExcel(atendido, label) {
       WhatsApp:   l.whatsapp || "",
       "CPF/CNPJ": l.cpf      || "",
       Serviço:    l.servico  || "",
-      "Data":     formatDate(l.created_at),
-      Atendido:   l.atendido ? "Sim" : "Não",
+      Data:       formatDate(l.created_at),
+      Status:     l.atendido ? "Atendido" : "Pendente",
       ...(l.dados && typeof l.dados === "object"
         ? Object.fromEntries(Object.entries(l.dados).map(([k, v]) => [`Resp: ${k}`, v ?? ""]))
         : {}),
     }));
 
     const ws = XLSX.utils.json_to_sheet(rows);
-    const colWidths = Object.keys(rows[0]).map((key) => ({
+    ws["!cols"] = Object.keys(rows[0]).map((key) => ({
       wch: Math.min(Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2, 40),
     }));
-    ws["!cols"] = colWidths;
-
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, label);
+    XLSX.utils.book_append_sheet(wb, ws, "Leads");
 
     const now   = new Date();
     const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`;
-    XLSX.writeFile(wb, `leads_avance_${atendido ? "atendidos" : "pendentes"}_${stamp}.xlsx`);
+    XLSX.writeFile(wb, `leads_avance_${stamp}.xlsx`);
   } catch (err) {
     alert(err?.message || "Erro ao exportar.");
   } finally {
@@ -355,38 +325,7 @@ async function exportLeadsToExcel(atendido, label) {
   }
 }
 
-// ── Navigation ─────────────────────────────────────────────────────────────
-function initNavigation() {
-  document.querySelectorAll(".nav-card").forEach((item) => {
-    item.addEventListener("click", () => switchView(item.dataset.view || "pendentes"));
-  });
-}
-
-function switchView(view) {
-  currentView = view;
-
-  document.querySelectorAll(".nav-card").forEach((item) => {
-    item.classList.toggle("active", item.dataset.view === view);
-  });
-
-  const sections = {
-    pendentes: document.getElementById("view-pendentes"),
-    atendidos: document.getElementById("view-atendidos"),
-  };
-  const headers = {
-    pendentes: document.getElementById("page-header-pendentes"),
-    atendidos: document.getElementById("page-header-atendidos"),
-  };
-
-  Object.entries(sections).forEach(([key, el]) => { if (el) el.hidden = key !== view; });
-  Object.entries(headers).forEach(([key, el]) => { if (el) el.hidden = key !== view; });
-
-  if (document.body.classList.contains("sidebar-open")) {
-    document.body.classList.remove("sidebar-open");
-  }
-}
-
-// ── Single dropdown helper ─────────────────────────────────────────────────
+// ── Dropdown helper ────────────────────────────────────────────────────────
 function initSingleDropdown({ btnId, dropdownId, labelId, hiddenEl, onSelect }) {
   const btn      = document.getElementById(btnId);
   const dropdown = document.getElementById(dropdownId);
@@ -419,24 +358,17 @@ function resetSingleDropdown({ dropdownId, labelId, hiddenEl, defaultLabel }) {
   const dd = document.getElementById(dropdownId);
   if (dd) {
     dd.querySelectorAll(".filter-single-item").forEach((li) => li.classList.remove("is-selected"));
-    const first = dd.querySelector(".filter-single-item");
-    if (first) first.classList.add("is-selected");
+    dd.querySelector(".filter-single-item")?.classList.add("is-selected");
   }
 }
 
-// ── Filter toggle ──────────────────────────────────────────────────────────
-function initFilterToggle(toggleId, bodyId, caretId) {
-  document.getElementById(toggleId)?.addEventListener("click", () => {
-    const body  = document.getElementById(bodyId);
-    const caret = document.getElementById(caretId);
-    if (!body) return;
-    const open = body.hidden;
-    body.hidden = !open;
-    if (caret) caret.className = open ? "ph ph-caret-up filter-caret" : "ph ph-caret-down filter-caret";
-  });
+// ── Utilities ──────────────────────────────────────────────────────────────
+function applyAndReload() {
+  currentPage = 1;
+  loadLeads(1, false);
+  updateFilterBadge();
 }
 
-// ── Utilities ──────────────────────────────────────────────────────────────
 function setError(el, message, hidden = false) {
   if (!el) return;
   el.textContent = message || "";
@@ -446,44 +378,39 @@ function setError(el, message, hidden = false) {
 function formatDate(value) {
   if (!value) return "—";
   const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("pt-BR");
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("pt-BR");
 }
 
 function escapeHtml(s) {
   return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
 
 function escapeAttr(s) {
   return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+    .replaceAll("&", "&amp;").replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
 function initSettingsMenu(btn, menu) {
   if (!btn || !menu) return;
-  const close = () => { menu.hidden = true; };
   btn.addEventListener("click", (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; });
-  document.addEventListener("click", (e) => { if (!e.target.closest("#sidebar-userbar")) close(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  document.addEventListener("click", (e) => { if (!e.target.closest("#sidebar-userbar")) menu.hidden = true; });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") menu.hidden = true; });
 }
 
 function initMobileSidebar(btn) {
-  if (!btn) return;
-  btn.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+  btn?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
 }
 
 function initTheme(btn) {
   if (!btn) return;
-  const saved = localStorage.getItem("theme");
-  if (saved === "light") { document.body.classList.add("light-mode"); btn.querySelector("span").textContent = "Modo escuro"; btn.querySelector("i").className = "ph ph-moon"; }
+  if (localStorage.getItem("theme") === "light") {
+    document.body.classList.add("light-mode");
+    btn.querySelector("span").textContent = "Modo escuro";
+    btn.querySelector("i").className = "ph ph-moon";
+  }
   btn.addEventListener("click", () => {
     const isLight = document.body.classList.toggle("light-mode");
     btn.querySelector("span").textContent = isLight ? "Modo escuro" : "Modo claro";
@@ -492,21 +419,18 @@ function initTheme(btn) {
   });
 }
 
-// ── DOMContentLoaded ───────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "/login/login.html";
   const HUB_URL   = "../paginaUnificada/index.html";
 
-  searchElPend     = document.getElementById("search");
-  searchElAtend    = document.getElementById("search-atendidos");
-  filterServicoEl  = document.getElementById("filter-servico");
-  filterServicoAtEl = document.getElementById("filter-servico-atendidos");
-  errorBoxPend     = document.getElementById("errorBox");
-  errorBoxAtend    = document.getElementById("errorBoxAtendidos");
+  searchEl        = document.getElementById("search");
+  filterStatusEl  = document.getElementById("filter-status");
+  filterServicoEl = document.getElementById("filter-servico");
+  errorBox        = document.getElementById("errorBox");
 
   try {
     await withLoading("Carregando leads", "Validando acesso...", async () => {
-      // Auth
       try { supabaseClient = await window.getSupabaseClient(); } catch { window.location.href = LOGIN_URL; return; }
 
       const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
@@ -518,7 +442,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const user  = currentSession.user;
       const email = user?.email || "";
 
-      // Permission check
       const { data: profile, error: profileError } = await supabaseClient
         .from("profiles").select("protocol").eq("id", user.id).single();
 
@@ -528,15 +451,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // Email
       const emailEl = document.getElementById("user-email");
       if (emailEl) { emailEl.textContent = email; emailEl.title = email; }
 
-      // UI setup
       initSettingsMenu(document.getElementById("settings-btn"), document.getElementById("settings-menu"));
       initMobileSidebar(document.getElementById("mobile-menu-btn"));
       initTheme(document.getElementById("theme-toggle"));
-      initNavigation();
 
       document.getElementById("menu-back-hub")?.addEventListener("click", () => { window.location.href = HUB_URL; });
       document.getElementById("menu-logout")?.addEventListener("click", async () => {
@@ -551,80 +471,51 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
 
-      // Filter toggles
-      initFilterToggle("filter-bar-toggle",          "filter-bar-body",          "filter-caret");
-      initFilterToggle("filter-bar-toggle-atendidos", "filter-bar-body-atendidos", "filter-caret-atendidos");
-
-      // Search — pendentes
-      searchElPend?.addEventListener("input", () => {
-        clearTimeout(searchDebounceP);
-        searchDebounceP = setTimeout(() => { currentPagePend = 1; loadLeads("pendentes", 1, false); updateBadgePend(); }, 350);
+      // Filter toggle
+      document.getElementById("filter-bar-toggle")?.addEventListener("click", () => {
+        const body  = document.getElementById("filter-bar-body");
+        const caret = document.getElementById("filter-caret");
+        if (!body) return;
+        const open = body.hidden;
+        body.hidden = !open;
+        if (caret) caret.className = open ? "ph ph-caret-up filter-caret" : "ph ph-caret-down filter-caret";
       });
 
-      // Search — atendidos
-      searchElAtend?.addEventListener("input", () => {
-        clearTimeout(searchDebounceA);
-        searchDebounceA = setTimeout(() => { currentPageAtend = 1; loadLeads("atendidos", 1, false); updateBadgeAtend(); }, 350);
+      // Search
+      searchEl?.addEventListener("input", () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(applyAndReload, 350);
       });
 
-      // Servico filter — pendentes
+      // Status filter
+      initSingleDropdown({
+        btnId: "filter-status-btn", dropdownId: "filter-status-dropdown",
+        labelId: "filter-status-label", hiddenEl: filterStatusEl,
+        onSelect: applyAndReload,
+      });
+
+      // Serviço filter
       initSingleDropdown({
         btnId: "filter-servico-btn", dropdownId: "filter-servico-dropdown",
         labelId: "filter-servico-label", hiddenEl: filterServicoEl,
-        onSelect: () => { currentPagePend = 1; loadLeads("pendentes", 1, false); updateBadgePend(); },
+        onSelect: applyAndReload,
       });
 
-      // Servico filter — atendidos
-      initSingleDropdown({
-        btnId: "filter-servico-atendidos-btn", dropdownId: "filter-servico-atendidos-dropdown",
-        labelId: "filter-servico-atendidos-label", hiddenEl: filterServicoAtEl,
-        onSelect: () => { currentPageAtend = 1; loadLeads("atendidos", 1, false); updateBadgeAtend(); },
-      });
-
-      // Clear filters — pendentes
+      // Clear filters
       document.getElementById("btn-clear-filters")?.addEventListener("click", () => {
+        resetSingleDropdown({ dropdownId: "filter-status-dropdown",  labelId: "filter-status-label",  hiddenEl: filterStatusEl,  defaultLabel: "Todos" });
         resetSingleDropdown({ dropdownId: "filter-servico-dropdown", labelId: "filter-servico-label", hiddenEl: filterServicoEl, defaultLabel: "Todos" });
-        if (searchElPend) searchElPend.value = "";
-        currentPagePend = 1;
-        loadLeads("pendentes", 1, false);
-        updateBadgePend();
-      });
-
-      // Clear filters — atendidos
-      document.getElementById("btn-clear-filters-atendidos")?.addEventListener("click", () => {
-        resetSingleDropdown({ dropdownId: "filter-servico-atendidos-dropdown", labelId: "filter-servico-atendidos-label", hiddenEl: filterServicoAtEl, defaultLabel: "Todos" });
-        if (searchElAtend) searchElAtend.value = "";
-        currentPageAtend = 1;
-        loadLeads("atendidos", 1, false);
-        updateBadgeAtend();
+        if (searchEl) searchEl.value = "";
+        applyAndReload();
       });
 
       // Export
-      document.getElementById("btn-export-excel")?.addEventListener("click", () => exportLeadsToExcel(false, "Pendentes"));
-      document.getElementById("btn-export-excel-atendidos")?.addEventListener("click", () => exportLeadsToExcel(true, "Atendidos"));
+      document.getElementById("btn-export-excel")?.addEventListener("click", exportToExcel);
 
-      // Load both views in parallel
-      await Promise.all([
-        loadLeads("pendentes", 1, false),
-        loadLeads("atendidos", 1, false),
-      ]);
+      await loadLeads(1, false);
     });
   } catch (err) {
     console.error(err);
-    setError(errorBoxPend, "Erro ao carregar a página.");
+    setError(errorBox, "Erro ao carregar a página.");
   }
 });
-
-function updateBadgePend() {
-  updateFilterBadge("filter-active-count", "btn-clear-filters", [
-    filterServicoEl?.value,
-    searchElPend?.value?.trim(),
-  ]);
-}
-
-function updateBadgeAtend() {
-  updateFilterBadge("filter-active-count-atendidos", "btn-clear-filters-atendidos", [
-    filterServicoAtEl?.value,
-    searchElAtend?.value?.trim(),
-  ]);
-}

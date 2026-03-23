@@ -23,23 +23,11 @@
       </div>
 
       <div class="chat-list" style="margin-top: 20px">
-        <button
-          class="chat-item active nav-card"
-          type="button"
-          data-view="pendentes"
-        >
+        <button class="chat-item active" type="button">
           <i class="ph ph-bell-ringing"></i>
           <div class="chat-info">
             <div class="chat-title">Leads recebidos</div>
-            <div class="chat-date">Aguardando atendimento</div>
-          </div>
-        </button>
-
-        <button class="chat-item nav-card" type="button" data-view="atendidos">
-          <i class="ph ph-check-circle"></i>
-          <div class="chat-info">
-            <div class="chat-title">Já atendidos</div>
-            <div class="chat-date">Histórico de contatos</div>
+            <div class="chat-date">Contatos e solicitações</div>
           </div>
         </button>
       </div>
@@ -59,11 +47,7 @@
           </button>
 
           <div class="settings-dropdown" id="settings-menu" hidden>
-            <a
-              href="../perfil/perfil.html"
-              class="dropdown-item"
-              id="menu-users"
-            >
+            <a href="../perfil/perfil.html" class="dropdown-item">
               <i class="ph ph-user"></i>
               <span>Perfil</span>
             </a>
@@ -71,7 +55,6 @@
               <i class="ph ph-house"></i>
               <span>Voltar ao Hub</span>
             </button>
-
             <button type="button" class="dropdown-item danger" id="menu-logout">
               <i class="ph ph-sign-out"></i>
               <span>Sair</span>
@@ -97,29 +80,18 @@
           <i class="ph ph-list"></i>
         </button>
 
-        <div class="assistant-info" id="page-header-pendentes">
+        <div class="assistant-info">
           <div class="assistant-avatar">
             <i class="ph ph-bell-ringing"></i>
           </div>
           <div class="assistant-details">
             <span class="name">Leads recebidos</span>
-            <span class="status">Contatos aguardando atendimento</span>
-          </div>
-        </div>
-
-        <div class="assistant-info" id="page-header-atendidos" hidden>
-          <div class="assistant-avatar">
-            <i class="ph ph-check-circle"></i>
-          </div>
-          <div class="assistant-details">
-            <span class="name">Já atendidos</span>
-            <span class="status">Histórico de leads atendidos</span>
+            <span class="status">Contatos e solicitações via Hub</span>
           </div>
         </div>
       </header>
 
-      <!-- ── VIEW: PENDENTES ───────────────────────────────────────────────── -->
-      <section class="protocol-wrap view-section" id="view-pendentes">
+      <section class="protocol-wrap">
         <div class="protocol-card">
           <h1 class="protocol-title">Leads recebidos</h1>
           <p class="protocol-subtitle">
@@ -150,23 +122,30 @@
                 <span>Filtros</span>
                 <i class="ph ph-caret-down filter-caret" id="filter-caret"></i>
               </button>
-              <span
-                class="filter-active-count"
-                id="filter-active-count"
-                hidden
-              ></span>
-              <button
-                class="btn-clear-filters"
-                id="btn-clear-filters"
-                type="button"
-                hidden
-              >
+              <span class="filter-active-count" id="filter-active-count" hidden></span>
+              <button class="btn-clear-filters" id="btn-clear-filters" type="button" hidden>
                 <i class="ph ph-x-circle"></i>
                 Limpar filtros
               </button>
             </div>
 
             <div class="filter-bar-body" id="filter-bar-body" hidden>
+              <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <div class="filter-multiselect" id="filter-status-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-status-btn">
+                    <span id="filter-status-label">Todos</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-status-dropdown" hidden>
+                    <li class="filter-single-item is-selected" data-value="">Todos</li>
+                    <li class="filter-single-item" data-value="false">Pendente</li>
+                    <li class="filter-single-item" data-value="true">Atendido</li>
+                  </ul>
+                  <input type="hidden" id="filter-status" />
+                </div>
+              </div>
+
               <div class="filter-group">
                 <label class="filter-label">Serviço</label>
                 <div class="filter-multiselect" id="filter-servico-wrap">
@@ -189,11 +168,7 @@
 
           <div class="filter-export-row">
             <span class="filter-result-count" id="filter-result-count"></span>
-            <button
-              class="btn-export-excel"
-              id="btn-export-excel"
-              type="button"
-            >
+            <button class="btn-export-excel" id="btn-export-excel" type="button">
               <i class="ph ph-microsoft-excel-logo"></i>
               Exportar para Excel
             </button>
@@ -216,107 +191,6 @@
           </div>
 
           <div id="pagination-controls"></div>
-        </div>
-      </section>
-
-      <!-- ── VIEW: ATENDIDOS ───────────────────────────────────────────────── -->
-      <section class="protocol-wrap view-section" id="view-atendidos" hidden>
-        <div class="protocol-card">
-          <h1 class="protocol-title">Já atendidos</h1>
-          <p class="protocol-subtitle">
-            Histórico de leads que já foram atendidos.
-          </p>
-
-          <div id="errorBoxAtendidos" class="error" hidden></div>
-
-          <div class="field" style="margin-bottom: 12px">
-            <label for="search-atendidos">Buscar</label>
-            <input
-              id="search-atendidos"
-              class="input-dark-lite"
-              type="text"
-              placeholder="Nome, CPF/CNPJ, WhatsApp..."
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="filter-bar" id="filter-bar-atendidos">
-            <div class="filter-bar-header">
-              <button
-                class="filter-bar-toggle"
-                id="filter-bar-toggle-atendidos"
-                type="button"
-              >
-                <i class="ph ph-funnel"></i>
-                <span>Filtros</span>
-                <i class="ph ph-caret-down filter-caret" id="filter-caret-atendidos"></i>
-              </button>
-              <span
-                class="filter-active-count"
-                id="filter-active-count-atendidos"
-                hidden
-              ></span>
-              <button
-                class="btn-clear-filters"
-                id="btn-clear-filters-atendidos"
-                type="button"
-                hidden
-              >
-                <i class="ph ph-x-circle"></i>
-                Limpar filtros
-              </button>
-            </div>
-
-            <div class="filter-bar-body" id="filter-bar-body-atendidos" hidden>
-              <div class="filter-group">
-                <label class="filter-label">Serviço</label>
-                <div class="filter-multiselect" id="filter-servico-atendidos-wrap">
-                  <button type="button" class="filter-multiselect-btn" id="filter-servico-atendidos-btn">
-                    <span id="filter-servico-atendidos-label">Todos</span>
-                    <i class="ph ph-caret-down"></i>
-                  </button>
-                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-servico-atendidos-dropdown" hidden>
-                    <li class="filter-single-item is-selected" data-value="">Todos</li>
-                    <li class="filter-single-item" data-value="internet">Internet</li>
-                    <li class="filter-single-item" data-value="telefonia">Telefonia</li>
-                    <li class="filter-single-item" data-value="seguranca">Segurança</li>
-                    <li class="filter-single-item" data-value="financeiro">Financeiro</li>
-                  </ul>
-                  <input type="hidden" id="filter-servico-atendidos" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-export-row">
-            <span class="filter-result-count" id="filter-result-count-atendidos"></span>
-            <button
-              class="btn-export-excel"
-              id="btn-export-excel-atendidos"
-              type="button"
-            >
-              <i class="ph ph-microsoft-excel-logo"></i>
-              Exportar para Excel
-            </button>
-          </div>
-
-          <div class="table-wrap">
-            <table class="users-table leads-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>WhatsApp</th>
-                  <th>CPF/CNPJ</th>
-                  <th>Serviço</th>
-                  <th>Data de envio</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="leads-table-body-atendidos"></tbody>
-            </table>
-          </div>
-
-          <div id="pagination-controls-atendidos"></div>
         </div>
       </section>
     </main>
