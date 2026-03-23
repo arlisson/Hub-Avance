@@ -188,6 +188,54 @@ document.addEventListener("DOMContentLoaded", async () => {
   const linesGroup = document.getElementById("lines-group");
   const contractGroup = document.getElementById("contract-type-group");
 
+  // --- DROPDOWN CUSTOMIZADO DE OPERADORA ---
+  const operatorBtn = document.getElementById("operator-btn");
+  const operatorList = document.getElementById("operator-list");
+  const operatorSelectedLabel = document.getElementById("operator-selected-label");
+
+  function resetOperatorDropdown() {
+    if (operatorInput) operatorInput.value = "";
+    if (operatorSelectedLabel) {
+      operatorSelectedLabel.textContent = "Selecione a operadora";
+      operatorSelectedLabel.classList.add("placeholder");
+    }
+    operatorList?.querySelectorAll("li").forEach((li) => li.removeAttribute("aria-selected"));
+  }
+
+  function closeOperatorDropdown() {
+    if (operatorList) operatorList.hidden = true;
+    operatorBtn?.setAttribute("aria-expanded", "false");
+  }
+
+  operatorBtn?.addEventListener("click", () => {
+    const isOpen = !operatorList.hidden;
+    operatorList.hidden = isOpen;
+    operatorBtn.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  operatorList?.querySelectorAll("li").forEach((li) => {
+    li.addEventListener("click", () => {
+      const val = li.dataset.value;
+      if (operatorInput) operatorInput.value = val;
+      if (operatorSelectedLabel) {
+        operatorSelectedLabel.textContent = val;
+        operatorSelectedLabel.classList.remove("placeholder");
+      }
+      operatorList.querySelectorAll("li").forEach((el) => el.removeAttribute("aria-selected"));
+      li.setAttribute("aria-selected", "true");
+      closeOperatorDropdown();
+      setValid(operatorInput);
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!operatorBtn?.contains(e.target) && !operatorList?.contains(e.target)) {
+      closeOperatorDropdown();
+    }
+  });
+
+  if (operatorSelectedLabel) operatorSelectedLabel.classList.add("placeholder");
+
   let cepLookupController = null;
 
   // --- REDIRECIONA SE JÁ ESTIVER LOGADO ---
@@ -550,9 +598,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     setContractTypeRequired(hasMobile === true);
 
     if (!shouldShow) {
-      if (operatorInput) operatorInput.value = "";
-      if (activeLinesInput) activeLinesInput.value = "";
+      resetOperatorDropdown();
       if (operatorInput) setValid(operatorInput);
+      if (activeLinesInput) activeLinesInput.value = "";
       if (activeLinesInput) setValid(activeLinesInput);
     }
   }
