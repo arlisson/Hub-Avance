@@ -408,7 +408,7 @@ body.light-mode .protocol-wrap {
 }
 
 .protocol-card {
-  max-width: 1100px;
+  max-width: 1340px;
   margin: 0 auto;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -612,7 +612,7 @@ body.light-mode .table-wrap {
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  min-width: 1060px;
 }
 
 .users-table th,
@@ -697,6 +697,27 @@ body.light-mode .badge.success {
 body.light-mode .badge.muted {
   background: #eef4f8;
   border-color: #dbe7ef;
+}
+
+.badge-operator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(87, 197, 234, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(87, 197, 234, 0.25);
+}
+
+body.light-mode .badge-operator {
+  background: rgba(44, 169, 214, 0.1);
+  color: #1a7fa8;
+  border-color: rgba(44, 169, 214, 0.22);
 }
 
 .user-details-row td {

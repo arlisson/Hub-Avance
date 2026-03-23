@@ -616,7 +616,7 @@ function renderUsers(users) {
   if (!users.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td colspan="8" style="text-align:center; color: var(--text-secondary); padding: 24px;">
+      <td colspan="9" style="text-align:center; color: var(--text-secondary); padding: 24px;">
         Nenhum usuário encontrado.
       </td>
     `;
@@ -641,6 +641,11 @@ function renderUsers(users) {
       <td>${escapeHtml(u.whatsapp || "")}</td>
       <td>${escapeHtml(cidade)}</td>
       <td>${escapeHtml(estado)}</td>
+      <td>
+        ${u.operator
+          ? `<span class="badge-operator">${escapeHtml(u.operator)}</span>`
+          : `<span style="color:var(--text-secondary);font-size:12px">—</span>`}
+      </td>
       <td>
         <span class="badge ${u.protocol ? "success" : "muted"}">
           ${u.protocol ? "Sim" : "Não"}
