@@ -697,7 +697,7 @@ body.dark-mode .hub-title {
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
-  padding: 0 20px 20px;
+  padding: 0 20px 40px;
 }
 
 .hub-coming-soon-badge {
