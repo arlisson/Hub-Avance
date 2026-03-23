@@ -1757,7 +1757,7 @@ body.dark-mode .testimonial-card {
   font-weight: 600;
   line-height: 1.35;
   color: var(--text-primary);
-  max-width: 640px;
+  max-width: 820px;
   margin: 0 auto;
   letter-spacing: -0.5px;
 }
