@@ -17,6 +17,7 @@ const WHATSAPP_NUMBER = "5522988124656";
 
 let LOGIN_URL = "/login/login.html";
 let CURRENT_USER_ID = "";
+let _currentUserProfile = null; // { name, cpf, whatsapp }
 
 // ============================================================
 // CATÁLOGO DE APPS (Hub)
@@ -1428,6 +1429,25 @@ function bindProductModalEvents(product, stepIndex, isReview) {
     handleProductNext(product, stepIndex);
   });
 
+  // Salva o lead no banco ao clicar em "Falar com um consultor"
+  if (isReview) {
+    document.getElementById("btn-whatsapp")?.addEventListener("click", () => {
+      const dados = {};
+      product.steps.forEach((s) => { dados[s.id] = _answers[s.id] ?? null; });
+      fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome:     _currentUserProfile?.name     ?? "",
+          cpf:      _currentUserProfile?.cpf      ?? "",
+          whatsapp: _currentUserProfile?.whatsapp ?? "",
+          servico:  product.id,
+          dados,
+        }),
+      }).catch(() => {}); // fire-and-forget
+    });
+  }
+
   const input = document.getElementById("step-input");
   if (input) {
     input.addEventListener("keydown", (e) => {
@@ -1595,11 +1615,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const { data: profile, error: profileError } = await sb
       .from("profiles")
-      .select("protocol")
+      .select("protocol, name, cpf, whatsapp")
       .eq("id", CURRENT_USER_ID)
       .single();
 
     if (profileError) console.error("Erro ao buscar permissões:", profileError);
+
+    if (profile) {
+      _currentUserProfile = {
+        name:     profile.name     ?? "",
+        cpf:      profile.cpf      ?? "",
+        whatsapp: profile.whatsapp ?? "",
+      };
+    }
 
     const canAccessProtocol = !!profile?.protocol;
 
