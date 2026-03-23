@@ -198,7 +198,7 @@ function renderLeads(leads, tbodyId) {
 
       btn.disabled = true;
       try {
-        const resp = await fetch("/api/admin/update-lead", {
+        const resp = await fetch("/api/admin/leads", {
           method:  "POST",
           headers: {
             "Content-Type":  "application/json",

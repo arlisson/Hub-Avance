@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   try {
-    if (req.method !== "GET") {
+    if (req.method !== "GET" && req.method !== "POST") {
       return res.status(405).json({ error: "method_not_allowed" });
     }
 
@@ -32,7 +32,6 @@ export default async function handler(req, res) {
       "Content-Type": "application/json",
       apikey:         SERVICE_ROLE,
       Authorization:  `Bearer ${SERVICE_ROLE}`,
-      Prefer:         "count=exact",
     };
 
     // ── Valida permissão de admin ──────────────────────────────────────────────
@@ -46,7 +45,32 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: "forbidden" });
     }
 
-    // ── Parâmetros da requisição ───────────────────────────────────────────────
+    // ── POST: atualiza atendido ────────────────────────────────────────────────
+    if (req.method === "POST") {
+      const { id, atendido } = req.body ?? {};
+
+      if (!id || typeof atendido !== "boolean") {
+        return res.status(400).json({ error: "missing_fields" });
+      }
+
+      const updateResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/leads?id=eq.${id}`,
+        {
+          method:  "PATCH",
+          headers: { ...adminHeaders, Prefer: "return=minimal" },
+          body:    JSON.stringify({ atendido }),
+        }
+      );
+
+      if (!updateResp.ok) {
+        const detail = await updateResp.text();
+        return res.status(500).json({ error: "db_error", detail });
+      }
+
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── GET: lista leads ───────────────────────────────────────────────────────
     const page   = Math.max(1, parseInt(req.query.page  || "1",  10));
     const limit  = Math.min(500, Math.max(1, parseInt(req.query.limit || "25", 10)));
     const offset = (page - 1) * limit;
@@ -55,7 +79,6 @@ export default async function handler(req, res) {
     const servico  = (req.query.servico  || "").trim();
     const atendido =  req.query.atendido; // "true" | "false" | undefined
 
-    // ── Monta os filtros PostgREST ─────────────────────────────────────────────
     const qs = new URLSearchParams({
       select: "id,created_at,nome,cpf,whatsapp,servico,dados,atendido",
       order:  "created_at.desc",
@@ -72,10 +95,9 @@ export default async function handler(req, res) {
       qs.append("or", `(nome.ilike.*${s}*,cpf.ilike.*${s}*,whatsapp.ilike.*${s}*)`);
     }
 
-    // ── Executa a query ────────────────────────────────────────────────────────
     const leadsResp = await fetch(
       `${SUPABASE_URL}/rest/v1/leads?${qs.toString()}`,
-      { headers: adminHeaders }
+      { headers: { ...adminHeaders, Prefer: "count=exact" } }
     );
 
     const leads = await leadsResp.json();
