@@ -702,8 +702,8 @@ body.dark-mode .hub-title {
 
 .hub-coming-soon-badge {
   position: absolute;
-  top: -160px;
-  right: 50px;
+  top: -130px;
+  right: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
