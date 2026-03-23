@@ -179,9 +179,9 @@ const PRODUCTS = [
         a.modalidade === "nova" ? "Contratação nova" : "Portabilidade";
       return (
         `Olá! Tenho interesse em *Telefonia Móvel Empresarial*.\n\n` +
-        `📱 *Linhas desejadas:* ${a.linhas}\n` +
-        `🔄 *Modalidade:* ${mod}\n` +
-        `📶 *Operadora preferida:* ${op}\n\n` +
+        ` -*Linhas desejadas:* ${a.linhas}\n` +
+        ` -*Modalidade:* ${mod}\n` +
+        ` -*Operadora preferida:* ${op}\n\n` +
         `Poderia me apresentar as melhores opções?`
       );
     },
