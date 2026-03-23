@@ -1436,6 +1436,19 @@ function bindProductModalEvents(product, stepIndex, isReview) {
   }
 
   const modal = document.getElementById("prod-modal");
+
+  // Enter em qualquer lugar do modal avança para o próximo passo,
+  // exceto se o foco estiver no botão Voltar ou Fechar (que têm comportamento próprio)
+  modal?.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const tag = document.activeElement?.tagName;
+    const id  = document.activeElement?.id;
+    if (tag === "INPUT" || tag === "TEXTAREA") return; // já tratado acima
+    if (id === "btn-back" || id === "btn-close") return; // deixa o clique natural
+    e.preventDefault();
+    if (!isReview) handleProductNext(product, stepIndex);
+  }, { capture: true });
+
   modal?.querySelectorAll(".step-chip").forEach((chip) => {
     chip.addEventListener("click", () => {
       modal.querySelectorAll(".step-chip").forEach((c) => {
