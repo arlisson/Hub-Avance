@@ -56,7 +56,9 @@ export default async function handler(req, res) {
     const hasMobileService =  req.query.has_mobile_service;   // "1" | "0" | undefined
     const activeLines      = (req.query.active_lines      || "").trim(); // "3" | "10+" | ""
     const contractType     = (req.query.contract_type     || "").trim().toUpperCase();
-    const operator         = (req.query.operator          || "").trim().toUpperCase();
+    const operatorRaw      = req.query.operator;
+    const operators        = (Array.isArray(operatorRaw) ? operatorRaw : operatorRaw ? [operatorRaw] : [])
+                               .map((o) => o.trim().toUpperCase()).filter(Boolean);
 
     // ── Monta os filtros PostgREST ────────────────────────────────────────────
     const qs = new URLSearchParams({
@@ -71,7 +73,8 @@ export default async function handler(req, res) {
     if (hasMobileService === "1") qs.append("has_mobile_service","eq.true");
     if (hasMobileService === "0") qs.append("has_mobile_service","eq.false");
     if (contractType)             qs.append("contract_type",     `ilike.${contractType}`);
-    if (operator)                 qs.append("operator",          `ilike.${operator}`);
+    if (operators.length === 1)   qs.append("operator", `eq.${operators[0]}`);
+    else if (operators.length > 1) qs.append("operator", `in.(${operators.join(",")})`);
 
     if (activeLines) {
       if (activeLines === "10+") {

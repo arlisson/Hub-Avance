@@ -295,8 +295,36 @@ body.dark-mode .toggle-password:hover { color: var(--brand-light); }
 .register-footer a:hover { color: var(--brand-action); }
 body.dark-mode .register-footer a { color: var(--brand-light); }
 
+/* Select (operadora) */
+.input-wrapper select {
+  width: 100%;
+  height: 54px;
+  padding: 0 48px 0 44px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.input-wrapper select:focus {
+  border-color: var(--brand-action);
+  box-shadow: var(--shadow-focus);
+  background: #FFFFFF;
+}
+body.dark-mode .input-wrapper select:focus {
+  background: rgba(255, 255, 255, 0.06);
+}
+.input-wrapper select option { background: var(--input-bg); color: var(--text-primary); }
+
 /* Erros de Validação (JS Original) */
-.input-group.is-invalid input { border-color: #ef4444; outline: none; }
+.input-group.is-invalid input,
+.input-group.is-invalid select { border-color: #ef4444; outline: none; }
 .input-error { margin-top: 6px; font-size: 12px; color: #ef4444; display: none; text-align: left; }
 .input-group.is-invalid .input-error { display: block; }
 

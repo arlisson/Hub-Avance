@@ -202,13 +202,20 @@
 
               <div class="filter-group">
                 <label class="filter-label">Operadora</label>
-                <select id="filter-operadora" class="filter-select">
-                  <option value="">Todas</option>
-                  <option value="VIVO">VIVO</option>
-                  <option value="TIM">TIM</option>
-                  <option value="CLARO">CLARO</option>
-                  <option value="OI">OI</option>
-                </select>
+                <div class="filter-multiselect" id="filter-operadora-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-operadora-btn">
+                    <span id="filter-operadora-label">Todas</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <div class="filter-multiselect-dropdown" id="filter-operadora-dropdown" hidden>
+                    <label class="filter-check-item"><input type="checkbox" value="VIVO"> VIVO</label>
+                    <label class="filter-check-item"><input type="checkbox" value="TIM"> TIM</label>
+                    <label class="filter-check-item"><input type="checkbox" value="CLARO"> CLARO</label>
+                    <label class="filter-check-item"><input type="checkbox" value="NIO"> NIO</label>
+                    <label class="filter-check-item"><input type="checkbox" value="EMBRATEL"> EMBRATEL</label>
+                    <label class="filter-check-item"><input type="checkbox" value="OUTRAS"> OUTRAS</label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

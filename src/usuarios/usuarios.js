@@ -15,7 +15,8 @@ let filterClienteEl = null;
 let filterTelefoniaEl = null;
 let filterLinhasEl = null;
 let filterContratoEl = null;
-let filterOperadoraEl = null;
+let filterOperadoraEl = null; // mantido para compatibilidade (limpar)
+let selectedOperadoras = new Set();
 
 // Debounce do campo de busca
 let searchDebounceTimer = null;
@@ -78,7 +79,7 @@ function buildQueryParams(page, limit) {
   if (filterLinhasEl?.value) params.set("active_lines", filterLinhasEl.value);
   if (filterContratoEl?.value)
     params.set("contract_type", filterContratoEl.value);
-  if (filterOperadoraEl?.value) params.set("operator", filterOperadoraEl.value);
+  selectedOperadoras.forEach((op) => params.append("operator", op));
 
   return params;
 }
@@ -111,7 +112,7 @@ function updateFilterBadge() {
     filterTelefoniaEl?.value,
     filterLinhasEl?.value,
     filterContratoEl?.value,
-    filterOperadoraEl?.value,
+    selectedOperadoras.size > 0 ? "1" : "",
   ].filter(Boolean).length;
 
   if (countEl) {
@@ -302,17 +303,52 @@ document.addEventListener("DOMContentLoaded", async () => {
         filterTelefoniaEl = document.getElementById("filter-telefonia");
         filterLinhasEl = document.getElementById("filter-linhas");
         filterContratoEl = document.getElementById("filter-contrato");
-        filterOperadoraEl = document.getElementById("filter-operadora");
+        filterOperadoraEl = null; // substituído pelo multi-select
 
         [
           filterClienteEl,
           filterTelefoniaEl,
           filterLinhasEl,
           filterContratoEl,
-          filterOperadoraEl,
         ].forEach((el) =>
           el?.addEventListener("change", () => applyFiltersAndReload()),
         );
+
+        // Multi-select de operadoras
+        const operadoraBtn = document.getElementById("filter-operadora-btn");
+        const operadoraDropdown = document.getElementById("filter-operadora-dropdown");
+        const operadoraLabel = document.getElementById("filter-operadora-label");
+
+        operadoraBtn?.addEventListener("click", () => {
+          const isOpen = !operadoraDropdown.hidden;
+          operadoraDropdown.hidden = isOpen;
+          operadoraBtn.classList.toggle("is-open", !isOpen);
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!document.getElementById("filter-operadora-wrap")?.contains(e.target)) {
+            if (operadoraDropdown) operadoraDropdown.hidden = true;
+            operadoraBtn?.classList.remove("is-open");
+          }
+        });
+
+        operadoraDropdown?.querySelectorAll("input[type='checkbox']").forEach((cb) => {
+          cb.addEventListener("change", () => {
+            if (cb.checked) selectedOperadoras.add(cb.value);
+            else selectedOperadoras.delete(cb.value);
+
+            const count = selectedOperadoras.size;
+            if (operadoraLabel) {
+              operadoraLabel.textContent = count === 0
+                ? "Todas"
+                : count === 1
+                ? [...selectedOperadoras][0]
+                : `${count} selecionadas`;
+            }
+
+            applyFiltersAndReload();
+          });
+        });
 
         document
           .getElementById("btn-clear-filters")
@@ -321,7 +357,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (filterTelefoniaEl) filterTelefoniaEl.value = "";
             if (filterLinhasEl) filterLinhasEl.value = "";
             if (filterContratoEl) filterContratoEl.value = "";
-            if (filterOperadoraEl) filterOperadoraEl.value = "";
+            selectedOperadoras.clear();
+            document.querySelectorAll("#filter-operadora-dropdown input[type='checkbox']").forEach((cb) => { cb.checked = false; });
+            const lbl = document.getElementById("filter-operadora-label");
+            if (lbl) lbl.textContent = "Todas";
             applyFiltersAndReload();
           });
 

@@ -1198,6 +1198,73 @@ body.light-mode .filter-select:focus {
   box-shadow: 0 0 0 3px rgba(44, 169, 214, 0.12);
 }
 
+.filter-multiselect {
+  position: relative;
+}
+
+.filter-multiselect-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.filter-multiselect-btn:hover {
+  border-color: var(--accent-cyan);
+}
+
+.filter-multiselect-btn.is-open {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(87, 197, 234, 0.15);
+}
+
+.filter-multiselect-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 6px 4px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.filter-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.15s ease;
+}
+
+.filter-check-item:hover {
+  background: rgba(87, 197, 234, 0.08);
+}
+
+.filter-check-item input[type="checkbox"] {
+  accent-color: var(--accent-cyan);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .filter-bar-body {
     grid-template-columns: 1fr 1fr;
