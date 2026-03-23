@@ -298,21 +298,49 @@ document.addEventListener("DOMContentLoaded", async () => {
           searchDebounceTimer = setTimeout(() => applyFiltersAndReload(), 350);
         });
 
-        // Inicializa referências dos filtros
+        // Inicializa referências dos filtros (hidden inputs)
         filterClienteEl = document.getElementById("filter-cliente");
         filterTelefoniaEl = document.getElementById("filter-telefonia");
         filterLinhasEl = document.getElementById("filter-linhas");
         filterContratoEl = document.getElementById("filter-contrato");
         filterOperadoraEl = null; // substituído pelo multi-select
 
-        [
-          filterClienteEl,
-          filterTelefoniaEl,
-          filterLinhasEl,
-          filterContratoEl,
-        ].forEach((el) =>
-          el?.addEventListener("change", () => applyFiltersAndReload()),
-        );
+        // Helper: inicializa dropdown single-select
+        function initSingleDropdown({ btnId, dropdownId, labelId, hiddenEl, defaultLabel }) {
+          const btn = document.getElementById(btnId);
+          const dropdown = document.getElementById(dropdownId);
+          const label = document.getElementById(labelId);
+
+          btn?.addEventListener("click", () => {
+            const isOpen = !dropdown.hidden;
+            // Fecha todos os outros dropdowns
+            document.querySelectorAll(".filter-multiselect-dropdown").forEach((d) => { d.hidden = true; });
+            document.querySelectorAll(".filter-multiselect-btn.is-open").forEach((b) => b.classList.remove("is-open"));
+            if (!isOpen) {
+              dropdown.hidden = false;
+              btn.classList.add("is-open");
+            }
+          });
+
+          dropdown?.querySelectorAll(".filter-single-item").forEach((li) => {
+            li.addEventListener("click", () => {
+              if (hiddenEl) hiddenEl.value = li.dataset.value;
+              if (label) label.textContent = li.textContent;
+              dropdown.querySelectorAll(".filter-single-item").forEach((el) => el.classList.remove("is-selected"));
+              li.classList.add("is-selected");
+              dropdown.hidden = true;
+              btn?.classList.remove("is-open");
+              applyFiltersAndReload();
+            });
+          });
+
+          return { btn, dropdown, label, defaultLabel };
+        }
+
+        initSingleDropdown({ btnId: "filter-cliente-btn",   dropdownId: "filter-cliente-dropdown",   labelId: "filter-cliente-label",   hiddenEl: filterClienteEl,   defaultLabel: "Todos" });
+        initSingleDropdown({ btnId: "filter-telefonia-btn", dropdownId: "filter-telefonia-dropdown", labelId: "filter-telefonia-label", hiddenEl: filterTelefoniaEl, defaultLabel: "Todos" });
+        initSingleDropdown({ btnId: "filter-linhas-btn",    dropdownId: "filter-linhas-dropdown",    labelId: "filter-linhas-label",    hiddenEl: filterLinhasEl,    defaultLabel: "Todas" });
+        initSingleDropdown({ btnId: "filter-contrato-btn",  dropdownId: "filter-contrato-dropdown",  labelId: "filter-contrato-label",  hiddenEl: filterContratoEl,  defaultLabel: "Todos" });
 
         // Multi-select de operadoras
         const operadoraBtn = document.getElementById("filter-operadora-btn");
@@ -326,9 +354,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         document.addEventListener("click", (e) => {
-          if (!document.getElementById("filter-operadora-wrap")?.contains(e.target)) {
-            if (operadoraDropdown) operadoraDropdown.hidden = true;
-            operadoraBtn?.classList.remove("is-open");
+          if (!e.target.closest(".filter-multiselect")) {
+            document.querySelectorAll(".filter-multiselect-dropdown").forEach((d) => { d.hidden = true; });
+            document.querySelectorAll(".filter-multiselect-btn.is-open").forEach((b) => b.classList.remove("is-open"));
           }
         });
 
@@ -353,10 +381,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         document
           .getElementById("btn-clear-filters")
           ?.addEventListener("click", () => {
-            if (filterClienteEl) filterClienteEl.value = "";
-            if (filterTelefoniaEl) filterTelefoniaEl.value = "";
-            if (filterLinhasEl) filterLinhasEl.value = "";
-            if (filterContratoEl) filterContratoEl.value = "";
+            [
+              { hiddenEl: filterClienteEl,   dropdownId: "filter-cliente-dropdown",   labelId: "filter-cliente-label",   defaultLabel: "Todos" },
+              { hiddenEl: filterTelefoniaEl, dropdownId: "filter-telefonia-dropdown", labelId: "filter-telefonia-label", defaultLabel: "Todos" },
+              { hiddenEl: filterLinhasEl,    dropdownId: "filter-linhas-dropdown",    labelId: "filter-linhas-label",    defaultLabel: "Todas" },
+              { hiddenEl: filterContratoEl,  dropdownId: "filter-contrato-dropdown",  labelId: "filter-contrato-label",  defaultLabel: "Todos" },
+            ].forEach(({ hiddenEl, dropdownId, labelId, defaultLabel }) => {
+              if (hiddenEl) hiddenEl.value = "";
+              const lbl = document.getElementById(labelId);
+              if (lbl) lbl.textContent = defaultLabel;
+              const dd = document.getElementById(dropdownId);
+              if (dd) {
+                dd.querySelectorAll(".filter-single-item").forEach((li) => li.classList.remove("is-selected"));
+                const first = dd.querySelector(".filter-single-item");
+                if (first) first.classList.add("is-selected");
+              }
+            });
             selectedOperadoras.clear();
             document.querySelectorAll("#filter-operadora-dropdown input[type='checkbox']").forEach((cb) => { cb.checked = false; });
             const lbl = document.getElementById("filter-operadora-label");

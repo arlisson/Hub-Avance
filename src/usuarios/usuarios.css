@@ -1267,6 +1267,32 @@ body.light-mode .filter-select:focus {
   flex-shrink: 0;
 }
 
+/* Single-select dropdown items */
+.filter-single-dropdown {
+  list-style: none;
+  padding: 6px 4px;
+}
+
+.filter-single-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.filter-single-item:hover {
+  background: rgba(87, 197, 234, 0.08);
+  color: var(--accent-cyan);
+}
+
+.filter-single-item.is-selected {
+  color: var(--accent-cyan);
+  font-weight: 600;
+  background: rgba(87, 197, 234, 0.1);
+}
+
 @media (max-width: 768px) {
   .filter-bar-body {
     grid-template-columns: 1fr 1fr;

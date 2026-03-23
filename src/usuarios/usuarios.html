@@ -158,46 +158,74 @@
             <div class="filter-bar-body" id="filter-bar-body" hidden>
               <div class="filter-group">
                 <label class="filter-label">Cliente Avance</label>
-                <select id="filter-cliente" class="filter-select">
-                  <option value="">Todos</option>
-                  <option value="1">Sim</option>
-                  <option value="0">Não</option>
-                </select>
+                <div class="filter-multiselect" id="filter-cliente-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-cliente-btn">
+                    <span id="filter-cliente-label">Todos</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-cliente-dropdown" hidden>
+                    <li class="filter-single-item is-selected" data-value="">Todos</li>
+                    <li class="filter-single-item" data-value="1">Sim</li>
+                    <li class="filter-single-item" data-value="0">Não</li>
+                  </ul>
+                  <input type="hidden" id="filter-cliente" />
+                </div>
               </div>
 
               <div class="filter-group">
                 <label class="filter-label">Telefonia ativa</label>
-                <select id="filter-telefonia" class="filter-select">
-                  <option value="">Todos</option>
-                  <option value="1">Sim</option>
-                  <option value="0">Não</option>
-                </select>
+                <div class="filter-multiselect" id="filter-telefonia-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-telefonia-btn">
+                    <span id="filter-telefonia-label">Todos</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-telefonia-dropdown" hidden>
+                    <li class="filter-single-item is-selected" data-value="">Todos</li>
+                    <li class="filter-single-item" data-value="1">Sim</li>
+                    <li class="filter-single-item" data-value="0">Não</li>
+                  </ul>
+                  <input type="hidden" id="filter-telefonia" />
+                </div>
               </div>
 
               <div class="filter-group">
                 <label class="filter-label">Linhas ativas</label>
-                <select id="filter-linhas" class="filter-select">
-                  <option value="">Todas</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10+">10 ou mais</option>
-                </select>
+                <div class="filter-multiselect" id="filter-linhas-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-linhas-btn">
+                    <span id="filter-linhas-label">Todas</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-linhas-dropdown" hidden>
+                    <li class="filter-single-item is-selected" data-value="">Todas</li>
+                    <li class="filter-single-item" data-value="1">1</li>
+                    <li class="filter-single-item" data-value="2">2</li>
+                    <li class="filter-single-item" data-value="3">3</li>
+                    <li class="filter-single-item" data-value="4">4</li>
+                    <li class="filter-single-item" data-value="5">5</li>
+                    <li class="filter-single-item" data-value="6">6</li>
+                    <li class="filter-single-item" data-value="7">7</li>
+                    <li class="filter-single-item" data-value="8">8</li>
+                    <li class="filter-single-item" data-value="9">9</li>
+                    <li class="filter-single-item" data-value="10+">10 ou mais</li>
+                  </ul>
+                  <input type="hidden" id="filter-linhas" />
+                </div>
               </div>
 
               <div class="filter-group">
                 <label class="filter-label">Tipo de contrato</label>
-                <select id="filter-contrato" class="filter-select">
-                  <option value="">Todos</option>
-                  <option value="CPF">CPF</option>
-                  <option value="CNPJ">CNPJ</option>
-                </select>
+                <div class="filter-multiselect" id="filter-contrato-wrap">
+                  <button type="button" class="filter-multiselect-btn" id="filter-contrato-btn">
+                    <span id="filter-contrato-label">Todos</span>
+                    <i class="ph ph-caret-down"></i>
+                  </button>
+                  <ul class="filter-multiselect-dropdown filter-single-dropdown" id="filter-contrato-dropdown" hidden>
+                    <li class="filter-single-item is-selected" data-value="">Todos</li>
+                    <li class="filter-single-item" data-value="CPF">CPF</li>
+                    <li class="filter-single-item" data-value="CNPJ">CNPJ</li>
+                  </ul>
+                  <input type="hidden" id="filter-contrato" />
+                </div>
               </div>
 
               <div class="filter-group">
