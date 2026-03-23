@@ -73,8 +73,25 @@ export default async function handler(req, res) {
     if (hasMobileService === "1") qs.append("has_mobile_service","eq.true");
     if (hasMobileService === "0") qs.append("has_mobile_service","eq.false");
     if (contractType)             qs.append("contract_type",     `ilike.${contractType}`);
-    if (operators.length === 1)   qs.append("operator", `eq.${operators[0]}`);
-    else if (operators.length > 1) qs.append("operator", `in.(${operators.join(",")})`);
+    const KNOWN_OPERATORS = ["VIVO", "NIO", "TIM", "CLARO", "EMBRATEL"];
+    const hasOutras    = operators.includes("OUTRAS");
+    const knownSel     = operators.filter((o) => o !== "OUTRAS");
+
+    if (hasOutras && knownSel.length === 0) {
+      // Apenas "OUTRAS" → tudo que não é uma operadora conhecida
+      qs.append("operator", `not.in.(${KNOWN_OPERATORS.join(",")})`);
+    } else if (hasOutras && knownSel.length > 0) {
+      // "OUTRAS" + operadoras específicas → OR entre as específicas e o not.in
+      const orParts = [
+        ...knownSel.map((o) => `operator.eq.${o}`),
+        `operator.not.in.(${KNOWN_OPERATORS.join(",")})`,
+      ];
+      qs.append("or", `(${orParts.join(",")})`);
+    } else if (knownSel.length === 1) {
+      qs.append("operator", `eq.${knownSel[0]}`);
+    } else if (knownSel.length > 1) {
+      qs.append("operator", `in.(${knownSel.join(",")})`);
+    }
 
     if (activeLines) {
       if (activeLines === "10+") {
