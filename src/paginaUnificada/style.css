@@ -2298,7 +2298,7 @@ body.dark-mode .product-card {
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 100px 24px 80px;
+  padding: 40px 24px 80px;
   max-width: 860px;
   margin: 0 auto;
 }
