@@ -686,14 +686,42 @@ body.dark-mode .hub-title {
 /* ============================================================
    7. HUB GRID & CARDS  (exclusivo hub)
    ============================================================ */
+.hub-grid-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .hub-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 20px 100px;
+}
+
+.hub-coming-soon-badge {
+  position: absolute;
+  top: -14px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(87, 197, 234, 0.1);
+  border: 1px solid rgba(87, 197, 234, 0.35);
+  color: var(--brand-action, #57c5ea);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hub-coming-soon-icon {
+  font-size: 14px;
+  line-height: 1;
 }
 
 .hub-card {
