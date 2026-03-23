@@ -702,25 +702,30 @@ body.dark-mode .hub-title {
 
 .hub-coming-soon-badge {
   position: absolute;
-  top: -160px;
-  right: -50;
+  top: -100px;
+  right: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  width: 160px;
+  height: 84px;
   background: rgba(87, 197, 234, 0.1);
   border: 1px solid rgba(87, 197, 234, 0.35);
   color: var(--brand-action, #57c5ea);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 20px;
+  text-align: center;
+  padding: 14px;
+  border-radius: 16px;
   backdrop-filter: blur(8px);
-  white-space: nowrap;
+  line-height: 1.4;
   pointer-events: none;
 }
 
 .hub-coming-soon-icon {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1;
 }
 
