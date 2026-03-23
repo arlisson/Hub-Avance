@@ -636,7 +636,7 @@ body.dark-mode .showcase-wrapper {
 /* Dentro do showcase wrapper (sem margem top) */
 .showcase-content .hub-section-title {
   margin: 0 auto 48px auto;
-  width: max-content;
+  width: min-content;
   max-width: 100%;
 }
 
