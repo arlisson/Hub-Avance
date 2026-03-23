@@ -192,6 +192,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const operatorBtn = document.getElementById("operator-btn");
   const operatorList = document.getElementById("operator-list");
   const operatorSelectedLabel = document.getElementById("operator-selected-label");
+  const operatorCustomWrap = document.getElementById("operator-custom-wrap");
+  const operatorCustomInput = document.getElementById("operator-custom");
+
+  function setOperatorCustomVisible(visible) {
+    if (operatorCustomWrap) operatorCustomWrap.hidden = !visible;
+    if (!visible && operatorCustomInput) operatorCustomInput.value = "";
+  }
 
   function resetOperatorDropdown() {
     if (operatorInput) operatorInput.value = "";
@@ -200,6 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       operatorSelectedLabel.classList.add("placeholder");
     }
     operatorList?.querySelectorAll("li").forEach((li) => li.removeAttribute("aria-selected"));
+    setOperatorCustomVisible(false);
   }
 
   function closeOperatorDropdown() {
@@ -225,6 +233,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       li.setAttribute("aria-selected", "true");
       closeOperatorDropdown();
       setValid(operatorInput);
+      setOperatorCustomVisible(val === "OUTRAS");
+      if (val === "OUTRAS" && operatorCustomInput) operatorCustomInput.focus();
     });
   });
 
@@ -710,7 +720,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         // NOVOS CAMPOS
         has_mobile_service: hasMobile,
         contract_type: contractType,
-        operator: (operatorInput?.value || "").trim(),
+        operator: (() => {
+          const op = (operatorInput?.value || "").trim();
+          if (op === "OUTRAS") return (operatorCustomInput?.value || "").trim() || "OUTRAS";
+          return op;
+        })(),
         active_lines: activeLinesInput?.value === "" ? null : Number(activeLinesInput?.value),
 
         // CEP / REGIÃO

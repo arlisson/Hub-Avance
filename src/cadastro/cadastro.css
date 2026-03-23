@@ -406,6 +406,38 @@ body.dark-mode .operator-dropdown {
   font-weight: 600;
 }
 
+/* Campo "outras" operadora */
+.operator-custom-wrap {
+  margin-top: 10px;
+  animation: fadeSlideDown 0.2s ease;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.operator-custom-input {
+  width: 100%;
+  height: 54px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
+  padding: 0 16px 0 44px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.operator-custom-input:focus {
+  border-color: var(--brand-action);
+}
+
+.operator-custom-input::placeholder {
+  color: var(--text-muted);
+}
+
 /* Erros de Validação (JS Original) */
 .input-group.is-invalid input,
 .input-group.is-invalid .operator-select-btn { border-color: #ef4444; outline: none; }
