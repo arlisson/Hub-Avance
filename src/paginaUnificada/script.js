@@ -1426,7 +1426,16 @@ function buildProductReviewHTML(product) {
     ? `\n\n_Dados do solicitante:_\n${profileLines.join("\n")}`
     : "";
 
-  const waUrl = buildWhatsAppUrl(product.buildMessage(_answers) + profileSuffix);
+  const rawMessage = product.buildMessage(_answers) + profileSuffix;
+  const waUrl = buildWhatsAppUrl(rawMessage);
+
+  const plainMessage = rawMessage
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/_([^_]+)_/g, "$1");
+  const emailUrl =
+    `mailto:vendas@avance.com` +
+    `?subject=${encodeURIComponent(`Solicitação: ${product.title}`)}` +
+    `&body=${encodeURIComponent(plainMessage)}`;
 
   return `
     <h3 class="step-question">Tudo certo! Confirme o seu pedido.</h3>
@@ -1440,8 +1449,12 @@ function buildProductReviewHTML(product) {
       <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
       Falar com um consultor
     </a>
+    <a href="${emailUrl}" class="email-btn-modal" id="btn-email">
+      <i class="ph ph-envelope" aria-hidden="true"></i>
+      Enviar por e-mail
+    </a>
     <p class="modal-footer-note">
-      Você será redirecionado para o WhatsApp com a sua solicitação já preenchida.
+      Você será redirecionado para o WhatsApp ou e-mail com a sua solicitação já preenchida.
     </p>
   `;
 }
@@ -1462,7 +1475,7 @@ function bindProductModalEvents(product, stepIndex, isReview) {
 
   // Salva o lead no banco ao clicar em "Falar com um consultor"
   if (isReview) {
-    document.getElementById("btn-whatsapp")?.addEventListener("click", () => {
+    const saveLead = () => {
       const dados = {};
       product.steps.forEach((s) => { dados[s.id] = _answers[s.id] ?? null; });
       fetch("/api/leads", {
@@ -1476,7 +1489,9 @@ function bindProductModalEvents(product, stepIndex, isReview) {
           dados,
         }),
       }).catch(() => {}); // fire-and-forget
-    });
+    };
+    document.getElementById("btn-whatsapp")?.addEventListener("click", saveLead);
+    document.getElementById("btn-email")?.addEventListener("click", saveLead);
   }
 
   const input = document.getElementById("step-input");
