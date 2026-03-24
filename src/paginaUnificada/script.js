@@ -1403,7 +1403,7 @@ function buildProductReviewHTML(product) {
   if (p?.active_lines != null) profileLines.push(`- *Chips ativos:* ${p.active_lines}`);
   if (p?.cidade || p?.estado)  profileLines.push(`- *Localização:* ${[p.cidade, p.estado].filter(Boolean).join(" - ")}`);
   const profileSuffix = profileLines.length
-    ? `\n\n---\n${profileLines.join("\n")}`
+    ? `\n\n_Dados do solicitante:_\n${profileLines.join("\n")}`
     : "";
 
   const waUrl = buildWhatsAppUrl(product.buildMessage(_answers) + profileSuffix);
