@@ -2314,8 +2314,18 @@ body.dark-mode .product-card {
 }
 
 @keyframes cta-pulse {
-  0%, 100% { box-shadow: 0 4px 14px rgba(87, 197, 234, 0.35), 0 0 0 0 rgba(87, 197, 234, 0.4); }
-  50%       { box-shadow: 0 4px 14px rgba(87, 197, 234, 0.35), 0 0 0 7px rgba(87, 197, 234, 0); }
+  0%   {
+    box-shadow: 0 6px 20px rgba(87, 197, 234, 0.5), 0 0 0 0 rgba(87, 197, 234, 0.7);
+    transform: scale(1);
+  }
+  55%  {
+    box-shadow: 0 8px 28px rgba(87, 197, 234, 0.6), 0 0 0 18px rgba(87, 197, 234, 0);
+    transform: scale(1.035);
+  }
+  100% {
+    box-shadow: 0 6px 20px rgba(87, 197, 234, 0.5), 0 0 0 0 rgba(87, 197, 234, 0);
+    transform: scale(1);
+  }
 }
 
 .product-card-cta {
@@ -2331,17 +2341,17 @@ body.dark-mode .product-card {
   border: none;
   cursor: pointer;
   width: 100%;
-  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.28s ease, box-shadow 0.28s ease;
   letter-spacing: 0.2px;
-  animation: cta-pulse 2s ease-in-out infinite;
+  animation: cta-pulse 1.8s ease-in-out infinite;
 }
 
 .product-card-cta:hover {
   background: #7ddbf5;
   color: #0d1b2a;
-  transform: translateY(-2px);
   animation: none;
-  box-shadow: 0 10px 26px rgba(87, 197, 234, 0.55);
+  transform: translateY(-2px) scale(1);
+  box-shadow: 0 12px 32px rgba(87, 197, 234, 0.65);
 }
 
 .product-card-cta i {
@@ -3191,16 +3201,16 @@ body:not(.dark-mode) .hub-cta-section #btn-submit-feedback:hover {
   background-color: #1d4ed8 !important; /* Azul mais escuro no hover */
 }
 
-/* 4. Corrige os Botões "Começar" (product-card-cta) nos Cards de Produto */
+/* 4. Botões "Contratar" (product-card-cta) — mantém cyan em ambos os temas */
 body:not(.dark-mode) .product-card-cta {
-  background-color: #f1f5f9 !important; /* Fundo cinza bem claro */
-  color: #1e293b !important; /* Texto escuro */
-  border: 1px solid #cbd5e1 !important; /* Borda cinza clara */
+  background-color: #57c5ea !important;
+  color: #0d1b2a !important;
+  border: none !important;
 }
 
 body:not(.dark-mode) .product-card-cta:hover {
-  background-color: #e2e8f0 !important; /* Fundo um pouco mais escuro no hover */
-  border-color: #94a3b8 !important; /* Borda mais escura no hover */
+  background-color: #7ddbf5 !important;
+  color: #0d1b2a !important;
 }
 
 /* 5. Corrige o Botão de WhatsApp "Falar com um consultor" */
@@ -3248,20 +3258,20 @@ body:not(.dark-mode) .mid-cta-desc {
   opacity: 0.75 !important;
 }
 
-/* 2. Corrige os botões "Começar" nos cards de Soluções */
+/* 2. Botões "Contratar" nos cards de Soluções — tema claro (regra final, prevalece) */
 body:not(.dark-mode) .product-card-cta {
-  background-color: #ffffff !important; /* Fundo branco/claro */
-  color: #133868 !important; /* Texto azul escuro */
-  border: 1px solid rgba(87, 197, 234, 0.4) !important;
+  background-color: #57c5ea !important;
+  color: #0d1b2a !important;
+  border: none !important;
+  animation: cta-pulse 1.8s ease-in-out infinite !important;
 }
 
 body:not(.dark-mode) .product-card-cta:hover {
-  background-color: #57c5ea !important; /* Azul ciano brilhante no hover */
-  color: #0f2c58 !important; /* Texto escuro no hover */
-  border-color: #57c5ea !important;
+  background-color: #7ddbf5 !important;
+  color: #0d1b2a !important;
+  animation: none !important;
 }
 
-/* Garante que o ícone do botão acompanhe a cor do texto */
 body:not(.dark-mode) .product-card-cta i {
   color: inherit !important;
 }
