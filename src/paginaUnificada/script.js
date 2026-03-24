@@ -35,6 +35,7 @@ const APPS = [
     youtubeId: "CNFqPBAdglE",
     enabled: true,
     requiresPermission: false,
+    clienteCta: true,
     actions: [
       {
         label: "Acessar",
@@ -902,6 +903,20 @@ function openAppModal(appId) {
       }
       actionsEl.appendChild(el);
     });
+
+    if (app.clienteCta) {
+      const ctaBtn = document.createElement("button");
+      ctaBtn.type = "button";
+      ctaBtn.className = "hub-btn hub-btn-cta";
+      ctaBtn.innerHTML = `<i class="ph ph-handshake"></i><span>Quero ser cliente</span>`;
+      ctaBtn.addEventListener("click", () => {
+        closeAppModal();
+        requestAnimationFrame(() => {
+          document.getElementById("solucoes")?.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+      actionsEl.appendChild(ctaBtn);
+    }
   }
 
   if (videoEl) {
