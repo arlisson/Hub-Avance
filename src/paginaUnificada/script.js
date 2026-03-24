@@ -912,10 +912,10 @@ function openAppModal(appId) {
       ctaBtn.addEventListener("click", () => {
         closeAppModal();
         requestAnimationFrame(() => {
-          document.getElementById("solucoes")?.scrollIntoView({ behavior: "smooth" });
+          document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
         });
       });
-      actionsEl.appendChild(ctaBtn);
+      actionsEl.insertBefore(ctaBtn, actionsEl.firstChild);
     }
   }
 
