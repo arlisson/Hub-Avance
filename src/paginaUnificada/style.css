@@ -1561,7 +1561,7 @@ body.modal-open .hero-badge {
 .footer-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr;
-  gap: 40px;
+  gap: 24px;
   max-width: 1100px;
   margin: 0 auto 48px;
 }
@@ -2313,12 +2313,17 @@ body.dark-mode .product-card {
   flex-shrink: 0;
 }
 
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(87, 197, 234, 0.35), 0 0 0 0 rgba(87, 197, 234, 0.4); }
+  50%       { box-shadow: 0 4px 14px rgba(87, 197, 234, 0.35), 0 0 0 7px rgba(87, 197, 234, 0); }
+}
+
 .product-card-cta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--brand-primary);
-  color: #fafeff;
+  background: var(--brand-action);
+  color: #0d1b2a;
   font-size: 14px;
   font-weight: 700;
   padding: 14px 20px;
@@ -2327,15 +2332,16 @@ body.dark-mode .product-card {
   cursor: pointer;
   width: 100%;
   transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(19, 56, 104, 0.25);
   letter-spacing: 0.2px;
+  animation: cta-pulse 2s ease-in-out infinite;
 }
 
 .product-card-cta:hover {
-  background: var(--brand-action);
-  color: #131739;
+  background: #7ddbf5;
+  color: #0d1b2a;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(87, 197, 234, 0.45);
+  animation: none;
+  box-shadow: 0 10px 26px rgba(87, 197, 234, 0.55);
 }
 
 .product-card-cta i {
@@ -2944,6 +2950,9 @@ body.dark-mode .posvenda-mission {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .product-card-cta {
+    animation: none;
   }
 }
 
