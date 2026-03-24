@@ -2313,19 +2313,41 @@ body.dark-mode .product-card {
   flex-shrink: 0;
 }
 
+/* Anel 1: expande rápido (0–55%); Anel 2: começa em 25%, expande até 80% */
 @keyframes cta-pulse {
-  0%   {
-    box-shadow: 0 6px 20px rgba(87, 197, 234, 0.5), 0 0 0 0 rgba(87, 197, 234, 0.7);
+  0% {
+    box-shadow:
+      0 4px 18px rgba(87, 197, 234, 0.45),
+      0 0 0  0px rgba(87, 197, 234, 0.65),
+      0 0 0  0px rgba(87, 197, 234, 0.30);
     transform: scale(1);
   }
-  55%  {
-    box-shadow: 0 8px 28px rgba(87, 197, 234, 0.6), 0 0 0 18px rgba(87, 197, 234, 0);
-    transform: scale(1.035);
+  25% {
+    box-shadow:
+      0 10px 32px rgba(87, 197, 234, 0.70),
+      0 0 0 12px rgba(87, 197, 234, 0.18),
+      0 0 0  0px rgba(87, 197, 234, 0.30);
+    transform: scale(1.04);
   }
-  100% {
-    box-shadow: 0 6px 20px rgba(87, 197, 234, 0.5), 0 0 0 0 rgba(87, 197, 234, 0);
+  55% {
+    box-shadow:
+      0 6px 22px rgba(87, 197, 234, 0.50),
+      0 0 0 22px rgba(87, 197, 234, 0),
+      0 0 0 10px rgba(87, 197, 234, 0.12);
+    transform: scale(1.01);
+  }
+  85%, 100% {
+    box-shadow:
+      0 4px 18px rgba(87, 197, 234, 0.45),
+      0 0 0 22px rgba(87, 197, 234, 0),
+      0 0 0 24px rgba(87, 197, 234, 0);
     transform: scale(1);
   }
+}
+
+@keyframes cta-icon-nudge {
+  0%, 60%, 100% { transform: translate(0, 0); }
+  78%            { transform: translate(4px, -3px); }
 }
 
 .product-card-cta {
@@ -2341,24 +2363,26 @@ body.dark-mode .product-card {
   border: none;
   cursor: pointer;
   width: 100%;
-  transition: background 0.28s ease, box-shadow 0.28s ease;
+  transition: background 0.28s ease;
   letter-spacing: 0.2px;
-  animation: cta-pulse 1.8s ease-in-out infinite;
+  animation: cta-pulse 2.2s ease-in-out infinite;
 }
 
 .product-card-cta:hover {
   background: #7ddbf5;
   color: #0d1b2a;
   animation: none;
-  transform: translateY(-2px) scale(1);
-  box-shadow: 0 12px 32px rgba(87, 197, 234, 0.65);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(87, 197, 234, 0.70);
 }
 
 .product-card-cta i {
   font-size: 18px;
+  animation: cta-icon-nudge 2.2s ease-in-out infinite;
   transition: transform 0.28s ease;
 }
 .product-card-cta:hover i {
+  animation: none;
   transform: translate(3px, -3px);
 }
 
@@ -2961,7 +2985,8 @@ body.dark-mode .posvenda-mission {
     transform: none;
     transition: none;
   }
-  .product-card-cta {
+  .product-card-cta,
+  .product-card-cta i {
     animation: none;
   }
 }
