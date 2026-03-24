@@ -3146,9 +3146,171 @@ body:not(.dark-mode) .product-card-cta i {
 /* Ajusta o tamanho da fonte e as margens no celular para caber na tela */
 @media (max-width: 768px) {
   .hero-badge {
-    font-size: 18px !important; /* Fonte menor e elegante no mobile */
-    padding: 14px 40px !important; /* Reduz as "gorduras" laterais */
-    letter-spacing: 2px !important; /* Ajusta o espaçamento das letras */
+    font-size: 18px !important;
+    padding: 14px 40px !important;
+    letter-spacing: 2px !important;
     margin-bottom: 24px !important;
+  }
+}
+
+/* ============================================================
+   RESPONSIVIDADE MOBILE — MELHORIAS ABRANGENTES
+   ============================================================ */
+
+/* iOS Safari: overflow-x: hidden no body sozinho não impede
+   scroll horizontal — precisa estar no html também.          */
+html {
+  overflow-x: hidden;
+}
+
+/* ── Modal como bottom sheet (≤ 640px) ────────────────────
+   Sobe da parte inferior em vez de centralizar — mais natural
+   no toque e não conflita com o teclado virtual.
+   ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .app-modal {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100vh - 32px) !important;
+    max-height: calc(100dvh - 32px) !important; /* fallback dinâmico */
+    border-radius: 24px 24px 0 0 !important;
+    transform: translateY(64px) !important;
+    opacity: 0 !important;
+  }
+  .app-modal.is-open {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
+  .app-modal-header {
+    padding: 20px 20px 14px !important;
+  }
+  .app-modal-body {
+    padding: 20px !important;
+    gap: 16px !important;
+  }
+  /* Botão WhatsApp ocupa largura total no modal mobile */
+  .whatsapp-btn-modal {
+    width: 100%;
+  }
+}
+
+/* ── Ajustes complementares ≤ 600px ───────────────────── */
+@media (max-width: 600px) {
+  .summary-card {
+    padding: 16px;
+  }
+  .prod-modal-nav {
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .showcase-content {
+    padding: 36px 18px 40px;
+  }
+}
+
+/* ── ≤ 480px — smartphones compactos ────────────────────
+   ──────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+
+  /* Hero */
+  .hero-section {
+    min-height: 80vh;
+  }
+  .hero-title {
+    font-size: clamp(28px, 7.5vw, 38px);
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+  .hero-badge {
+    font-size: 13px !important;
+    padding: 10px 22px !important;
+    letter-spacing: 1.5px !important;
+    margin-bottom: 20px !important;
+  }
+  .hero-subtitle {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+  .hero-btn {
+    font-size: 15px;
+    padding: 14px 28px;
+  }
+
+  /* Showcase sections */
+  .showcase-content {
+    padding: 32px 16px 36px !important;
+  }
+  .about-content {
+    padding: 36px 16px 44px !important;
+  }
+  .posvenda-content {
+    padding: 36px 16px 44px !important;
+  }
+
+  /* Section headings */
+  .hub-section-title h2 {
+    font-size: clamp(19px, 5.5vw, 26px);
+  }
+  .solucoes-intro-title {
+    font-size: clamp(22px, 6vw, 32px) !important;
+  }
+
+  /* Hub cards */
+  .hub-grid {
+    padding: 0 0 40px;
+    gap: 16px;
+  }
+  .hub-card,
+  .hub-card-skeleton {
+    width: 100%;
+    max-width: 100%;
+    height: 340px;
+  }
+
+  /* Badge "em desenvolvimento" — absolute com right: -65px
+     causa overflow horizontal no mobile; ocultar é seguro.  */
+  .hub-coming-soon-badge {
+    display: none !important;
+  }
+
+  /* Product cards */
+  .products-grid {
+    gap: 16px;
+  }
+  .product-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 28px 18px 24px;
+  }
+
+  /* About */
+  .about-header {
+    margin-bottom: 36px;
+  }
+  .about-tagline {
+    font-size: clamp(17px, 5vw, 22px);
+  }
+
+  /* Mid CTA */
+  .mid-cta-banner {
+    padding: 28px 18px !important;
+    border-radius: 16px;
+  }
+
+  /* Pós-venda */
+  .posvenda-header {
+    margin-bottom: 36px;
+  }
+  .posvenda-pillars {
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .posvenda-pillar {
+    width: 100%;
   }
 }
