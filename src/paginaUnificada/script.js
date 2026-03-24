@@ -179,9 +179,9 @@ const PRODUCTS = [
         a.modalidade === "nova" ? "Contratação nova" : "Portabilidade";
       return (
         `Olá! Tenho interesse em *Telefonia Móvel Empresarial*.\n\n` +
-        ` -*Linhas desejadas:* ${a.linhas}\n` +
-        ` -*Modalidade:* ${mod}\n` +
-        ` -*Operadora preferida:* ${op}\n\n` +
+        `- *Linhas desejadas:* ${a.linhas}\n` +
+        `- *Modalidade:* ${mod}\n` +
+        `- *Operadora preferida:* ${op}\n\n` +
         `Poderia me apresentar as melhores opções?`
       );
     },
@@ -255,8 +255,8 @@ const PRODUCTS = [
       };
       return (
         `Olá! Tenho interesse em *Internet Empresarial*.\n\n` +
-        `🏢 *Perfil do negócio:* ${perfilMap[a.perfil]}\n` +
-        `⚡ *Velocidade desejada:* ${velMap[a.velocidade]}\n\n` +
+        `- *Perfil do negócio:* ${perfilMap[a.perfil]}\n` +
+        `- *Velocidade desejada:* ${velMap[a.velocidade]}\n\n` +
         `Poderia me apresentar as melhores opções?`
       );
     },
@@ -318,8 +318,8 @@ const PRODUCTS = [
           : "Migração de linha existente";
       return (
         `Olá! Tenho interesse em *Telefonia Fixa*.\n\n` +
-        `☎️ *Situação:* ${sit}\n` +
-        `📋 *Linhas desejadas:* ${a.linhas}\n\n` +
+        `- *Situação:* ${sit}\n` +
+        `- *Linhas desejadas:* ${a.linhas}\n\n` +
         `Poderia me apresentar as melhores opções?`
       );
     },
@@ -1397,11 +1397,11 @@ function buildProductReviewHTML(product) {
 
   const p = _currentUserProfile;
   const profileLines = [];
-  if (p?.name)         profileLines.push(` -*Nome:* ${p.name}`);
-  if (p?.whatsapp)     profileLines.push(` -*Telefone:* ${p.whatsapp}`);
-  if (p?.operator)     profileLines.push(` -*Operadora atual:* ${p.operator}`);
-  if (p?.active_lines != null) profileLines.push(` -*Chips ativos:* ${p.active_lines}`);
-  if (p?.cidade || p?.estado)  profileLines.push(` -*Localização:* ${[p.cidade, p.estado].filter(Boolean).join(" - ")}`);
+  if (p?.name)         profileLines.push(`- *Nome:* ${p.name}`);
+  if (p?.whatsapp)     profileLines.push(`- *Telefone:* ${p.whatsapp}`);
+  if (p?.operator)     profileLines.push(`- *Operadora atual:* ${p.operator}`);
+  if (p?.active_lines != null) profileLines.push(`- *Chips ativos:* ${p.active_lines}`);
+  if (p?.cidade || p?.estado)  profileLines.push(`- *Localização:* ${[p.cidade, p.estado].filter(Boolean).join(" - ")}`);
   const profileSuffix = profileLines.length
     ? `\n\n---\n${profileLines.join("\n")}`
     : "";
