@@ -3256,11 +3256,19 @@ html {
   .hub-section-title h2 {
     font-size: clamp(19px, 5.5vw, 26px);
   }
+  .showcase-content .hub-section-title {
+    width: 100%;
+  }
   .showcase-content .hub-section-title h2 {
     white-space: normal;
   }
   .solucoes-intro-title {
     font-size: clamp(22px, 6vw, 32px) !important;
+    width: 100%;
+  }
+  .solucoes-intro-subtitle {
+    width: 100%;
+    max-width: 100%;
   }
 
   /* Hub cards */
