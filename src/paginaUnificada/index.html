@@ -442,6 +442,72 @@
         </div>
       </section>
 
+      <!-- ===== Seção de Avaliações ===== -->
+      <section id="avaliacoes" class="hub-reviews-section">
+        <div class="hub-container">
+          <div class="hub-section-title" data-reveal>
+            <span class="hub-section-tag"><i class="ph ph-star"></i> Avaliações</span>
+            <h2>O que achou da Avance?</h2>
+            <p class="hub-section-subtitle">Sua opinião nos ajuda a melhorar. Leva menos de um minuto.</p>
+          </div>
+
+          <div class="review-form-wrap">
+            <form id="review-form" class="review-form" novalidate>
+
+              <div class="review-field">
+                <span class="review-label">Sua nota</span>
+                <div class="review-stars" id="review-stars" role="group" aria-label="Selecione uma nota de 1 a 5 estrelas">
+                  <button type="button" class="review-star" data-val="1" aria-label="1 estrela"><i class="ph ph-star"></i></button>
+                  <button type="button" class="review-star" data-val="2" aria-label="2 estrelas"><i class="ph ph-star"></i></button>
+                  <button type="button" class="review-star" data-val="3" aria-label="3 estrelas"><i class="ph ph-star"></i></button>
+                  <button type="button" class="review-star" data-val="4" aria-label="4 estrelas"><i class="ph ph-star"></i></button>
+                  <button type="button" class="review-star" data-val="5" aria-label="5 estrelas"><i class="ph ph-star"></i></button>
+                </div>
+                <span class="review-star-label" id="review-star-label">Selecione uma nota</span>
+              </div>
+
+              <div class="review-field">
+                <label class="review-label" for="review-nome">
+                  Nome <span class="review-optional">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="review-nome"
+                  class="review-input"
+                  placeholder="Como você se chama?"
+                  maxlength="60"
+                  autocomplete="name"
+                />
+              </div>
+
+              <div class="review-field">
+                <label class="review-label" for="review-comentario">Comentário</label>
+                <textarea
+                  id="review-comentario"
+                  class="review-textarea"
+                  placeholder="Conta como foi sua experiência com a Avance..."
+                  maxlength="500"
+                  rows="4"
+                ></textarea>
+                <span class="review-char-count" id="review-char-count">0 / 500</span>
+              </div>
+
+              <p class="review-error" id="review-error" hidden></p>
+
+              <button type="submit" class="hub-btn hub-btn-primary review-submit" id="review-submit">
+                <i class="ph ph-paper-plane-tilt"></i>
+                <span>Enviar avaliação</span>
+              </button>
+            </form>
+
+            <div id="review-success" class="review-success" hidden>
+              <i class="ph ph-check-circle"></i>
+              <p>Avaliação enviada! Obrigado pelo seu feedback.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer class="hub-footer">
         <div class="footer-grid">
           <div class="footer-col footer-col-brand">

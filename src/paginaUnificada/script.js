@@ -1728,3 +1728,98 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = normalizeLoginUrl(LOGIN_URL);
   }
 });
+
+// ============================================================
+// FORMULÁRIO DE AVALIAÇÃO (seção pública)
+// ============================================================
+
+(function initReviewForm() {
+  const form        = document.getElementById("review-form");
+  const starsEl     = document.getElementById("review-stars");
+  const starLabel   = document.getElementById("review-star-label");
+  const textarea    = document.getElementById("review-comentario");
+  const charCount   = document.getElementById("review-char-count");
+  const errorEl     = document.getElementById("review-error");
+  const submitBtn   = document.getElementById("review-submit");
+  const successEl   = document.getElementById("review-success");
+
+  if (!form) return;
+
+  const STAR_LABELS = ["", "Muito insatisfeito", "Insatisfeito", "Regular", "Satisfeito", "Muito satisfeito!"];
+  const stars       = Array.from(starsEl.querySelectorAll(".review-star"));
+  let selectedStar  = 0;
+
+  function paintStars(upTo, className) {
+    stars.forEach((s, i) => s.classList.toggle(className, i < upTo));
+  }
+
+  // Hover
+  starsEl.addEventListener("mousemove", (e) => {
+    const btn = e.target.closest(".review-star");
+    if (!btn) return;
+    const val = +btn.dataset.val;
+    paintStars(val, "hovered");
+    starLabel.textContent = STAR_LABELS[val];
+  });
+
+  starsEl.addEventListener("mouseleave", () => {
+    paintStars(0, "hovered");
+    starLabel.textContent = selectedStar ? STAR_LABELS[selectedStar] : "Selecione uma nota";
+  });
+
+  // Click
+  starsEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".review-star");
+    if (!btn) return;
+    selectedStar = +btn.dataset.val;
+    paintStars(selectedStar, "active");
+    starLabel.textContent = STAR_LABELS[selectedStar];
+  });
+
+  // Char counter
+  textarea.addEventListener("input", () => {
+    charCount.textContent = `${textarea.value.length} / 500`;
+  });
+
+  // Submit
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    errorEl.hidden = true;
+
+    const nome       = document.getElementById("review-nome").value.trim();
+    const comentario = textarea.value.trim();
+
+    if (!selectedStar) {
+      errorEl.textContent = "Selecione uma nota antes de enviar.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (comentario.length < 10) {
+      errorEl.textContent = "Escreva um comentário com pelo menos 10 caracteres.";
+      errorEl.hidden = false;
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.querySelector("span").textContent = "Enviando...";
+
+    try {
+      const resp = await fetch("/api/avaliacoes-reais", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: nome || null, estrelas: selectedStar, comentario }),
+      });
+
+      if (!resp.ok) throw new Error("server_error");
+
+      form.hidden     = true;
+      successEl.hidden = false;
+    } catch {
+      errorEl.textContent = "Não foi possível enviar. Tente novamente em instantes.";
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.querySelector("span").textContent = "Enviar avaliação";
+    }
+  });
+})();
