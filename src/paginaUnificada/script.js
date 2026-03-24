@@ -511,7 +511,7 @@ function initScrollReveal() {
   });
 
   document.querySelectorAll(".posvenda-pillar").forEach((el, i) => {
-    el.style.transitionDelay = `${i * 0.12}s`;
+    el.style.transitionDelay = `${i * 0.08}s`;
     revealObserver.observe(el);
   });
 
