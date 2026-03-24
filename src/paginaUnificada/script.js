@@ -1434,7 +1434,7 @@ function buildProductReviewHTML(product) {
     .replace(/_([^_]+)_/g, "$1");
   const emailUrl =
     `https://mail.google.com/mail/?view=cm` +
-    `&to=${encodeURIComponent("vendas@avance.com")}` +
+    `&to=${encodeURIComponent("querosercliente@avancevip.net.br")}` +
     `&su=${encodeURIComponent(`Solicitação: ${product.title}`)}` +
     `&body=${encodeURIComponent(plainMessage)}`;
 
