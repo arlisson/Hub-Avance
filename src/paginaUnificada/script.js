@@ -433,8 +433,13 @@ function initNavbarEffect() {
   window.addEventListener("scroll", handleScroll, { passive: true });
 
   // 3. Monitora o mouse para mostrar a barra se ele encostar no topo
+  let _navMouseFrame;
   document.addEventListener("mousemove", (e) => {
-    navbar.classList.toggle("hover-active", e.clientY <= 30);
+    if (_navMouseFrame) return;
+    _navMouseFrame = requestAnimationFrame(() => {
+      navbar.classList.toggle("hover-active", e.clientY <= 30);
+      _navMouseFrame = null;
+    });
   });
 }
 
@@ -1480,9 +1485,10 @@ function bindProductModalEvents(product, stepIndex, isReview) {
     if (!isReview) handleProductNext(product, stepIndex);
   }, { capture: true });
 
-  modal?.querySelectorAll(".step-chip").forEach((chip) => {
+  const _chips = modal ? Array.from(modal.querySelectorAll(".step-chip")) : [];
+  _chips.forEach((chip) => {
     chip.addEventListener("click", () => {
-      modal.querySelectorAll(".step-chip").forEach((c) => {
+      _chips.forEach((c) => {
         c.classList.remove("selected");
         c.setAttribute("aria-pressed", "false");
       });
@@ -1573,6 +1579,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initScrollReveal();
   initActiveNavTracking();
 
+  const _navLinks = document.querySelectorAll(".nav-link");
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       const target = document.querySelector(this.getAttribute("href"));
@@ -1580,9 +1587,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
 
       // Atualiza manualmente a classe active no nav
-      const navLinks = document.querySelectorAll(".nav-link");
       const clickedHref = this.getAttribute("href");
-      navLinks.forEach((link) => {
+      _navLinks.forEach((link) => {
         link.classList.toggle(
           "active",
           link.getAttribute("href") === clickedHref,

@@ -2808,9 +2808,7 @@ body.dark-mode .posvenda-mission {
   transform: translateY(0);
 }
 
-.hub-card.is-visible:hover {
-  transform: translateY(-8px) scale(1.01);
-}
+/* .hub-card:hover already handles this transform */
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
